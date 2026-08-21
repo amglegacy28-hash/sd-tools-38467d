@@ -1,4 +1,5 @@
 <title>Lions Den Draft Room</title>
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
@@ -437,8 +438,8 @@ function reasonsFor(p,ctx){
     else out.push('No 2025 history, so upside here is <b>unmeasured</b> &mdash; positional average assumed');
     if(sv!=null&&nextPick) out.push(Math.round(sv*100)+'% he lasts to '+rp(nextPick));
   }
-  if(p.inj) out.unshift('<b style="color:var(--bad)">'+String(p.inj).toUpperCase()+
-    (p.injb?' ('+p.injb+')':'')+'</b> per Sleeper'+(p.nu?', news '+daysAgo(p.nu):''));
+  if(p.inj && !ctx.isTop) out.unshift('<b style="color:var(--bad)">'+String(p.inj).toUpperCase()+
+    (p.injb?' ('+p.injb+')':'')+'</b> per Sleeper');
   else if(p.dcp&&p.dco&&p.dco>=3) out.push('Listed <b>'+p.dcp+'</b> on the depth chart &mdash; behind '+(p.dco-1)+' at his spot');
   else if(p.dcp&&p.dco===1&&ctx.phase==='BENCH') out.push('Listed <b>'+p.dcp+'</b> &mdash; a starter\u2019s role, not a handcuff');
   const left=avail.filter(q=>q.pos===p.pos && q.vor>=p.vor-12).length;
@@ -553,7 +554,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections Rotowire via Sleeper, updated 2026-08-20 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 6978 drafts, 2026-08-13..2026-08-20 &middot; variance from real 2025 weekly scores &middot; built Fri 21 Aug, 01:29.<br>'+
+  $('prov').innerHTML = 'Projections Rotowire via Sleeper, updated 2026-08-20 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 6978 drafts, 2026-08-13..2026-08-20 &middot; variance from real 2025 weekly scores &middot; built Fri 21 Aug, 01:30.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
@@ -583,7 +584,7 @@ function viewPick(avail,cur,total,nextPick,isMine,st,onClock,me,teams,gain,ctxBa
   if(top.inj) h+='<div class="err" style="margin:10px 0 0">Sleeper lists him <b>'+String(top.inj).toUpperCase()+
      (top.injb?' ('+top.injb+')':'')+'</b>'+(top.nu?', news '+daysAgo(top.nu):'')+
      '. That designation is not in his projection or his ADP. Check before you take him.</div>';
-  h+='<ul class="why">'+reasonsFor(top,ctx).map(x=>'<li><span>'+x+'</span></li>').join('')+'</ul>';
+  h+='<ul class="why">'+reasonsFor(top,Object.assign({},ctx,{isTop:true})).map(x=>'<li><span>'+x+'</span></li>').join('')+'</ul>';
   if(isMine&&r.cands[0].med!=null){
     const spread=r.cands[0].med-r.cands[0].p10;
     h+='<p style="font-size:13px;color:var(--ink-2);margin:9px 0 0">Scored over '+SIMS+
