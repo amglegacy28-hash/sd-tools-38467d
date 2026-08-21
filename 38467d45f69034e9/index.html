@@ -67,7 +67,9 @@ h1{font-family:Oswald,"Arial Narrow",Haettenschweiler,sans-serif;font-weight:600
 .t-SELF{background:var(--panel-2);color:var(--ink-2)}
 .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:5px}
 .sl{border:1px solid var(--line);border-radius:4px;padding:5px 7px;background:var(--panel-2);min-height:44px}
-.sl .lb{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.08em;color:var(--ink-3)}
+.sl .lb{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.08em;color:var(--ink-3);
+  display:flex;justify-content:space-between;gap:4px}
+.sl .lb .pkn{color:var(--gold);font-weight:600}
 .sl .vl{font-size:12.5px;font-weight:500;line-height:1.25}
 .sl.empty{border-style:dashed;opacity:.6}
 .sv{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:13.5px}
@@ -100,6 +102,22 @@ tr.lot td{opacity:.6}
 .feed .mine{color:var(--gold);font-weight:600}
 footer{margin-top:26px;padding-top:12px;border-top:1px solid var(--line);
   font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);line-height:1.7}
+.mrow{display:flex;gap:6px;margin-top:8px}
+.mrow input{flex:1;min-width:0;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+  border-radius:4px;padding:9px 10px;font-size:16px;font-family:inherit}
+.mrow input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.mbtn{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:4px;
+  padding:9px 12px;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;cursor:pointer}
+.mbtn.danger{color:var(--bad);border-color:var(--bad)}
+.mbtn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.mlist{display:grid;gap:4px;margin-top:10px;max-height:340px;overflow-y:auto}
+.mpick{display:flex;justify-content:space-between;align-items:baseline;gap:8px;width:100%;
+  background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:10px 11px;
+  color:var(--ink);font-family:inherit;font-size:14px;text-align:left;cursor:pointer;min-height:44px}
+.mpick:hover{border-color:var(--gold)}
+.mpick:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.manualbar{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:5px;
+  padding:7px 11px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;margin:8px 0}
 .testbar{background:var(--gold);color:var(--ground);border-radius:5px;padding:8px 11px;
   font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;margin:10px 0;letter-spacing:.02em}
 .testbar a{color:var(--ground);text-decoration:underline}
@@ -115,6 +133,7 @@ footer{margin-top:26px;padding-top:12px;border-top:1px solid var(--line);
 <h1>Draft Room</h1>
 <p class="sub">The Lions Den &middot; Gunit28 &middot; slot 9 of 12 &middot; full PPR, 3 FLEX, no K/DEF</p>
 <div id="testbar"></div>
+<div id="manualbar"></div>
 <div id="err"></div>
 <div id="turn"></div>
 <div class="card"><h2>Your roster</h2><div class="slots" id="roster"></div>
@@ -129,6 +148,7 @@ footer{margin-top:26px;padding-top:12px;border-top:1px solid var(--line);
   <button class="f" data-p="QB" aria-pressed="false">QB</button>
   <button class="f" data-p="NEED" aria-pressed="false">NEEDS</button>
   <button class="f" data-p="QUEUE" aria-pressed="false">QUEUE</button>
+  <button class="f" data-p="MANUAL" aria-pressed="false">MANUAL ENTRY</button>
 </div>
 <div id="board"></div>
 <div class="card"><h2>Picks so far</h2><div class="feed" id="feed">none yet</div></div>
@@ -140,7 +160,7 @@ footer{margin-top:26px;padding-top:12px;border-top:1px solid var(--line);
   <p><b>It reads the draft; it never picks for you.</b> No write access exists in this page.</p>
 </div>
 <footer>
-  Projections Rotowire via Sleeper, updated 2026-08-20 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 6978 drafts, 2026-08-13..2026-08-20, and Sleeper stats.adp_ppr &middot; variance from real 2025 weekly scores &middot; built Fri 21 Aug, 00:22.<br>
+  Projections Rotowire via Sleeper, updated 2026-08-20 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 6978 drafts, 2026-08-13..2026-08-20, and Sleeper stats.adp_ppr &middot; variance from real 2025 weekly scores &middot; built Fri 21 Aug, 00:34.<br>
   Survival is Monte Carlo, 3,000 sims per recompute, rank-based over the intervening picks. Polling adapts from 6s down to 2s as your pick approaches. Nothing here forecasts results.
 </footer>
 </div>
@@ -163,6 +183,32 @@ let SHAPE={teams:CFG.teams, rounds:CFG.rounds, slot:CFG.slot,
            nameBySlot:CFG.name_by_slot, type:'snake', reversal:0, status:null};
 let MYPICKS=[], PICKMAP={};
 let picks=[], filt='ALL', lastOk=0, failCount=0;
+// ---- manual fallback -------------------------------------------------------
+// If Sleeper stops answering, the draft does not stop. Manual entries append to
+// whatever the API already gave us and survive a refresh, so the tool keeps
+// working from wherever the feed died.
+let manual=[];
+const MKEY='ld_manual_'+DRAFT_ID;
+try{ manual=JSON.parse(localStorage.getItem(MKEY)||'[]'); }catch(e){ manual=[]; }
+function saveManual(){ try{ localStorage.setItem(MKEY, JSON.stringify(manual)); }catch(e){} }
+function effectivePicks(){
+  const base=picks.length;
+  const extra=manual.filter(m=>m.pick_no>base)
+    .sort((a,b)=>a.pick_no-b.pick_no)
+    .map(m=>({pick_no:m.pick_no, player_id:m.id, _manual:true}));
+  return picks.concat(extra);
+}
+function isMinePick(x){
+  if(x.picked_by) return x.picked_by===CFG.me_id;
+  return PICKMAP[x.pick_no]===SHAPE.slot;
+}
+function addManual(id){
+  const nextNo=effectivePicks().length+1;
+  if(nextNo>SHAPE.teams*SHAPE.rounds) return;
+  manual.push({id:String(id), pick_no:nextNo}); saveManual(); render();
+}
+function undoManual(){ if(manual.length){ manual.pop(); saveManual(); render(); } }
+function clearManual(){ if(confirm('Clear all '+manual.length+' hand-entered picks?')){ manual=[]; saveManual(); render(); } }
 
 function rebuildPickMap(){
   PICKMAP={}; MYPICKS=[];
@@ -192,9 +238,15 @@ async function loadDraftShape(){
     SHAPE.reversal=st.reversal_round||0;
     SHAPE.status=d.status;
     const ord=d.draft_order||{};
+    // A mock often has only your own seat filled. Give every slot a name so the
+    // feed never prints "?" for an opponent that simply has not been named.
     const names={};
-    Object.keys(ord).forEach(uid=>{ names[ord[uid]]= (CFG.user_names&&CFG.user_names[uid]) || ('Team '+ord[uid]); });
-    if(Object.keys(names).length) SHAPE.nameBySlot=Object.assign({},names);
+    for(let sl=1; sl<=SHAPE.teams; sl++) names[sl]='Team '+sl;
+    Object.keys(ord).forEach(uid=>{
+      const nm=(CFG.user_names&&CFG.user_names[uid]);
+      if(nm) names[ord[uid]]=nm;
+    });
+    SHAPE.nameBySlot=names;
     const mySlot=ord[CFG.me_id];
     const forced=parseInt(QS.get('slot')||'',10);
     if(!isNaN(forced)&&forced>=1&&forced<=SHAPE.teams) SHAPE.slot=forced;
@@ -281,6 +333,7 @@ function rosterState(mine){
   rest.forEach(p=>{ if(res.FLEX.length<3 && ['RB','WR','TE'].includes(p.pos)) res.FLEX.push(p); else res.BN.push(p); });
   return {res,need,openFlex:3-res.FLEX.length};
 }
+function rp(k){ const T=SHAPE.teams; return Math.ceil(k/T)+'.'+String(((k-1)%T)+1).padStart(2,'0'); }
 function fillsNeed(p,st){ return (st.need[p.pos]>0) || (st.openFlex>0 && ['RB','WR','TE'].includes(p.pos)); }
 
 // ---- the recommendation ---------------------------------------------------
@@ -325,17 +378,20 @@ function recommend(avail, cur, next, st, isMine){
 
 // ---- render ---------------------------------------------------------------
 function render(){
-  const drafted=new Set(picks.map(x=>String(x.player_id)));
-  const cur=picks.length+1, total=SHAPE.teams*SHAPE.rounds;
+  const EFF=effectivePicks();
+  const drafted=new Set(EFF.map(x=>String(x.player_id)));
+  const cur=EFF.length+1, total=SHAPE.teams*SHAPE.rounds;
   const avail=P.filter(p=>!drafted.has(p.id));
-  const mine=picks.filter(x=>x.picked_by===CFG.me_id).map(x=>byId[String(x.player_id)]).filter(Boolean);
+  const mine=EFF.filter(isMinePick).map(x=>{
+    const p=byId[String(x.player_id)]; return p?Object.assign({},p,{_pick:x.pick_no,_manual:!!x._manual}):null;
+  }).filter(Boolean);
   const st=rosterState(mine);
   const next=MYPICKS.find(k=>k>=cur);
   const onClock=cur<=total?mgrAt(cur):null;
 
   document.getElementById('pickno').textContent = cur>total? 'DRAFT COMPLETE' : ('PICK '+cur+' / '+total);
-  document.getElementById('status').textContent = picks.length===0? 'waiting for pick 1'
-      : (onClock? ('on the clock: '+onClock) : 'complete');
+  document.getElementById('status').textContent = (cur>total) ? 'complete'
+      : (EFF.length===0 ? 'waiting for pick 1' : (onClock ? ('on the clock: '+onClock) : 'complete'));
 
   // your turn / next turn panel
   const turn=document.getElementById('turn');
@@ -388,10 +444,12 @@ function render(){
   const rs=st.res, cells=[];
   [['QB',1],['RB',2],['WR',2],['TE',1],['FLEX',3]].forEach(([k,n])=>{
     for(let i=0;i<n;i++){ const p=rs[k][i];
-      cells.push('<div class="sl'+(p?'':' empty')+'"><div class="lb">'+k+'</div><div class="vl">'+
+      cells.push('<div class="sl'+(p?'':' empty')+'"><div class="lb">'+k+
+        (p&&p._pick?'<span class="pkn">'+rp(p._pick)+'</span>':'')+'</div><div class="vl">'+
         (p?p.n:'&mdash;')+'</div></div>'); }
   });
-  rs.BN.forEach(p=>cells.push('<div class="sl"><div class="lb">BN</div><div class="vl">'+p.n+'</div></div>'));
+  rs.BN.forEach(p=>cells.push('<div class="sl"><div class="lb">BN'+
+    (p._pick?'<span class="pkn">'+rp(p._pick)+'</span>':'')+'</div><div class="vl">'+p.n+'</div></div>'));
   document.getElementById('roster').innerHTML=cells.join('');
   document.getElementById('po').innerHTML = mine.length
     ? mine.map(p=>p.n+' &mdash; '+(p.po||'schedule n/a')).join('<br>')
@@ -406,6 +464,32 @@ function render(){
       clash.map(([w,n])=>n+' starters out in week '+w).join('; ')+'</span>';
   }
   // board
+  if(filt==='MANUAL'){
+    const q=(document.getElementById('msearch')?.value||'').toLowerCase();
+    const list=avail.filter(p=>!q||p.n.toLowerCase().includes(q)).slice(0,60);
+    document.getElementById('board').innerHTML=
+      '<div class="card"><h2>Manual entry &mdash; fallback</h2>'+
+      '<p>Use this if Sleeper stops feeding picks. Tap whoever was just taken and the tool carries on. '+
+      'It works out who picked from the slot order, so your own picks land on your roster automatically. '+
+      'Entries are saved on this phone and survive a refresh.</p>'+
+      '<div class="mrow"><input id="msearch" type="search" placeholder="type a name, then tap him" '+
+      'autocomplete="off" autocapitalize="off" spellcheck="false" value="'+q.replace(/"/g,'&quot;')+'">'+
+      '<button class="mbtn" id="mundo">Undo</button>'+
+      (manual.length?'<button class="mbtn danger" id="mclear">Clear</button>':'')+'</div>'+
+      '<p style="margin-top:8px"><b>'+manual.length+'</b> hand-entered &middot; next is pick <b>'+
+      rp(EFF.length+1)+'</b> ('+ (SHAPE.nameBySlot[PICKMAP[EFF.length+1]]||'?') +')</p>'+
+      '<div class="mlist">'+list.map(p=>
+        '<button class="mpick" data-id="'+p.id+'"><span>'+p.n+'</span>'+
+        '<span class="pm" style="display:inline">'+p.pos+(p.tm?' · '+p.tm:'')+' · VOR '+p.vor.toFixed(0)+'</span></button>').join('')+
+      '</div></div>';
+    const si=document.getElementById('msearch');
+    if(si){ si.addEventListener('input',()=>render());
+            if(document.activeElement!==si && q) { si.focus(); si.setSelectionRange(q.length,q.length); } }
+    document.querySelectorAll('.mpick').forEach(b=>b.addEventListener('click',()=>addManual(b.dataset.id)));
+    const u=document.getElementById('mundo'); if(u) u.addEventListener('click',undoManual);
+    const c=document.getElementById('mclear'); if(c) c.addEventListener('click',clearManual);
+    return;
+  }
   if(filt==='QUEUE'){
     const q=avail.filter(p=>fillsNeed(p,st)||st.openFlex>0).slice(0,40);
     document.getElementById('board').innerHTML=
@@ -436,8 +520,14 @@ function render(){
   h+='</tbody></table>';
   document.getElementById('board').innerHTML=h;
 
+  // manual-mode indicator
+  const mb=document.getElementById('manualbar');
+  if(mb) mb.innerHTML = manual.length
+    ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+
+      ' entered by hand. Sleeper supplied '+picks.length+'. If the feed comes back it takes over automatically.</div>'
+    : '';
   // feed
-  const f=picks.slice(-40).reverse().map(x=>{
+  const f=EFF.slice(-40).reverse().map(x=>{
     const p=byId[String(x.player_id)], m=SHAPE.nameBySlot[PICKMAP[x.pick_no]]||'?';
     return '<div class="'+(x.picked_by===CFG.me_id?'mine':'')+'">'+String(x.pick_no).padStart(3)+
       '  '+m+'  &mdash; '+(p?p.n+' ('+p.pos+')':(x.metadata?(x.metadata.first_name+' '+x.metadata.last_name):'?'))+'</div>';
@@ -461,8 +551,10 @@ async function poll(){
     netOk();
   }catch(e){
     failCount++;
-    if(failCount>=3) showErr('Cannot reach Sleeper ('+failCount+' tries). '+
-      'The board below is still valid \u2014 it is baked into this page and needs no network. Retrying.');
+    if(failCount>=3) showErr('Cannot reach Sleeper ('+failCount+' tries). Still retrying \u2014 '+
+      'the board is baked into this page and stays valid. '+
+      '<a href="#" id="gomanual" style="color:inherit;font-weight:600">Switch to manual entry</a> '+
+      'and keep drafting.');
     schedule(Math.min(15000, 3000*failCount));
     return;
   }
@@ -472,12 +564,18 @@ async function poll(){
     showErr('Display error after loading picks: '+e.message+'. Data reached the page fine; this is a bug in the page, not the network.');
   }
   // poll harder as your pick approaches, easier when it is far away
-  const cur=picks.length+1, nxt=MYPICKS.find(k=>k>=cur);
+  const cur=effectivePicks().length+1, nxt=MYPICKS.find(k=>k>=cur);
   const away=nxt?nxt-cur:99;
   schedule(away<=2?2000:(away<=6?3000:6000));
 }
 function showErr(m){ document.getElementById('err').innerHTML='<div class="err">'+m+'</div>';
-  document.getElementById('dot').className='dot'; }
+  document.getElementById('dot').className='dot';
+  const g=document.getElementById('gomanual');
+  if(g) g.addEventListener('click',e=>{ e.preventDefault();
+    filt='MANUAL';
+    document.querySelectorAll('button.f').forEach(x=>x.setAttribute('aria-pressed', x.dataset.p==='MANUAL'?'true':'false'));
+    render(); });
+}
 function netOk(){ failCount=0; lastOk=Date.now(); document.getElementById('err').innerHTML='';
   document.getElementById('dot').className='dot on'; }
 
