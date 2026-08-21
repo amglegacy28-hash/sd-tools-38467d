@@ -554,7 +554,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections Rotowire via Sleeper, updated 2026-08-20 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 6978 drafts, 2026-08-13..2026-08-20 &middot; variance from real 2025 weekly scores &middot; built Fri 21 Aug, 01:30.<br>'+
+  $('prov').innerHTML = 'Projections Rotowire via Sleeper, updated 2026-08-20 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 6978 drafts, 2026-08-13..2026-08-20 &middot; variance from real 2025 weekly scores &middot; built Fri 21 Aug, 12:58.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
@@ -580,7 +580,8 @@ function viewPick(avail,cur,total,nextPick,isMine,st,onClock,me,teams,gain,ctxBa
   h+='<div class="nm">'+top.n+'</div>';
   h+='<div class="meta">'+top.pos+(top.tm?' &middot; '+top.tm:'')+' &middot; tier '+top.tier+
      ' &middot; '+top.pts.toFixed(0)+' proj pts'+(top.bye?' &middot; bye '+top.bye:'')+
-     (top.dcp?' &middot; '+top.dcp:'')+'</div>';
+     (top.dcp&&top.dcp!==top.pos?' &middot; '+top.dcp+(top.dco>1?String(top.dco):''):
+        (top.dco>1?' &middot; '+top.pos+top.dco:''))+'</div>';
   if(top.inj) h+='<div class="err" style="margin:10px 0 0">Sleeper lists him <b>'+String(top.inj).toUpperCase()+
      (top.injb?' ('+top.injb+')':'')+'</b>'+(top.nu?', news '+daysAgo(top.nu):'')+
      '. That designation is not in his projection or his ADP. Check before you take him.</div>';
@@ -625,7 +626,8 @@ function viewBoard(avail,st){
         '<table><thead><tr><th>Player</th><th>Proj</th><th>ADP</th><th>Bye</th><th>Role</th><th>Start%</th></tr></thead><tbody>'; }
     h+='<tr class="'+(p.zone==='lottery'?'lot':'')+'"><td><span class="pn">'+p.n+'</span><span class="pm">'+p.pos+(p.tm?' &middot; '+p.tm:'')+'</span></td>'+
        '<td>'+p.pts.toFixed(0)+'</td><td>'+(p.adp?p.adp.toFixed(0):'&mdash;')+'</td><td>'+(p.bye||'&mdash;')+'</td>'+
-       '<td>'+(p.inj?'<span style="color:var(--bad)">'+String(p.inj).slice(0,4).toUpperCase()+'</span>':(p.dcp||'&mdash;'))+'</td>'+
+       '<td>'+(p.inj?'<span style="color:var(--bad)">'+String(p.inj).slice(0,4).toUpperCase()+'</span>'
+        :((p.dcp&&p.dcp!==p.pos)?p.dcp:(p.dco?p.pos+p.dco:'&mdash;')))+'</td>'+
        '<td>'+(p.sr!=null?Math.round(p.sr*100)+'%':'&mdash;')+'</td></tr>';
   });
   h+='</tbody></table>';
