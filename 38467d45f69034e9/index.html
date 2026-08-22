@@ -584,19 +584,36 @@ function biasAt(k){ const b=BIAS[PICKMAP[k]]; return b?b.bias:0; }
 // much. "Improvement" is never a rating - it is the change in your own optimal
 // starting-lineup projection if you add him.
 let ROSTERED=null, MYROSTER=null, faLoaded=0;
+let FA_SOURCE='';
 async function loadRosters(){
+  // Start from the draft itself. It is always right the moment the draft ends,
+  // and it is the ONLY thing that is right for a mock, which is not attached to
+  // the league at all - reading league rosters for a mock returned an empty set,
+  // so every player just drafted looked like a free agent.
+  const EFF=effectivePicks();
+  const fromDraft=new Set(EFF.map(x=>String(x.player_id)));
+  const mineFromDraft=EFF.filter(isMinePick).map(x=>String(x.player_id));
+  let owned=fromDraft, mine=mineFromDraft, src='the draft';
   try{
     const r=await fetch('https://api.sleeper.app/v1/league/'+(LEAGUE_ID||CFG.league_id)+'/rosters',{cache:'no-store'});
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const rs=await r.json();
-    const owned=new Set(); let mine=[];
-    rs.forEach(x=>{
-      (x.players||[]).forEach(pid=>owned.add(String(pid)));
-      if(x.owner_id===CFG.me_id) mine=(x.players||[]).map(String);
-    });
-    ROSTERED=owned; MYROSTER=mine; faLoaded=Date.now();
-    return true;
-  }catch(e){ return false; }
+    if(r.ok){
+      const rs=await r.json();
+      const lg=new Set(); let lgMine=[];
+      rs.forEach(x=>{
+        (x.players||[]).forEach(pid=>lg.add(String(pid)));
+        if(x.owner_id===CFG.me_id) lgMine=(x.players||[]).map(String);
+      });
+      // League rosters only supersede the draft once they actually hold players,
+      // because that is when adds and drops have started to matter.
+      if(lg.size>0){
+        fromDraft.forEach(id=>lg.add(id));
+        owned=lg; src='league rosters + draft';
+        if(lgMine.length) mine=lgMine;
+      }
+    }
+  }catch(e){ /* draft-derived view stands */ }
+  ROSTERED=owned; MYROSTER=mine; FA_SOURCE=src; faLoaded=Date.now();
+  return owned.size>0 || EFF.length>0;
 }
 function faCandidates(){
   // Anyone on the board not on any roster. Post-draft this is exactly the FA pool.
@@ -632,6 +649,7 @@ function viewFA(){
   const byeLoad={}; starters.forEach(p=>{ if(p.bye) byeLoad[p.bye]=(byeLoad[p.bye]||0)+1; });
   const painWeeks=Object.keys(byeLoad).filter(w=>byeLoad[w]>=3).map(Number);
   let h='<div class="card"><h2>Free agency &mdash; first come, first served</h2>'+
+    '<p style="font-size:12px;color:var(--ink-3)">Rostered players read from <b>'+FA_SOURCE+'</b> &middot; '+ROSTERED.size+' players accounted for.</p>'+
     '<p>Your league is <b>waiver_type 2</b>: no FAAB, no waiver period. Whoever clicks first gets him. '+
     'Every number below is the change in <b>your own</b> projected starting lineup if you add that player &mdash; not a rating of him.</p>'+
     '<p>Your lineup now: <b>'+fa.base.toFixed(0)+'</b> projected points from '+mine.length+' rostered.</p></div>';
@@ -680,7 +698,7 @@ function viewFA(){
 }
 
 // ============================ views ======================================
-let VIEW='PICK', lastRank=null, lastTotal=null, lastMineCount=0;
+let VIEW='PICK', lastRank=null, lastTotal=null, lastMineCount=0, lastStarters=null;
 const $=id=>document.getElementById(id);
 
 function render(){
@@ -706,10 +724,15 @@ function render(){
   // per-pick gain
   let gain=null;
   if(me.players.length!==lastMineCount){
-    if(lastTotal!=null && me.players.length>lastMineCount)
-      gain={pts:me.total-lastTotal,from:lastRank,to:me.rank};
+    if(lastTotal!=null && me.players.length>lastMineCount){
+      const startersBefore=lastStarters, startersNow=startersFilled(me.line);
+      gain={pts:me.total-lastTotal, from:lastRank, to:me.rank,
+            filled:startersNow>startersBefore};
+    }
     lastTotal=me.total; lastRank=me.rank; lastMineCount=me.players.length;
+    lastStarters=startersFilled(me.line);
   }
+  if(lastStarters==null) lastStarters=startersFilled(me.line);
   if(lastTotal==null){ lastTotal=me.total; lastRank=me.rank; lastMineCount=me.players.length; }
 
   const ctxBase={depth:st.depth,line:st.line,avail};
@@ -725,7 +748,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections Rotowire via Sleeper, updated 2026-08-22 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 16:02.<br>'+
+  $('prov').innerHTML = 'Projections Rotowire via Sleeper, updated 2026-08-22 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 16:35.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
@@ -736,10 +759,20 @@ function viewPick(avail,cur,total,nextPick,isMine,st,onClock,me,teams,gain,ctxBa
   const target=isMine?(MYPICKS.find(k=>k>cur)||cur+1):nextPick;
   const r=recommend(avail,cur,target,st,isMine);
   let h='';
-  if(gain) h+='<div class="gain'+(gain.pts<=0?' flat':'')+'">That pick added <b>'+
-    (gain.pts>=0?'+':'')+gain.pts.toFixed(1)+'</b> projected starter points'+
-    (gain.from&&gain.to&&gain.from!==gain.to?' &middot; you moved '+ord(gain.from)+' &rarr; <b>'+ord(gain.to)+'</b>':
-     ' &middot; still '+ord(me.rank))+'</div>';
+  if(gain){
+    const lead=teams[0].total-me.total;
+    h+='<div class="gain'+(gain.pts<=0?' flat':'')+'">'+
+      (gain.filled
+        ? 'That pick <b>filled an empty slot</b>, so your lineup total jumps <b>+'+gain.pts.toFixed(1)+'</b>. '+
+          'That is the slot going from nothing to something, not an upgrade over a player you had.'
+        : 'That pick <b>upgraded</b> your lineup by <b>'+(gain.pts>=0?'+':'')+gain.pts.toFixed(1)+'</b> points.')+
+      ' You are '+ord(me.rank)+' of '+SHAPE.teams+
+      (lead>0?', '+lead.toFixed(0)+' behind the leader':', leading')+'.</div>';
+    if(gain.from&&gain.to&&gain.from!==gain.to&&!gain.filled)
+      h+='<div class="card"><p style="margin:0">Your rank moved '+ord(gain.from)+' &rarr; '+ord(gain.to)+
+        '. Rank moves when <b>anyone</b> picks, not just you &mdash; while you waited, others filled slots too. '+
+        'Watch your points and the gap to the leader; the rank number bounces early and settles as rosters fill.</p></div>';
+  }
   if(!r.cands.length){ $('view').innerHTML=h+'<div class="card"><p>No candidates.</p></div>'; return; }
   const top=r.cands[0].p;
   const ctx=Object.assign({},ctxBase,{survMap:r.survMap,nextPick:isMine?target:nextPick,phase:r.phase,
