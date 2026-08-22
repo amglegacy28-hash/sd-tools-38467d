@@ -845,7 +845,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-22 07:50 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 18:51.<br>'+
+  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-22 07:50 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 19:19.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
@@ -933,8 +933,10 @@ function viewPick(avail,cur,total,nextPick,isMine,st,onClock,me,teams,gain,ctxBa
   }
   h+='</div>';
   if(RUN) h+='<div class="card warn"><h2>'+RUN.pos+' run happening</h2><p><b>'+RUN.count+' of the last '+RUN.of+
-    ' picks</b> were '+RUN.pos+'. The survival numbers above already account for it &mdash; they are recomputed from '+
-    'what this room is actually doing, not from ADP alone.</p></div>';
+    ' picks</b> were '+RUN.pos+'. <b>This is shown as fact and is NOT fed into the survival numbers</b>, because in this '+
+    'league runs do not continue &mdash; tested on last year\u2019s 180 picks, after 5 of 8 at a position the next pick was '+
+    'that position only 31% of the time against a 41% baseline. The pool thins and the room moves on. Chasing a run here '+
+    'would be backwards; if anything the position AFTER the run is where value sits.</p></div>';
   // are the seats between you and your next pick reaching?
   if(nextPick&&nextPick>cur){
     const seats=[]; for(let k=cur;k<nextPick;k++){ const s=PICKMAP[k]; if(s&&s!==SHAPE.slot&&!seats.includes(s)) seats.push(s); }
