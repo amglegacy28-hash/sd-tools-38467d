@@ -300,7 +300,7 @@ function simulate(pool, from, to, sims){
     const alive=new Uint8Array(n).fill(1);
     for(let k=from+1;k<to;k++){
       const sc=scales[k]; let best=-1,bv=Infinity;
-      const bias=biasAt(k);
+      const bias=0;   // measured to be noise - see readRoom()
       for(let i=0;i<n;i++){
         if(!alive[i])continue;
         const v=adp[i]+bias+gauss()*sd[i]*sc;
@@ -558,6 +558,16 @@ function readRoom(EFF){
   }
   return BIAS;
 }
+// biasAt is deliberately NOT used by the simulator any more. Tested on last
+// year's 180 picks:
+//   split-half (R1-7 reach vs R8-15 reach)      r = -0.289
+//   lag-1 autocorrelation between a manager's
+//   consecutive picks                            r = +0.173
+//   running-mean-so-far vs their NEXT pick       r = +0.010   <- what this assumed
+// A manager's reach so far predicts essentially nothing about their next pick,
+// so feeding it into survival moved the numbers on noise. Reach is still SHOWN,
+// because it is a true statement about what has happened - it just is not
+// evidence about what happens next.
 function biasAt(k){ const b=BIAS[PICKMAP[k]]; return b?b.bias:0; }
 
 // ============================ free agency ================================
@@ -708,7 +718,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections Rotowire via Sleeper, updated 2026-08-22 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 15:53.<br>'+
+  $('prov').innerHTML = 'Projections Rotowire via Sleeper, updated 2026-08-22 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 16:01.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
@@ -768,7 +778,7 @@ function viewPick(avail,cur,total,nextPick,isMine,st,onClock,me,teams,gain,ctxBa
     if(sharp.length) h+='<div class="card warn"><h2>Sharp seats ahead of you</h2><p>'+
       sharp.map(x=>'<b>'+(SHAPE.nameBySlot[x.s]||('Team '+x.s))+'</b> is taking players <b>'+
         Math.abs(x.b.bias).toFixed(0)+' picks earlier</b> than ADP ('+x.b.n+' pick'+(x.b.n>1?'s':'')+' observed)').join('; ')+
-      '. Their reach is fed into every survival number on this screen, so targets will look less safe than raw ADP suggests.</p></div>';
+      '. <b>Shown as fact, not fed into the model.</b> Tested on last year\u2019s 180 picks, how much a manager has reached so far predicts their next pick at r=+0.01 &mdash; so acting on it would be acting on noise. Use your own judgement about whether this one is sharp.</p></div>';
   }
   if(onClock&&!isMine) h+='<div class="card"><p>On the clock: <b>'+onClock+'</b> '+basisTag(onClock)+'</p></div>';
   const crit=Object.keys(REQ).filter(k=>st.depth[k]<REQ[k]);
@@ -865,7 +875,7 @@ function viewRivals(teams,me){
        '<td style="width:52px">'+t.total.toFixed(0)+'</td></tr>';
   });
   h+='</tbody></table></div>';
-  h+='<div class="card"><h2>Who is reaching</h2><p>Measured live from this draft: average picks earlier (or later) than ADP that each seat is taking players. Shrunk toward the league average, because two picks is not evidence. <b>This is fed into the survival model</b>, so a sharp drafter ahead of you makes your targets look correctly less safe.</p>'+
+  h+='<div class="card"><h2>Who is reaching</h2><p>Average picks earlier (or later) than ADP each seat is taking players, measured live. <b>Information only &mdash; it does not move the survival numbers.</b> On last year\u2019s 180 picks a manager\u2019s reach so far predicted their next pick at r=+0.01, and reaching correlated with drafting a <b>worse</b> team (r=+0.69 between waiting and points actually drafted).</p>'+
     (Object.keys(BIAS).filter(s=>BIAS[s].n>=2).length?
       Object.keys(BIAS).filter(s=>BIAS[s].n>=2).sort((a,b)=>BIAS[a].raw-BIAS[b].raw).map(s=>
       '<div class="alt"><span class="an">'+(SHAPE.nameBySlot[s]||('Team '+s))+'</span><span class="ar">'+
