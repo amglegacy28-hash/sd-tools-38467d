@@ -861,7 +861,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-22 07:50 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 19:25.<br>'+
+  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-22 07:50 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 19:30.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
@@ -1025,8 +1025,15 @@ function viewBoard(avail,st){
     const q=avail.filter(p=>fillsStarter(p,st.depth,st.line)&&!injSevere(p)).slice(0,40);
     h+='<div class="card"><h2>Sleeper queue &mdash; set this yourself before 8:30</h2>'+
       '<p><b>I cannot set this for you.</b> Sleeper has no public write API and I will not sign into your account. '+
-      'Open Sleeper, go to your draft, and enter these in this order. If your 90 seconds run out, Sleeper picks from '+
-      'your list instead of taking its own best-available.</p>'+
+      'Open Sleeper, go to your draft, and enter these in this order. If your 90 seconds run out, Sleeper takes the '+
+      '<b>highest-ranked player still available</b> from your list rather than its own best-available.</p>'+
+      '<p><b>Why a faller cannot break it.</b> This list is ordered by VALUE, not by who you expect to reach you. '+
+      'If someone takes CeeDee Lamb at 1.05 and Puka Nacua drops to you instead, Nacua is already sitting above Lamb '+
+      'here &mdash; the queue picks him automatically. The only way it fails you is if EVERY name on it is gone, which '+
+      'is why it runs 40 deep rather than 10.</p>'+
+      '<p><b>It fades as the draft goes on.</b> These are the best players overall, so by round 6 or 7 most will be '+
+      'drafted. Re-set it from this tab between picks if you get a quiet minute; otherwise treat it as a rounds 1-5 '+
+      'safety net, which is when an expired clock costs the most.</p>'+
       '<p>Ordered by value over replacement, filtered to slots you still need, with PUP/IR/Out/Doubtful players removed.</p>'+
       '<table><thead><tr><th>#</th><th>Player</th><th>Pos</th><th>Proj</th><th>Bye</th></tr></thead><tbody>'+
       q.map((p,i)=>'<tr><td style="text-align:left">'+(i+1)+'</td><td style="text-align:left"><span class="pn">'+p.n+
