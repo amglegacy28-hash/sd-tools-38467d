@@ -300,9 +300,10 @@ function simulate(pool, from, to, sims){
     const alive=new Uint8Array(n).fill(1);
     for(let k=from+1;k<to;k++){
       const sc=scales[k]; let best=-1,bv=Infinity;
+      const bias=biasAt(k);
       for(let i=0;i<n;i++){
         if(!alive[i])continue;
-        const v=adp[i]+gauss()*sd[i]*sc;
+        const v=adp[i]+bias+gauss()*sd[i]*sc;
         if(v<bv){bv=v;best=i;}
       }
       if(best<0)break;
@@ -518,6 +519,39 @@ function recommend(avail,cur,target,st,isMine){
   return {cands:cands.slice(0,4),survMap,phase,pool};
 }
 
+// ============================ reading the room ===========================
+// The survival model starts from ADP. That is a prior, not a fact, and a sharp
+// manager who reaches will break it. So measure what each seat is ACTUALLY doing
+// in THIS draft and feed it back. Shrunk toward the pool, because two picks is
+// not evidence: weight = n/(n+K).
+const SHRINK_K=4;
+let BIAS={};      // slot -> picks of bias (negative = takes players earlier than ADP)
+let RUN=null;     // current positional run, if any
+function readRoom(EFF){
+  const bySlot={};
+  EFF.forEach(x=>{
+    const p=byId[String(x.player_id)]; if(!p||!p.adp) return;
+    const slot=PICKMAP[x.pick_no]; if(!slot) return;
+    (bySlot[slot]=bySlot[slot]||[]).push(x.pick_no-p.adp);
+  });
+  BIAS={};
+  Object.keys(bySlot).forEach(s=>{
+    const v=bySlot[s], n=v.length;
+    const mean=v.reduce((a,b)=>a+b,0)/n;
+    BIAS[s]={n, raw:mean, bias:mean*(n/(n+SHRINK_K))};
+  });
+  // positional run over the last 8 picks
+  const tail=EFF.slice(-8).map(x=>byId[String(x.player_id)]).filter(Boolean);
+  RUN=null;
+  if(tail.length>=6){
+    const c={}; tail.forEach(p=>c[p.pos]=(c[p.pos]||0)+1);
+    const best=Object.keys(c).sort((a,b)=>c[b]-c[a])[0];
+    if(c[best]>=5) RUN={pos:best,count:c[best],of:tail.length};
+  }
+  return BIAS;
+}
+function biasAt(k){ const b=BIAS[PICKMAP[k]]; return b?b.bias:0; }
+
 // ============================ free agency ================================
 // League setting pulled live: waiver_type 2 = free agency, first come first
 // served. No FAAB bidding, so speed is the whole game and this screen exists to
@@ -567,10 +601,26 @@ function viewFA(){
   }
   const fa=faCandidates();
   const mine=fa.mine;
+  // which weeks are thin? count starters unavailable per bye week
+  const lu=lineupOf(mine).line;
+  const starters=['QB','RB','WR','TE','FLEX'].flatMap(k=>lu[k]);
+  const byeLoad={}; starters.forEach(p=>{ if(p.bye) byeLoad[p.bye]=(byeLoad[p.bye]||0)+1; });
+  const painWeeks=Object.keys(byeLoad).filter(w=>byeLoad[w]>=3).map(Number);
   let h='<div class="card"><h2>Free agency &mdash; first come, first served</h2>'+
     '<p>Your league is <b>waiver_type 2</b>: no FAAB, no waiver period. Whoever clicks first gets him. '+
     'Every number below is the change in <b>your own</b> projected starting lineup if you add that player &mdash; not a rating of him.</p>'+
     '<p>Your lineup now: <b>'+fa.base.toFixed(0)+'</b> projected points from '+mine.length+' rostered.</p></div>';
+  if(painWeeks.length){
+    h+='<div class="card warn"><h2>Bye weeks that will hurt</h2><p>'+
+      painWeeks.map(w=>'<b>Week '+w+'</b>: '+byeLoad[w]+' of your starters are out').join(' &middot; ')+
+      '. Free agents who play those weeks are promoted below, because a player who cannot fill your worst week '+
+      'is worth less to you than his season projection says.</p></div>';
+    // Sort with a bye-fit bonus, but NEVER fold it into the displayed gain -
+    // that number must stay exactly "what my starting lineup gains", or it lies.
+    fa.rows.forEach(r=>{ r.covers = !!(r.p.bye && !painWeeks.includes(r.p.bye));
+                         r.fit = r.gain + (r.covers?3.0*painWeeks.length:0); });
+    fa.rows.sort((a,b)=>b.fit-a.fit||b.p.pts-a.p.pts);
+  }
   const helps=fa.rows.filter(r=>r.gain>0.5).slice(0,12);
   if(!helps.length){
     h+='<div class="card"><h2>Nobody out there improves your starters</h2><p>Every free agent projects below what you already start. That is a good sign, not a bug. Check back after injuries.</p></div>';
@@ -579,7 +629,8 @@ function viewFA(){
     helps.forEach(r=>{
       h+='<tr><td><span class="pn">'+r.p.n+'</span><span class="pm">'+r.p.pos+(r.p.tm?' &middot; '+r.p.tm:'')+
          (r.bumped?' &middot; over '+r.bumped.n:'')+'</span></td>'+
-         '<td style="color:var(--good);font-weight:600">+'+r.gain.toFixed(1)+'</td>'+
+         '<td style="color:var(--good);font-weight:600">+'+r.gain.toFixed(1)+
+           (r.covers?'<span class="pm" style="color:var(--gold)">covers bye</span>':'')+'</td>'+
          '<td>'+(r.p.inj?'<span style="color:var(--bad)">'+String(r.p.inj).slice(0,4).toUpperCase()+'</span>':(r.p.dcp&&r.p.dcp!==r.p.pos?r.p.dcp:(r.p.dco?r.p.pos+r.p.dco:'&mdash;')))+'</td>'+
          '<td>'+(r.p.sr!=null?Math.round(r.p.sr*100)+'%':'&mdash;')+'</td></tr>';
     });
@@ -589,6 +640,7 @@ function viewFA(){
        '<div class="meta">'+t0.p.pos+(t0.p.tm?' &middot; '+t0.p.tm:'')+' &middot; '+t0.p.pts.toFixed(0)+' proj pts'+
        (t0.p.bye?' &middot; bye '+t0.p.bye:'')+'</div><ul class="why">'+
        ['<b>+'+t0.gain.toFixed(1)+'</b> to your starting lineup ('+fa.base.toFixed(0)+' &rarr; '+(fa.base+t0.gain).toFixed(0)+')',
+        t0.covers?'He plays in the weeks your starters are on bye':'',
         t0.bumped?'He starts over <b>'+t0.bumped.n+'</b>, who moves to your bench':'He fills a slot you cannot currently field',
         t0.p.sr!=null?'Startable in <b>'+Math.round(t0.p.sr*100)+'%</b> of weeks last season':'No 2025 history &mdash; upside unmeasured',
         t0.p.inj?'<b style="color:var(--bad)">'+String(t0.p.inj).toUpperCase()+'</b> per Sleeper &mdash; check before you claim':''
@@ -612,6 +664,7 @@ function render(){
   const cur=EFF.length+1, total=SHAPE.teams*SHAPE.rounds;
   const avail=P.filter(p=>!drafted.has(p.id));
   const teams=allTeams(EFF);
+  readRoom(EFF);
   const me=teams.find(t=>t.slot===SHAPE.slot)||{total:0,rank:'-',line:lineupOf([]).line,players:[]};
   const st={depth:depthOf(me.players),line:me.line};
   const nextPick=MYPICKS.find(k=>k>=cur);
@@ -647,7 +700,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections Rotowire via Sleeper, updated 2026-08-22 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 15:35.<br>'+
+  $('prov').innerHTML = 'Projections Rotowire via Sleeper, updated 2026-08-22 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 15:47.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
@@ -697,6 +750,18 @@ function viewPick(avail,cur,total,nextPick,isMine,st,onClock,me,teams,gain,ctxBa
     h+='</div>';
   }
   h+='</div>';
+  if(RUN) h+='<div class="card warn"><h2>'+RUN.pos+' run happening</h2><p><b>'+RUN.count+' of the last '+RUN.of+
+    ' picks</b> were '+RUN.pos+'. The survival numbers above already account for it &mdash; they are recomputed from '+
+    'what this room is actually doing, not from ADP alone.</p></div>';
+  // are the seats between you and your next pick reaching?
+  if(nextPick&&nextPick>cur){
+    const seats=[]; for(let k=cur;k<nextPick;k++){ const s=PICKMAP[k]; if(s&&s!==SHAPE.slot&&!seats.includes(s)) seats.push(s); }
+    const sharp=seats.map(s=>({s,b:BIAS[s]})).filter(x=>x.b&&x.b.n>=2&&x.b.bias<=-5);
+    if(sharp.length) h+='<div class="card warn"><h2>Sharp seats ahead of you</h2><p>'+
+      sharp.map(x=>'<b>'+(SHAPE.nameBySlot[x.s]||('Team '+x.s))+'</b> is taking players <b>'+
+        Math.abs(x.b.bias).toFixed(0)+' picks earlier</b> than ADP ('+x.b.n+' pick'+(x.b.n>1?'s':'')+' observed)').join('; ')+
+      '. Their reach is fed into every survival number on this screen, so targets will look less safe than raw ADP suggests.</p></div>';
+  }
   if(onClock&&!isMine) h+='<div class="card"><p>On the clock: <b>'+onClock+'</b> '+basisTag(onClock)+'</p></div>';
   const crit=Object.keys(REQ).filter(k=>st.depth[k]<REQ[k]);
   if(crit.length&&cur>SHAPE.teams*8) h+='<div class="card warn"><h2>Roster hole</h2><p>You still have no legal starter at <b>'+
@@ -705,8 +770,24 @@ function viewPick(avail,cur,total,nextPick,isMine,st,onClock,me,teams,gain,ctxBa
 }
 
 function viewBoard(avail,st){
-  let h='<div class="chips">'+['ALL','RB','WR','TE','QB','NEEDS'].map(x=>
+  let h='<div class="chips">'+['ALL','RB','WR','TE','QB','NEEDS','QUEUE'].map(x=>
     '<button class="f" data-p="'+x+'" aria-pressed="'+(filt===x)+'">'+x+'</button>').join('')+'</div>';
+  if(filt==='QUEUE'){
+    const q=avail.filter(p=>fillsStarter(p,st.depth,st.line)&&!injSevere(p)).slice(0,40);
+    h+='<div class="card"><h2>Sleeper queue &mdash; set this yourself before 8:30</h2>'+
+      '<p><b>I cannot set this for you.</b> Sleeper has no public write API and I will not sign into your account. '+
+      'Open Sleeper, go to your draft, and enter these in this order. If your 90 seconds run out, Sleeper picks from '+
+      'your list instead of taking its own best-available.</p>'+
+      '<p>Ordered by value over replacement, filtered to slots you still need, with PUP/IR/Out/Doubtful players removed.</p>'+
+      '<table><thead><tr><th>#</th><th>Player</th><th>Pos</th><th>Proj</th><th>Bye</th></tr></thead><tbody>'+
+      q.map((p,i)=>'<tr><td style="text-align:left">'+(i+1)+'</td><td style="text-align:left"><span class="pn">'+p.n+
+        '</span>'+(p.inj?' <span style="color:var(--bad);font-size:11px">'+String(p.inj).slice(0,4).toUpperCase()+'</span>':'')+
+        '</td><td>'+p.pos+'</td><td>'+p.pts.toFixed(0)+'</td><td>'+(p.bye||'&mdash;')+'</td></tr>').join('')+
+      '</tbody></table></div>';
+    $('view').innerHTML=h;
+    document.querySelectorAll('.chips button.f').forEach(b=>b.addEventListener('click',()=>{filt=b.dataset.p;render();}));
+    return;
+  }
   let rows=avail;
   if(filt==='NEEDS') rows=avail.filter(p=>fillsStarter(p,st.depth,st.line));
   else if(filt!=='ALL') rows=avail.filter(p=>p.pos===filt);
@@ -769,11 +850,20 @@ function viewRivals(teams,me){
   teams.forEach(t=>{
     const d=depthOf(t.players);
     h+='<tr class="'+(t.slot===me.slot?'me':'')+'"><td style="width:34px">'+ord(t.rank)+'</td>'+
-       '<td>'+t.name+'<span class="pm">QB'+d.QB+' RB'+d.RB+' WR'+d.WR+' TE'+d.TE+'</span></td>'+
+       '<td>'+t.name+'<span class="pm">QB'+d.QB+' RB'+d.RB+' WR'+d.WR+' TE'+d.TE+
+         (BIAS[t.slot]&&BIAS[t.slot].n>=2?' &middot; '+(BIAS[t.slot].raw<0?'reaches ':'waits ')+
+           Math.abs(BIAS[t.slot].raw).toFixed(0):'')+'</span></td>'+
        '<td style="width:33%"><span class="bar2"><i style="width:'+Math.max(4,Math.round(t.total/top*100))+'%"></i></span></td>'+
        '<td style="width:52px">'+t.total.toFixed(0)+'</td></tr>';
   });
   h+='</tbody></table></div>';
+  h+='<div class="card"><h2>Who is reaching</h2><p>Measured live from this draft: average picks earlier (or later) than ADP that each seat is taking players. Shrunk toward the league average, because two picks is not evidence. <b>This is fed into the survival model</b>, so a sharp drafter ahead of you makes your targets look correctly less safe.</p>'+
+    (Object.keys(BIAS).filter(s=>BIAS[s].n>=2).length?
+      Object.keys(BIAS).filter(s=>BIAS[s].n>=2).sort((a,b)=>BIAS[a].raw-BIAS[b].raw).map(s=>
+      '<div class="alt"><span class="an">'+(SHAPE.nameBySlot[s]||('Team '+s))+'</span><span class="ar">'+
+      (BIAS[s].raw<0?'takes them '+Math.abs(BIAS[s].raw).toFixed(1)+' picks EARLY':'waits '+BIAS[s].raw.toFixed(1)+' picks')+
+      ' over '+BIAS[s].n+' picks &middot; applied as '+BIAS[s].bias.toFixed(1)+'</span></div>').join('')
+      : '<p style="color:var(--ink-3)">Nothing yet &mdash; needs at least two picks from a seat.</p>')+'</div>';
   h+='<div class="card warn"><h2>What this does not do</h2><p>These counts are what your rivals have <b>already taken</b>. The survival model does <b>not</b> assume a team with four running backs will avoid a fifth: tested on last year&rsquo;s 180 picks, that effect was not measurable in this league (direction flipped by position, RB &minus;1.8 picks vs WR +3.6). Shown so you can read the room yourself, not modelled as if it were proven.</p></div>';
   $('view').innerHTML=h;
 }
