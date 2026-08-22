@@ -332,6 +332,18 @@ const REQ={QB:1,RB:2,WR:2,TE:1}, NFLEX=3;
 // those bounds at either position. These caps stop that recurring.
 const POSCAP={QB:2,RB:6,WR:7,TE:3}, POSTARGET={QB:2,RB:5,WR:6,TE:2};
 const FALLBACK_SR={QB:0.46,RB:0.53,WR:0.56,TE:0.36};
+// RB_TILT: a small standing preference for running backs, worth 5 points of VOR.
+// Not a script and not a hunch. Backtested on TWO independent seasons, drafting
+// off that year's ADP and scored on what players ACTUALLY did:
+//   2025  RB-early 2090 / 43% contending   vs balanced 1975 / 25%
+//   2024  RB-early 2116 / 52% contending   vs balanced 2008 / 31%
+// Zero RB was worst in both years (7% and 12%). Independently, ESPN projects
+// top-60 backs +29.6 points above Rotowire, and it is ESPN's view that matched
+// outcomes - so the blend still under-rates backs a little.
+// Size chosen by test, not taste: +5 is NEUTRAL on the blend (2144.4 vs 2144.0)
+// while helping under ESPN; +10 and above start costing real points.
+const RB_TILT=5;
+function tilt(p){ return p.pos==='RB'?RB_TILT:0; }
 // Designation severity. PUP and IR mean weeks missed, not a game-time call, and
 // a regular-season PUP player cannot play at all early. Treating those the same
 // as Questionable is how a tool recommends a man who will not take the field.
@@ -485,6 +497,7 @@ function reasonsFor(p,ctx){
     else if(p.sr!=null&&p.sr>=0.75) out.push('Steady: startable in <b>'+Math.round(p.sr*100)+
       '%</b> of 2025 weeks, floor '+p.floor);
   }
+  if(p.pos==='RB'&&ctx.phase==='STARTERS') out.push('Backs carry a small standing edge here: on 2024 and 2025 outcomes, RB-early drafting beat balanced in both years, and Zero RB was worst in both');
   if(p.espn==null) out.push('<b>Only one source has him.</b> Rotowire projects him; ESPN does not, so this number has no second opinion behind it');
   else if(Math.abs(p.gap)>=35) out.push('Sources disagree hard: Rotowire <b>'+p.roto.toFixed(0)+'</b> vs ESPN <b>'+
     p.espn.toFixed(0)+'</b>. The number above is their average, so it is '+(p.gap>0?'ESPN':'Rotowire')+' pulling it up');
@@ -543,7 +556,7 @@ function recommend(avail,cur,target,st,isMine){
         cont/=sims; lows.sort((a,b)=>a-b);
       }
       const p10=lows.length?p.vor+lows[Math.floor(lows.length*0.10)]:p.vor;
-      return {p,score:(p.vor+cont)*injMult(p),cont,p10,med:p.vor+cont};
+      return {p,score:(p.vor+tilt(p)+cont)*injMult(p),cont,p10,med:p.vor+cont};
     });
   }else{
     cands=avail.slice(0,90).map(p=>({p,score:benchScore(p,st.depth),cont:0,p10:null,med:null}));
@@ -779,7 +792,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-22 07:50 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 17:11.<br>'+
+  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-22 07:50 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 17:22.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
