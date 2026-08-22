@@ -842,7 +842,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-22 07:50 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 18:02.<br>'+
+  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-22 07:50 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 18:03.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
@@ -956,7 +956,21 @@ function compareCard(p, avail, st){
   else if(gap<=3) verdict='Effectively a coin flip &mdash; only '+gap.toFixed(0)+' points between them. Take the one you believe in.';
   else if(sp!=null&&stp!=null&&sp>=60&&stp<=25) verdict='He is '+gap.toFixed(0)+' points behind, AND '+sp+'% likely to still be here at '+rp(target)+' while the pick above is only '+stp+'%. Waiting on him is the cheaper option.';
   else if(sp!=null&&sp<=25) verdict='He is '+gap.toFixed(0)+' points behind and only '+sp+'% to last to '+rp(target)+' &mdash; so taking him means giving up the better player to secure the worse one.';
-  else verdict='He is '+gap.toFixed(0)+' points behind on the blend.';
+  else {
+    verdict='He is '+gap.toFixed(0)+' points behind on the blend';
+    if(sp!=null&&stp!=null&&(sp-stp)>=15)
+      verdict+=', but <b>'+sp+'% likely to last to '+rp(target)+'</b> against '+stp+
+        '% for the pick above &mdash; so you may be able to have both by taking the other one first';
+    else if(sp!=null&&stp!=null&&(stp-sp)>=15)
+      verdict+=', and <b>less likely to last</b> ('+sp+'% vs '+stp+'%), so taking him now costs you the better player';
+    verdict+='.';
+    // where the sources split, say so - the blend can hide a real disagreement
+    if(p.roto!=null&&p.espn!=null&&top.roto!=null&&top.espn!=null){
+      const pr=p.roto-top.roto, pe=p.espn-top.espn;
+      if(pr>0&&pe<0) verdict+=' Note the sources split: <b>Rotowire prefers '+p.n+'</b> by '+pr.toFixed(0)+', ESPN prefers '+top.n+' by '+(-pe).toFixed(0)+'.';
+      else if(pr<0&&pe>0) verdict+=' Note the sources split: <b>ESPN prefers '+p.n+'</b> by '+pe.toFixed(0)+', Rotowire prefers '+top.n+' by '+(-pr).toFixed(0)+'.';
+    }
+  }
   const line=(lab,a,b)=>'<div class="srow"><span class="sl">'+lab+'</span><span class="sn">'+a+'</span><span class="st2">'+b+'</span></div>';
   return '<div class="card" style="border-color:var(--gold)"><h2>'+p.n+' &mdash; why not him</h2>'+
     '<div class="split" style="margin-top:0">'+
