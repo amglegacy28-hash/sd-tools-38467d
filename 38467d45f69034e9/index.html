@@ -343,6 +343,23 @@ const FALLBACK_SR={QB:0.46,RB:0.53,WR:0.56,TE:0.36};
 // Size chosen by test, not taste: +5 is NEUTRAL on the blend (2144.4 vs 2144.0)
 // while helping under ESPN; +10 and above start costing real points.
 const RB_TILT=5;
+// STREAMABLE: how replaceable a position is off waivers if a starter goes down.
+// The bench rule used to weight "zero spare" identically everywhere, so a backup
+// QB scored the same as a third RB when you held two. In a 1-QB league roughly
+// 23 quarterbacks get drafted, leaving QB13+ on the wire all season - a backup
+// QB is nearly free, a backup RB is not. Predicted before mock #4 that this
+// would waste a pick; it then spent 10.04 on Bo Nix, who projects BELOW the
+// starter and can never crack the lineup, while Wan'Dale Robinson (173 blend,
+// startable in 75% of 2025 weeks) sat on the board.
+// The starters-only harness is blind to this - bench picks do not change the
+// starting lineup - so it was tuned against an injury-adjusted score instead
+// (each drafted player independently missing the season with p=0.18):
+//   uniform 1.0      1984.1
+//   QB.5 TE.8        1984.6
+//   QB.3 TE.55       1987.1
+//   QB.15 TE.4       1989.1   <- peak, and zero cost on starters (2143.4 either way)
+//   QB.08 TE.3       1982.2   <- past the peak, roster shape starts degrading
+const STREAMABLE={QB:0.15,TE:0.40,WR:1.0,RB:1.0};
 function tilt(p){ return p.pos==='RB'?RB_TILT:0; }
 // Designation severity. PUP and IR mean weeks missed, not a game-time call, and
 // a regular-season PUP player cannot play at all early. Treating those the same
@@ -436,6 +453,7 @@ function benchScore(p,depth){
   else cover=Math.pow(0.28,spare-1);
   if(depth[p.pos]>=POSTARGET[p.pos]) cover*=0.35;
   if(depth[p.pos]>=POSCAP[p.pos])    cover*=0.05;
+  cover*=(STREAMABLE[p.pos]!==undefined?STREAMABLE[p.pos]:1.0);
   return cover*(upside(p)*100 + (p.ceil||0)*1.2)*injMult(p);
 }
 
@@ -482,6 +500,7 @@ function reasonsFor(p,ctx){
     if(spare<0) out.push('<b>You cannot field a legal lineup at '+p.pos+'</b> &mdash; you have '+depth[p.pos]+' for '+REQ[p.pos]+' required slots');
     else if(spare===0) out.push('<b>Zero spare '+p.pos+'.</b> One injury leaves that slot empty');
     else out.push('Depth pick &mdash; you already have '+depth[p.pos]+' at '+p.pos);
+    if(p.pos==='QB'&&depth.QB>=1) out.push('A backup QB is close to free here &mdash; about 23 go in a 12-team 1-QB league, so QB13 and below sit on waivers all year');
     if(p.sr!=null) out.push('Was startable in <b>'+Math.round(p.sr*100)+'% of weeks</b> last season'+(p.ceil?', ceiling '+p.ceil:''));
     else out.push('No 2025 history, so upside here is <b>unmeasured</b> &mdash; positional average assumed');
     if(sv!=null&&nextPick) out.push(Math.round(sv*100)+'% he lasts to '+rp(nextPick));
@@ -792,7 +811,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-22 07:50 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 17:22.<br>'+
+  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-22 07:50 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 17:46.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
