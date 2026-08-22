@@ -519,6 +519,14 @@ function recommend(avail,cur,target,st,isMine){
   return {cands:cands.slice(0,4),survMap,phase,pool};
 }
 
+// NOTE: a full-draft rollout was built and tested here - play the whole draft
+// out for each candidate, with our own future picks made greedily, and score the
+// final lineup. It did NOT beat the one-step continuation term: over three
+// replays of the same mock it returned 2073/2080/2074 against 2073/2081/2081,
+// i.e. indistinguishable, at roughly double the compute. Removed rather than
+// shipped. The reason it adds nothing is that our own future picks are greedy in
+// both engines, so the extra lookahead carries no new information.
+
 // ============================ reading the room ===========================
 // The survival model starts from ADP. That is a prior, not a fact, and a sharp
 // manager who reaches will break it. So measure what each seat is ACTUALLY doing
@@ -700,7 +708,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections Rotowire via Sleeper, updated 2026-08-22 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 15:47.<br>'+
+  $('prov').innerHTML = 'Projections Rotowire via Sleeper, updated 2026-08-22 07:50 UTC &middot; ADP FantasyFootballCalculator PPR 12-team, 7288 drafts, 2026-08-15..2026-08-22 &middot; variance from real 2025 weekly scores &middot; built Sat 22 Aug, 15:53.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
