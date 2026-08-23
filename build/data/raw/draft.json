@@ -1,0 +1,72 @@
+{
+  "created": 1785605097143,
+  "creators": [
+    "737314015986008064"
+  ],
+  "draft_id": "1389332111156088833",
+  "draft_order": {
+    "1017597133878407168": 8,
+    "1137114210523037696": 5,
+    "1154602560041406464": 9,
+    "1253153765649825792": 12,
+    "1262122812240297984": 6,
+    "1390341120642260992": 11,
+    "1391841803954552832": 1,
+    "1393678125505716224": 3,
+    "737314015986008064": 4,
+    "737850069386223616": 10,
+    "879071112217305088": 2,
+    "994330272524972032": 7
+  },
+  "last_message_id": "1389332111156088833",
+  "last_message_time": 1785605097143,
+  "last_picked": 1786734861433,
+  "league_id": "1389332111156088832",
+  "metadata": {
+    "description": "",
+    "name": "The Lions Den",
+    "scoring_type": "ppr",
+    "show_team_names": "0"
+  },
+  "season": "2026",
+  "season_type": "regular",
+  "settings": {
+    "alpha_sort": 0,
+    "autopause_enabled": 0,
+    "autopause_end_time": 840,
+    "autopause_start_time": 120,
+    "autostart": 0,
+    "cpu_autopick": 1,
+    "enforce_position_limits": 1,
+    "nomination_timer": 60,
+    "pick_timer": 90,
+    "player_type": 0,
+    "reversal_round": 0,
+    "rounds": 15,
+    "slots_bn": 6,
+    "slots_flex": 3,
+    "slots_qb": 1,
+    "slots_rb": 2,
+    "slots_te": 1,
+    "slots_wr": 2,
+    "teams": 12
+  },
+  "slot_to_roster_id": {
+    "1": 10,
+    "10": 2,
+    "11": 7,
+    "12": 9,
+    "2": 12,
+    "3": 8,
+    "4": 1,
+    "5": 11,
+    "6": 6,
+    "7": 3,
+    "8": 4,
+    "9": 5
+  },
+  "sport": "nfl",
+  "start_time": 1787445049000,
+  "status": "pre_draft",
+  "type": "snake"
+}

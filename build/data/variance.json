@@ -1,0 +1,2588 @@
+{
+  "definition": "startable_rate = share of 2025 weeks the player outscored this league's own weekly starter baseline at his position (QB12/RB31/WR51/TE14)",
+  "fallback_by_pos": {
+    "QB": {
+      "n_measured": 26,
+      "sd": 7.2,
+      "startable_rate": 0.46
+    },
+    "RB": {
+      "n_measured": 58,
+      "sd": 6.5,
+      "startable_rate": 0.58
+    },
+    "TE": {
+      "n_measured": 41,
+      "sd": 5.5,
+      "startable_rate": 0.31
+    },
+    "WR": {
+      "n_measured": 85,
+      "sd": 6.3,
+      "startable_rate": 0.54
+    }
+  },
+  "min_games": 8,
+  "players": {
+    "10213": {
+      "basis": "MEASURED",
+      "ceiling": 13.4,
+      "floor": 4.9,
+      "games": 16,
+      "hit10": 0.31,
+      "hit15": 0.06,
+      "mean": 10.1,
+      "sd": 8.6,
+      "startable_rate": 0.56
+    },
+    "10218": {
+      "basis": "MEASURED",
+      "ceiling": 13.4,
+      "floor": 2.3,
+      "games": 15,
+      "hit10": 0.2,
+      "hit15": 0.13,
+      "mean": 6.5,
+      "sd": 5.1,
+      "startable_rate": 0.27
+    },
+    "10219": {
+      "basis": "MEASURED",
+      "ceiling": 13.9,
+      "floor": 0.7,
+      "games": 12,
+      "hit10": 0.33,
+      "hit15": 0.08,
+      "mean": 7.7,
+      "sd": 4.6,
+      "startable_rate": 0.42
+    },
+    "10222": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 5
+    },
+    "10226": {
+      "basis": "MEASURED",
+      "ceiling": 13.2,
+      "floor": 2.2,
+      "games": 13,
+      "hit10": 0.23,
+      "hit15": 0.08,
+      "mean": 6.9,
+      "sd": 4.7,
+      "startable_rate": 0.38
+    },
+    "10229": {
+      "basis": "MEASURED",
+      "ceiling": 25.5,
+      "floor": 9.8,
+      "games": 8,
+      "hit10": 0.75,
+      "hit15": 0.62,
+      "mean": 18.8,
+      "sd": 7.6,
+      "startable_rate": 0.88
+    },
+    "10232": {
+      "basis": "MEASURED",
+      "ceiling": 21.8,
+      "floor": 3.6,
+      "games": 17,
+      "hit10": 0.41,
+      "hit15": 0.35,
+      "mean": 13.0,
+      "sd": 10.3,
+      "startable_rate": 0.53
+    },
+    "10236": {
+      "basis": "MEASURED",
+      "ceiling": 17.6,
+      "floor": 5.7,
+      "games": 11,
+      "hit10": 0.45,
+      "hit15": 0.27,
+      "mean": 11.5,
+      "sd": 5.7,
+      "startable_rate": 0.36
+    },
+    "10859": {
+      "basis": "MEASURED",
+      "ceiling": 20.2,
+      "floor": 5.6,
+      "games": 9,
+      "hit10": 0.56,
+      "hit15": 0.33,
+      "mean": 11.9,
+      "sd": 6.1,
+      "startable_rate": 0.44
+    },
+    "11199": {
+      "basis": "MEASURED",
+      "ceiling": 10.1,
+      "floor": 2.1,
+      "games": 10,
+      "hit10": 0.2,
+      "hit15": 0.0,
+      "mean": 5.8,
+      "sd": 3.8,
+      "startable_rate": 0.2
+    },
+    "11560": {
+      "basis": "MEASURED",
+      "ceiling": 25.1,
+      "floor": 10.5,
+      "games": 17,
+      "hit10": 0.94,
+      "hit15": 0.71,
+      "mean": 19.1,
+      "sd": 7.7,
+      "startable_rate": 0.53
+    },
+    "11563": {
+      "basis": "MEASURED",
+      "ceiling": 26.7,
+      "floor": 10.5,
+      "games": 17,
+      "hit10": 0.88,
+      "hit15": 0.65,
+      "mean": 18.6,
+      "sd": 7.9,
+      "startable_rate": 0.53
+    },
+    "11564": {
+      "basis": "MEASURED",
+      "ceiling": 27.2,
+      "floor": 15.7,
+      "games": 17,
+      "hit10": 1.0,
+      "hit15": 0.94,
+      "mean": 21.2,
+      "sd": 5.1,
+      "startable_rate": 0.71
+    },
+    "11566": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 7
+    },
+    "11571": {
+      "basis": "MEASURED",
+      "ceiling": 10.0,
+      "floor": 1.1,
+      "games": 14,
+      "hit10": 0.21,
+      "hit15": 0.07,
+      "mean": 5.1,
+      "sd": 5.0,
+      "startable_rate": 0.21
+    },
+    "11575": {
+      "basis": "MEASURED",
+      "ceiling": 9.9,
+      "floor": 0.3,
+      "games": 13,
+      "hit10": 0.08,
+      "hit15": 0.08,
+      "mean": 4.9,
+      "sd": 6.5,
+      "startable_rate": 0.08
+    },
+    "11576": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 4
+    },
+    "11581": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "11583": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "11584": {
+      "basis": "MEASURED",
+      "ceiling": 18.1,
+      "floor": 8.1,
+      "games": 10,
+      "hit10": 0.7,
+      "hit15": 0.4,
+      "mean": 13.9,
+      "sd": 5.3,
+      "startable_rate": 0.8
+    },
+    "11586": {
+      "basis": "MEASURED",
+      "ceiling": 13.1,
+      "floor": 1.8,
+      "games": 17,
+      "hit10": 0.29,
+      "hit15": 0.06,
+      "mean": 7.2,
+      "sd": 6.3,
+      "startable_rate": 0.35
+    },
+    "11597": {
+      "basis": "MEASURED",
+      "ceiling": 14.5,
+      "floor": 4.7,
+      "games": 14,
+      "hit10": 0.5,
+      "hit15": 0.14,
+      "mean": 9.1,
+      "sd": 5.3,
+      "startable_rate": 0.29
+    },
+    "11603": {
+      "basis": "MEASURED",
+      "ceiling": 15.0,
+      "floor": 1.9,
+      "games": 17,
+      "hit10": 0.47,
+      "hit15": 0.18,
+      "mean": 8.7,
+      "sd": 6.3,
+      "startable_rate": 0.41
+    },
+    "11604": {
+      "basis": "MEASURED",
+      "ceiling": 22.3,
+      "floor": 8.8,
+      "games": 12,
+      "hit10": 0.58,
+      "hit15": 0.25,
+      "mean": 14.7,
+      "sd": 9.7,
+      "startable_rate": 0.58
+    },
+    "11610": {
+      "basis": "MEASURED",
+      "ceiling": 10.2,
+      "floor": 4.0,
+      "games": 17,
+      "hit10": 0.18,
+      "hit15": 0.0,
+      "mean": 6.9,
+      "sd": 3.2,
+      "startable_rate": 0.47
+    },
+    "11618": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 4
+    },
+    "11620": {
+      "basis": "MEASURED",
+      "ceiling": 20.6,
+      "floor": 5.1,
+      "games": 11,
+      "hit10": 0.55,
+      "hit15": 0.55,
+      "mean": 13.3,
+      "sd": 8.3,
+      "startable_rate": 0.64
+    },
+    "11624": {
+      "basis": "MEASURED",
+      "ceiling": 11.4,
+      "floor": 5.5,
+      "games": 13,
+      "hit10": 0.38,
+      "hit15": 0.08,
+      "mean": 8.5,
+      "sd": 3.9,
+      "startable_rate": 0.54
+    },
+    "11625": {
+      "basis": "MEASURED",
+      "ceiling": 17.4,
+      "floor": 1.8,
+      "games": 12,
+      "hit10": 0.25,
+      "hit15": 0.17,
+      "mean": 7.3,
+      "sd": 6.6,
+      "startable_rate": 0.33
+    },
+    "11626": {
+      "basis": "MEASURED",
+      "ceiling": 11.1,
+      "floor": 1.3,
+      "games": 14,
+      "hit10": 0.21,
+      "hit15": 0.14,
+      "mean": 6.4,
+      "sd": 6.7,
+      "startable_rate": 0.29
+    },
+    "11627": {
+      "basis": "MEASURED",
+      "ceiling": 20.8,
+      "floor": 4.1,
+      "games": 16,
+      "hit10": 0.44,
+      "hit15": 0.25,
+      "mean": 11.1,
+      "sd": 7.1,
+      "startable_rate": 0.62
+    },
+    "11628": {
+      "basis": "MEASURED",
+      "ceiling": 18.6,
+      "floor": 4.7,
+      "games": 11,
+      "hit10": 0.55,
+      "hit15": 0.27,
+      "mean": 11.6,
+      "sd": 6.3,
+      "startable_rate": 0.55
+    },
+    "11631": {
+      "basis": "MEASURED",
+      "ceiling": 12.0,
+      "floor": 6.1,
+      "games": 14,
+      "hit10": 0.36,
+      "hit15": 0.14,
+      "mean": 9.9,
+      "sd": 4.8,
+      "startable_rate": 0.5
+    },
+    "11632": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 4
+    },
+    "11635": {
+      "basis": "MEASURED",
+      "ceiling": 20.7,
+      "floor": 4.0,
+      "games": 16,
+      "hit10": 0.5,
+      "hit15": 0.25,
+      "mean": 11.3,
+      "sd": 6.6,
+      "startable_rate": 0.69
+    },
+    "11637": {
+      "basis": "MEASURED",
+      "ceiling": 13.6,
+      "floor": 3.7,
+      "games": 12,
+      "hit10": 0.25,
+      "hit15": 0.08,
+      "mean": 8.5,
+      "sd": 5.8,
+      "startable_rate": 0.33
+    },
+    "11646": {
+      "basis": "MEASURED",
+      "ceiling": 16.7,
+      "floor": 3.6,
+      "games": 10,
+      "hit10": 0.4,
+      "hit15": 0.2,
+      "mean": 9.0,
+      "sd": 5.2,
+      "startable_rate": 0.4
+    },
+    "11647": {
+      "basis": "MEASURED",
+      "ceiling": 20.7,
+      "floor": 2.0,
+      "games": 12,
+      "hit10": 0.42,
+      "hit15": 0.33,
+      "mean": 9.8,
+      "sd": 7.9,
+      "startable_rate": 0.42
+    },
+    "11655": {
+      "basis": "MEASURED",
+      "ceiling": 17.9,
+      "floor": 5.5,
+      "games": 15,
+      "hit10": 0.33,
+      "hit15": 0.27,
+      "mean": 10.7,
+      "sd": 7.4,
+      "startable_rate": 0.4
+    },
+    "11783": {
+      "basis": "MEASURED",
+      "ceiling": 18.4,
+      "floor": 4.1,
+      "games": 12,
+      "hit10": 0.25,
+      "hit15": 0.17,
+      "mean": 9.5,
+      "sd": 6.6,
+      "startable_rate": 0.42
+    },
+    "11834": {
+      "basis": "MEASURED",
+      "ceiling": 11.9,
+      "floor": 2.3,
+      "games": 9,
+      "hit10": 0.22,
+      "hit15": 0.11,
+      "mean": 7.4,
+      "sd": 6.4,
+      "startable_rate": 0.22
+    },
+    "12457": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 4
+    },
+    "12469": {
+      "basis": "MEASURED",
+      "ceiling": 10.9,
+      "floor": 0.9,
+      "games": 15,
+      "hit10": 0.2,
+      "hit15": 0.13,
+      "mean": 5.8,
+      "sd": 5.4,
+      "startable_rate": 0.33
+    },
+    "12474": {
+      "basis": "MEASURED",
+      "ceiling": 15.6,
+      "floor": 2.7,
+      "games": 16,
+      "hit10": 0.38,
+      "hit15": 0.25,
+      "mean": 9.4,
+      "sd": 6.6,
+      "startable_rate": 0.5
+    },
+    "12481": {
+      "basis": "MEASURED",
+      "ceiling": 24.1,
+      "floor": 10.0,
+      "games": 8,
+      "hit10": 0.88,
+      "hit15": 0.38,
+      "mean": 16.0,
+      "sd": 8.1,
+      "startable_rate": 0.88
+    },
+    "12483": {
+      "basis": "MEASURED",
+      "ceiling": 6.3,
+      "floor": 2.9,
+      "games": 9,
+      "hit10": 0.11,
+      "hit15": 0.0,
+      "mean": 4.7,
+      "sd": 2.6,
+      "startable_rate": 0.11
+    },
+    "12487": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 7
+    },
+    "12489": {
+      "basis": "MEASURED",
+      "ceiling": 22.0,
+      "floor": 4.3,
+      "games": 17,
+      "hit10": 0.47,
+      "hit15": 0.41,
+      "mean": 12.2,
+      "sd": 7.4,
+      "startable_rate": 0.53
+    },
+    "12490": {
+      "basis": "MEASURED",
+      "ceiling": 9.6,
+      "floor": 1.7,
+      "games": 15,
+      "hit10": 0.13,
+      "hit15": 0.07,
+      "mean": 5.9,
+      "sd": 4.8,
+      "startable_rate": 0.4
+    },
+    "12492": {
+      "basis": "MEASURED",
+      "ceiling": 12.0,
+      "floor": 3.8,
+      "games": 11,
+      "hit10": 0.18,
+      "hit15": 0.0,
+      "mean": 6.8,
+      "sd": 3.4,
+      "startable_rate": 0.36
+    },
+    "12493": {
+      "basis": "MEASURED",
+      "ceiling": 12.2,
+      "floor": 2.4,
+      "games": 15,
+      "hit10": 0.4,
+      "hit15": 0.13,
+      "mean": 8.8,
+      "sd": 7.3,
+      "startable_rate": 0.27
+    },
+    "12497": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 5
+    },
+    "12498": {
+      "basis": "MEASURED",
+      "ceiling": 14.4,
+      "floor": 1.4,
+      "games": 13,
+      "hit10": 0.31,
+      "hit15": 0.08,
+      "mean": 6.8,
+      "sd": 5.0,
+      "startable_rate": 0.23
+    },
+    "12501": {
+      "basis": "MEASURED",
+      "ceiling": 11.3,
+      "floor": 1.5,
+      "games": 13,
+      "hit10": 0.23,
+      "hit15": 0.0,
+      "mean": 5.4,
+      "sd": 4.1,
+      "startable_rate": 0.31
+    },
+    "12502": {
+      "basis": "MEASURED",
+      "ceiling": 10.3,
+      "floor": 2.2,
+      "games": 16,
+      "hit10": 0.19,
+      "hit15": 0.0,
+      "mean": 5.7,
+      "sd": 3.9,
+      "startable_rate": 0.12
+    },
+    "12503": {
+      "basis": "MEASURED",
+      "ceiling": 8.8,
+      "floor": 1.5,
+      "games": 13,
+      "hit10": 0.08,
+      "hit15": 0.0,
+      "mean": 4.2,
+      "sd": 3.0,
+      "startable_rate": 0.08
+    },
+    "12506": {
+      "basis": "MEASURED",
+      "ceiling": 18.4,
+      "floor": 5.5,
+      "games": 16,
+      "hit10": 0.56,
+      "hit15": 0.25,
+      "mean": 11.7,
+      "sd": 5.5,
+      "startable_rate": 0.5
+    },
+    "12507": {
+      "basis": "MEASURED",
+      "ceiling": 24.9,
+      "floor": 7.5,
+      "games": 9,
+      "hit10": 0.67,
+      "hit15": 0.44,
+      "mean": 15.1,
+      "sd": 7.6,
+      "startable_rate": 0.67
+    },
+    "12508": {
+      "basis": "MEASURED",
+      "ceiling": 26.3,
+      "floor": 1.0,
+      "games": 14,
+      "hit10": 0.79,
+      "hit15": 0.71,
+      "mean": 17.6,
+      "sd": 9.8,
+      "startable_rate": 0.57
+    },
+    "12509": {
+      "basis": "MEASURED",
+      "ceiling": 7.9,
+      "floor": 2.4,
+      "games": 14,
+      "hit10": 0.0,
+      "hit15": 0.0,
+      "mean": 5.0,
+      "sd": 2.4,
+      "startable_rate": 0.21
+    },
+    "12512": {
+      "basis": "MEASURED",
+      "ceiling": 16.7,
+      "floor": 4.7,
+      "games": 14,
+      "hit10": 0.64,
+      "hit15": 0.36,
+      "mean": 12.1,
+      "sd": 6.5,
+      "startable_rate": 0.71
+    },
+    "12514": {
+      "basis": "MEASURED",
+      "ceiling": 23.5,
+      "floor": 4.4,
+      "games": 17,
+      "hit10": 0.41,
+      "hit15": 0.24,
+      "mean": 11.5,
+      "sd": 8.2,
+      "startable_rate": 0.76
+    },
+    "12517": {
+      "basis": "MEASURED",
+      "ceiling": 21.4,
+      "floor": 4.1,
+      "games": 15,
+      "hit10": 0.4,
+      "hit15": 0.2,
+      "mean": 11.0,
+      "sd": 8.0,
+      "startable_rate": 0.33
+    },
+    "12518": {
+      "basis": "MEASURED",
+      "ceiling": 17.9,
+      "floor": 6.0,
+      "games": 17,
+      "hit10": 0.47,
+      "hit15": 0.24,
+      "mean": 11.1,
+      "sd": 4.7,
+      "startable_rate": 0.53
+    },
+    "12519": {
+      "basis": "MEASURED",
+      "ceiling": 14.4,
+      "floor": 1.5,
+      "games": 15,
+      "hit10": 0.27,
+      "hit15": 0.13,
+      "mean": 8.5,
+      "sd": 7.3,
+      "startable_rate": 0.47
+    },
+    "12521": {
+      "basis": "MEASURED",
+      "ceiling": 6.4,
+      "floor": 1.5,
+      "games": 9,
+      "hit10": 0.11,
+      "hit15": 0.0,
+      "mean": 4.1,
+      "sd": 3.1,
+      "startable_rate": 0.0
+    },
+    "12522": {
+      "basis": "MEASURED",
+      "ceiling": 17.0,
+      "floor": 6.3,
+      "games": 17,
+      "hit10": 0.53,
+      "hit15": 0.24,
+      "mean": 11.4,
+      "sd": 5.1,
+      "startable_rate": 0.24
+    },
+    "12526": {
+      "basis": "MEASURED",
+      "ceiling": 17.9,
+      "floor": 6.3,
+      "games": 17,
+      "hit10": 0.71,
+      "hit15": 0.29,
+      "mean": 12.4,
+      "sd": 6.9,
+      "startable_rate": 0.88
+    },
+    "12527": {
+      "basis": "MEASURED",
+      "ceiling": 24.8,
+      "floor": 6.3,
+      "games": 17,
+      "hit10": 0.59,
+      "hit15": 0.41,
+      "mean": 14.4,
+      "sd": 8.4,
+      "startable_rate": 0.76
+    },
+    "12529": {
+      "basis": "MEASURED",
+      "ceiling": 28.0,
+      "floor": 4.6,
+      "games": 17,
+      "hit10": 0.53,
+      "hit15": 0.24,
+      "mean": 12.1,
+      "sd": 9.3,
+      "startable_rate": 0.59
+    },
+    "12530": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 7
+    },
+    "12533": {
+      "basis": "MEASURED",
+      "ceiling": 15.6,
+      "floor": 2.5,
+      "games": 17,
+      "hit10": 0.29,
+      "hit15": 0.18,
+      "mean": 8.3,
+      "sd": 7.2,
+      "startable_rate": 0.41
+    },
+    "12534": {
+      "basis": "MEASURED",
+      "ceiling": 17.4,
+      "floor": 2.4,
+      "games": 17,
+      "hit10": 0.35,
+      "hit15": 0.18,
+      "mean": 8.6,
+      "sd": 6.1,
+      "startable_rate": 0.59
+    },
+    "12535": {
+      "basis": "MEASURED",
+      "ceiling": 13.9,
+      "floor": 2.8,
+      "games": 9,
+      "hit10": 0.44,
+      "hit15": 0.11,
+      "mean": 8.4,
+      "sd": 4.5,
+      "startable_rate": 0.44
+    },
+    "12536": {
+      "basis": "MEASURED",
+      "ceiling": 11.7,
+      "floor": 1.0,
+      "games": 13,
+      "hit10": 0.23,
+      "hit15": 0.0,
+      "mean": 5.3,
+      "sd": 4.8,
+      "startable_rate": 0.31
+    },
+    "12540": {
+      "basis": "MEASURED",
+      "ceiling": 16.4,
+      "floor": 0.9,
+      "games": 17,
+      "hit10": 0.35,
+      "hit15": 0.18,
+      "mean": 7.4,
+      "sd": 6.4,
+      "startable_rate": 0.53
+    },
+    "12544": {
+      "basis": "MEASURED",
+      "ceiling": 2.6,
+      "floor": 1.0,
+      "games": 15,
+      "hit10": 0.0,
+      "hit15": 0.0,
+      "mean": 1.8,
+      "sd": 0.9,
+      "startable_rate": 0.0
+    },
+    "12545": {
+      "basis": "MEASURED",
+      "ceiling": 22.3,
+      "floor": 8.9,
+      "games": 10,
+      "hit10": 0.8,
+      "hit15": 0.7,
+      "mean": 16.4,
+      "sd": 5.8,
+      "startable_rate": 0.3
+    },
+    "13268": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13269": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13274": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13276": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13279": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13281": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13282": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13285": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13286": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13287": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13293": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13294": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13296": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13298": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13301": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13305": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13311": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13317": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13320": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13329": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13330": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13337": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13345": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13346": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13349": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13394": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13413": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13414": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13417": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "13434": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "1373": {
+      "basis": "MEASURED",
+      "ceiling": 18.5,
+      "floor": 6.2,
+      "games": 15,
+      "hit10": 0.53,
+      "hit15": 0.27,
+      "mean": 12.7,
+      "sd": 6.8,
+      "startable_rate": 0.13
+    },
+    "1466": {
+      "basis": "MEASURED",
+      "ceiling": 19.1,
+      "floor": 4.2,
+      "games": 17,
+      "hit10": 0.53,
+      "hit15": 0.24,
+      "mean": 11.4,
+      "sd": 6.2,
+      "startable_rate": 0.59
+    },
+    "1479": {
+      "basis": "MEASURED",
+      "ceiling": 19.5,
+      "floor": 5.2,
+      "games": 17,
+      "hit10": 0.35,
+      "hit15": 0.24,
+      "mean": 10.7,
+      "sd": 6.6,
+      "startable_rate": 0.65
+    },
+    "2133": {
+      "basis": "MEASURED",
+      "ceiling": 23.0,
+      "floor": 7.9,
+      "games": 14,
+      "hit10": 0.71,
+      "hit15": 0.5,
+      "mean": 15.9,
+      "sd": 6.6,
+      "startable_rate": 0.79
+    },
+    "2216": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 7
+    },
+    "2449": {
+      "basis": "MEASURED",
+      "ceiling": 22.1,
+      "floor": 5.6,
+      "games": 17,
+      "hit10": 0.59,
+      "hit15": 0.35,
+      "mean": 12.4,
+      "sd": 6.6,
+      "startable_rate": 0.76
+    },
+    "2505": {
+      "basis": "MEASURED",
+      "ceiling": 18.8,
+      "floor": 2.7,
+      "games": 8,
+      "hit10": 0.38,
+      "hit15": 0.38,
+      "mean": 11.1,
+      "sd": 8.1,
+      "startable_rate": 0.38
+    },
+    "3163": {
+      "basis": "MEASURED",
+      "ceiling": 25.5,
+      "floor": 11.9,
+      "games": 17,
+      "hit10": 0.94,
+      "hit15": 0.65,
+      "mean": 17.9,
+      "sd": 6.8,
+      "startable_rate": 0.47
+    },
+    "3198": {
+      "basis": "MEASURED",
+      "ceiling": 22.8,
+      "floor": 9.3,
+      "games": 17,
+      "hit10": 0.82,
+      "hit15": 0.41,
+      "mean": 16.4,
+      "sd": 9.7,
+      "startable_rate": 0.82
+    },
+    "3214": {
+      "basis": "MEASURED",
+      "ceiling": 15.5,
+      "floor": 2.8,
+      "games": 17,
+      "hit10": 0.47,
+      "hit15": 0.18,
+      "mean": 10.5,
+      "sd": 7.1,
+      "startable_rate": 0.41
+    },
+    "3257": {
+      "basis": "MEASURED",
+      "ceiling": 23.9,
+      "floor": 11.6,
+      "games": 13,
+      "hit10": 0.92,
+      "hit15": 0.85,
+      "mean": 18.1,
+      "sd": 6.1,
+      "startable_rate": 0.62
+    },
+    "3294": {
+      "basis": "MEASURED",
+      "ceiling": 28.1,
+      "floor": 8.6,
+      "games": 17,
+      "hit10": 0.82,
+      "hit15": 0.71,
+      "mean": 19.0,
+      "sd": 7.9,
+      "startable_rate": 0.71
+    },
+    "3321": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 4
+    },
+    "4033": {
+      "basis": "MEASURED",
+      "ceiling": 13.7,
+      "floor": 2.4,
+      "games": 11,
+      "hit10": 0.27,
+      "hit15": 0.09,
+      "mean": 7.8,
+      "sd": 4.8,
+      "startable_rate": 0.09
+    },
+    "4034": {
+      "basis": "MEASURED",
+      "ceiling": 34.3,
+      "floor": 15.7,
+      "games": 17,
+      "hit10": 0.94,
+      "hit15": 0.88,
+      "mean": 24.5,
+      "sd": 8.0,
+      "startable_rate": 1.0
+    },
+    "4035": {
+      "basis": "MEASURED",
+      "ceiling": 14.5,
+      "floor": 3.5,
+      "games": 11,
+      "hit10": 0.45,
+      "hit15": 0.09,
+      "mean": 9.2,
+      "sd": 4.7,
+      "startable_rate": 0.45
+    },
+    "4037": {
+      "basis": "MEASURED",
+      "ceiling": 14.0,
+      "floor": 2.9,
+      "games": 9,
+      "hit10": 0.44,
+      "hit15": 0.11,
+      "mean": 9.2,
+      "sd": 6.3,
+      "startable_rate": 0.33
+    },
+    "4039": {
+      "basis": "MEASURED",
+      "ceiling": 11.9,
+      "floor": 3.5,
+      "games": 16,
+      "hit10": 0.25,
+      "hit15": 0.06,
+      "mean": 7.3,
+      "sd": 3.9,
+      "startable_rate": 0.56
+    },
+    "4046": {
+      "basis": "MEASURED",
+      "ceiling": 27.7,
+      "floor": 13.2,
+      "games": 14,
+      "hit10": 0.93,
+      "hit15": 0.64,
+      "mean": 21.2,
+      "sd": 7.2,
+      "startable_rate": 0.64
+    },
+    "4066": {
+      "basis": "MEASURED",
+      "ceiling": 9.9,
+      "floor": 2.8,
+      "games": 15,
+      "hit10": 0.13,
+      "hit15": 0.0,
+      "mean": 6.9,
+      "sd": 3.5,
+      "startable_rate": 0.13
+    },
+    "4137": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 3
+    },
+    "4147": {
+      "basis": "MEASURED",
+      "ceiling": 8.3,
+      "floor": 0.5,
+      "games": 14,
+      "hit10": 0.14,
+      "hit15": 0.07,
+      "mean": 5.6,
+      "sd": 4.5,
+      "startable_rate": 0.29
+    },
+    "4199": {
+      "basis": "MEASURED",
+      "ceiling": 15.7,
+      "floor": 4.5,
+      "games": 12,
+      "hit10": 0.5,
+      "hit15": 0.25,
+      "mean": 9.9,
+      "sd": 4.3,
+      "startable_rate": 0.67
+    },
+    "421": {
+      "basis": "MEASURED",
+      "ceiling": 27.4,
+      "floor": 13.6,
+      "games": 17,
+      "hit10": 0.94,
+      "hit15": 0.71,
+      "mean": 21.1,
+      "sd": 6.4,
+      "startable_rate": 0.65
+    },
+    "4217": {
+      "basis": "MEASURED",
+      "ceiling": 24.5,
+      "floor": 7.9,
+      "games": 10,
+      "hit10": 0.8,
+      "hit15": 0.4,
+      "mean": 16.1,
+      "sd": 6.7,
+      "startable_rate": 0.7
+    },
+    "4454": {
+      "basis": "MEASURED",
+      "ceiling": 19.2,
+      "floor": 2.9,
+      "games": 12,
+      "hit10": 0.17,
+      "hit15": 0.17,
+      "mean": 7.7,
+      "sd": 6.6,
+      "startable_rate": 0.17
+    },
+    "4866": {
+      "basis": "MEASURED",
+      "ceiling": 18.4,
+      "floor": 6.8,
+      "games": 16,
+      "hit10": 0.69,
+      "hit15": 0.5,
+      "mean": 14.5,
+      "sd": 7.0,
+      "startable_rate": 0.88
+    },
+    "4881": {
+      "basis": "MEASURED",
+      "ceiling": 27.0,
+      "floor": 6.7,
+      "games": 13,
+      "hit10": 0.69,
+      "hit15": 0.62,
+      "mean": 17.1,
+      "sd": 8.5,
+      "startable_rate": 0.46
+    },
+    "4892": {
+      "basis": "MEASURED",
+      "ceiling": 22.6,
+      "floor": 12.1,
+      "games": 17,
+      "hit10": 0.88,
+      "hit15": 0.59,
+      "mean": 16.6,
+      "sd": 5.8,
+      "startable_rate": 0.47
+    },
+    "4943": {
+      "basis": "MEASURED",
+      "ceiling": 23.3,
+      "floor": 5.9,
+      "games": 17,
+      "hit10": 0.59,
+      "hit15": 0.53,
+      "mean": 14.7,
+      "sd": 7.7,
+      "startable_rate": 0.35
+    },
+    "4981": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 7
+    },
+    "4983": {
+      "basis": "MEASURED",
+      "ceiling": 22.9,
+      "floor": 2.1,
+      "games": 16,
+      "hit10": 0.38,
+      "hit15": 0.25,
+      "mean": 10.6,
+      "sd": 7.8,
+      "startable_rate": 0.5
+    },
+    "4984": {
+      "basis": "MEASURED",
+      "ceiling": 37.8,
+      "floor": 11.8,
+      "games": 16,
+      "hit10": 0.94,
+      "hit15": 0.81,
+      "mean": 23.4,
+      "sd": 10.0,
+      "startable_rate": 0.75
+    },
+    "4993": {
+      "basis": "MEASURED",
+      "ceiling": 12.5,
+      "floor": 1.8,
+      "games": 12,
+      "hit10": 0.17,
+      "hit15": 0.08,
+      "mean": 5.9,
+      "sd": 5.3,
+      "startable_rate": 0.08
+    },
+    "5001": {
+      "basis": "MEASURED",
+      "ceiling": 18.3,
+      "floor": 4.9,
+      "games": 17,
+      "hit10": 0.53,
+      "hit15": 0.18,
+      "mean": 10.5,
+      "sd": 5.5,
+      "startable_rate": 0.47
+    },
+    "5012": {
+      "basis": "MEASURED",
+      "ceiling": 15.7,
+      "floor": 1.9,
+      "games": 17,
+      "hit10": 0.29,
+      "hit15": 0.18,
+      "mean": 7.7,
+      "sd": 6.6,
+      "startable_rate": 0.29
+    },
+    "5022": {
+      "basis": "MEASURED",
+      "ceiling": 19.7,
+      "floor": 4.7,
+      "games": 15,
+      "hit10": 0.6,
+      "hit15": 0.33,
+      "mean": 12.3,
+      "sd": 6.9,
+      "startable_rate": 0.53
+    },
+    "5045": {
+      "basis": "MEASURED",
+      "ceiling": 20.6,
+      "floor": 2.7,
+      "games": 17,
+      "hit10": 0.65,
+      "hit15": 0.47,
+      "mean": 12.9,
+      "sd": 7.3,
+      "startable_rate": 0.82
+    },
+    "5844": {
+      "basis": "MEASURED",
+      "ceiling": 10.6,
+      "floor": 2.8,
+      "games": 15,
+      "hit10": 0.27,
+      "hit15": 0.07,
+      "mean": 7.5,
+      "sd": 3.9,
+      "startable_rate": 0.2
+    },
+    "5846": {
+      "basis": "MEASURED",
+      "ceiling": 19.5,
+      "floor": 6.5,
+      "games": 15,
+      "hit10": 0.6,
+      "hit15": 0.27,
+      "mean": 12.5,
+      "sd": 5.8,
+      "startable_rate": 0.8
+    },
+    "5848": {
+      "basis": "MEASURED",
+      "ceiling": 12.8,
+      "floor": 4.5,
+      "games": 15,
+      "hit10": 0.27,
+      "hit15": 0.13,
+      "mean": 9.2,
+      "sd": 5.2,
+      "startable_rate": 0.47
+    },
+    "5849": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 5
+    },
+    "5850": {
+      "basis": "MEASURED",
+      "ceiling": 23.2,
+      "floor": 4.8,
+      "games": 15,
+      "hit10": 0.8,
+      "hit15": 0.47,
+      "mean": 15.8,
+      "sd": 8.7,
+      "startable_rate": 0.8
+    },
+    "5859": {
+      "basis": "MEASURED",
+      "ceiling": 25.0,
+      "floor": 3.3,
+      "games": 15,
+      "hit10": 0.67,
+      "hit15": 0.4,
+      "mean": 14.7,
+      "sd": 9.4,
+      "startable_rate": 0.67
+    },
+    "5870": {
+      "basis": "MEASURED",
+      "ceiling": 23.5,
+      "floor": 12.4,
+      "games": 13,
+      "hit10": 0.92,
+      "hit15": 0.85,
+      "mean": 18.0,
+      "sd": 6.4,
+      "startable_rate": 0.38
+    },
+    "5872": {
+      "basis": "MEASURED",
+      "ceiling": 20.7,
+      "floor": 4.9,
+      "games": 16,
+      "hit10": 0.5,
+      "hit15": 0.31,
+      "mean": 11.8,
+      "sd": 6.7,
+      "startable_rate": 0.81
+    },
+    "5892": {
+      "basis": "MEASURED",
+      "ceiling": 14.3,
+      "floor": 4.7,
+      "games": 17,
+      "hit10": 0.41,
+      "hit15": 0.12,
+      "mean": 9.8,
+      "sd": 6.5,
+      "startable_rate": 0.59
+    },
+    "5906": {
+      "basis": "MEASURED",
+      "ceiling": 10.4,
+      "floor": 3.3,
+      "games": 15,
+      "hit10": 0.2,
+      "hit15": 0.13,
+      "mean": 6.9,
+      "sd": 4.9,
+      "startable_rate": 0.2
+    },
+    "5927": {
+      "basis": "MEASURED",
+      "ceiling": 15.9,
+      "floor": 7.1,
+      "games": 10,
+      "hit10": 0.5,
+      "hit15": 0.2,
+      "mean": 11.4,
+      "sd": 4.8,
+      "startable_rate": 0.6
+    },
+    "5947": {
+      "basis": "MEASURED",
+      "ceiling": 15.0,
+      "floor": 7.1,
+      "games": 16,
+      "hit10": 0.44,
+      "hit15": 0.19,
+      "mean": 11.0,
+      "sd": 4.2,
+      "startable_rate": 0.62
+    },
+    "5967": {
+      "basis": "MEASURED",
+      "ceiling": 14.8,
+      "floor": 6.3,
+      "games": 17,
+      "hit10": 0.47,
+      "hit15": 0.12,
+      "mean": 10.9,
+      "sd": 5.5,
+      "startable_rate": 0.53
+    },
+    "5995": {
+      "basis": "MEASURED",
+      "ceiling": 9.4,
+      "floor": 0.2,
+      "games": 9,
+      "hit10": 0.11,
+      "hit15": 0.11,
+      "mean": 7.2,
+      "sd": 8.2,
+      "startable_rate": 0.22
+    },
+    "6039": {
+      "basis": "MEASURED",
+      "ceiling": 10.0,
+      "floor": 1.0,
+      "games": 16,
+      "hit10": 0.19,
+      "hit15": 0.12,
+      "mean": 6.3,
+      "sd": 5.1,
+      "startable_rate": 0.31
+    },
+    "6149": {
+      "basis": "MEASURED",
+      "ceiling": 12.9,
+      "floor": 3.3,
+      "games": 13,
+      "hit10": 0.23,
+      "hit15": 0.0,
+      "mean": 7.6,
+      "sd": 3.6,
+      "startable_rate": 0.38
+    },
+    "6271": {
+      "basis": "MEASURED",
+      "ceiling": 10.3,
+      "floor": 1.6,
+      "games": 13,
+      "hit10": 0.15,
+      "hit15": 0.08,
+      "mean": 6.5,
+      "sd": 4.3,
+      "startable_rate": 0.23
+    },
+    "6770": {
+      "basis": "MEASURED",
+      "ceiling": 25.4,
+      "floor": 7.5,
+      "games": 8,
+      "hit10": 0.62,
+      "hit15": 0.62,
+      "mean": 17.4,
+      "sd": 8.0,
+      "startable_rate": 0.25
+    },
+    "6783": {
+      "basis": "MEASURED",
+      "ceiling": 11.6,
+      "floor": 3.5,
+      "games": 16,
+      "hit10": 0.25,
+      "hit15": 0.12,
+      "mean": 7.5,
+      "sd": 4.9,
+      "startable_rate": 0.5
+    },
+    "6786": {
+      "basis": "MEASURED",
+      "ceiling": 22.0,
+      "floor": 9.6,
+      "games": 13,
+      "hit10": 0.85,
+      "hit15": 0.62,
+      "mean": 15.5,
+      "sd": 5.7,
+      "startable_rate": 0.92
+    },
+    "6790": {
+      "basis": "MEASURED",
+      "ceiling": 21.9,
+      "floor": 9.0,
+      "games": 16,
+      "hit10": 0.69,
+      "hit15": 0.44,
+      "mean": 14.3,
+      "sd": 6.5,
+      "startable_rate": 0.94
+    },
+    "6794": {
+      "basis": "MEASURED",
+      "ceiling": 18.4,
+      "floor": 4.2,
+      "games": 17,
+      "hit10": 0.65,
+      "hit15": 0.24,
+      "mean": 11.9,
+      "sd": 5.6,
+      "startable_rate": 0.88
+    },
+    "6797": {
+      "basis": "MEASURED",
+      "ceiling": 28.7,
+      "floor": 13.2,
+      "games": 16,
+      "hit10": 0.94,
+      "hit15": 0.62,
+      "mean": 18.7,
+      "sd": 7.4,
+      "startable_rate": 0.44
+    },
+    "6801": {
+      "basis": "MEASURED",
+      "ceiling": 21.6,
+      "floor": 6.3,
+      "games": 15,
+      "hit10": 0.67,
+      "hit15": 0.33,
+      "mean": 14.1,
+      "sd": 7.9,
+      "startable_rate": 0.8
+    },
+    "6803": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "6804": {
+      "basis": "MEASURED",
+      "ceiling": 25.8,
+      "floor": 7.8,
+      "games": 15,
+      "hit10": 0.8,
+      "hit15": 0.6,
+      "mean": 16.1,
+      "sd": 7.1,
+      "startable_rate": 0.33
+    },
+    "6806": {
+      "basis": "MEASURED",
+      "ceiling": 15.4,
+      "floor": 6.9,
+      "games": 10,
+      "hit10": 0.6,
+      "hit15": 0.3,
+      "mean": 11.6,
+      "sd": 3.9,
+      "startable_rate": 0.8
+    },
+    "6813": {
+      "basis": "MEASURED",
+      "ceiling": 34.2,
+      "floor": 8.6,
+      "games": 17,
+      "hit10": 0.82,
+      "hit15": 0.59,
+      "mean": 21.3,
+      "sd": 12.1,
+      "startable_rate": 0.94
+    },
+    "6819": {
+      "basis": "MEASURED",
+      "ceiling": 20.5,
+      "floor": 3.6,
+      "games": 17,
+      "hit10": 0.53,
+      "hit15": 0.41,
+      "mean": 11.9,
+      "sd": 7.3,
+      "startable_rate": 0.76
+    },
+    "6826": {
+      "basis": "MEASURED",
+      "ceiling": 8.0,
+      "floor": 1.5,
+      "games": 16,
+      "hit10": 0.06,
+      "hit15": 0.0,
+      "mean": 4.9,
+      "sd": 3.1,
+      "startable_rate": 0.12
+    },
+    "6865": {
+      "basis": "MEASURED",
+      "ceiling": 19.6,
+      "floor": 3.0,
+      "games": 13,
+      "hit10": 0.46,
+      "hit15": 0.15,
+      "mean": 10.0,
+      "sd": 6.8,
+      "startable_rate": 0.38
+    },
+    "6904": {
+      "basis": "MEASURED",
+      "ceiling": 25.4,
+      "floor": 11.5,
+      "games": 16,
+      "hit10": 0.88,
+      "hit15": 0.69,
+      "mean": 19.1,
+      "sd": 7.1,
+      "startable_rate": 0.56
+    },
+    "7002": {
+      "basis": "MEASURED",
+      "ceiling": 15.9,
+      "floor": 5.8,
+      "games": 17,
+      "hit10": 0.59,
+      "hit15": 0.24,
+      "mean": 10.6,
+      "sd": 4.7,
+      "startable_rate": 0.53
+    },
+    "7021": {
+      "basis": "MEASURED",
+      "ceiling": 28.1,
+      "floor": 3.6,
+      "games": 17,
+      "hit10": 0.53,
+      "hit15": 0.29,
+      "mean": 12.7,
+      "sd": 9.5,
+      "startable_rate": 0.76
+    },
+    "7049": {
+      "basis": "MEASURED",
+      "ceiling": 18.1,
+      "floor": 6.4,
+      "games": 15,
+      "hit10": 0.53,
+      "hit15": 0.33,
+      "mean": 11.6,
+      "sd": 5.5,
+      "startable_rate": 0.67
+    },
+    "7090": {
+      "basis": "MEASURED",
+      "ceiling": 8.4,
+      "floor": 2.5,
+      "games": 15,
+      "hit10": 0.07,
+      "hit15": 0.07,
+      "mean": 5.5,
+      "sd": 3.7,
+      "startable_rate": 0.4
+    },
+    "7523": {
+      "basis": "MEASURED",
+      "ceiling": 27.2,
+      "floor": 11.3,
+      "games": 17,
+      "hit10": 0.94,
+      "hit15": 0.76,
+      "mean": 20.6,
+      "sd": 8.3,
+      "startable_rate": 0.59
+    },
+    "7525": {
+      "basis": "MEASURED",
+      "ceiling": 19.4,
+      "floor": 4.6,
+      "games": 17,
+      "hit10": 0.41,
+      "hit15": 0.29,
+      "mean": 11.9,
+      "sd": 7.6,
+      "startable_rate": 0.76
+    },
+    "7526": {
+      "basis": "MEASURED",
+      "ceiling": 19.4,
+      "floor": 4.6,
+      "games": 16,
+      "hit10": 0.56,
+      "hit15": 0.38,
+      "mean": 12.1,
+      "sd": 6.7,
+      "startable_rate": 0.81
+    },
+    "7543": {
+      "basis": "MEASURED",
+      "ceiling": 20.6,
+      "floor": 6.5,
+      "games": 17,
+      "hit10": 0.71,
+      "hit15": 0.59,
+      "mean": 14.9,
+      "sd": 6.7,
+      "startable_rate": 0.82
+    },
+    "7547": {
+      "basis": "MEASURED",
+      "ceiling": 29.9,
+      "floor": 9.4,
+      "games": 16,
+      "hit10": 0.81,
+      "hit15": 0.69,
+      "mean": 20.2,
+      "sd": 9.8,
+      "startable_rate": 0.88
+    },
+    "7553": {
+      "basis": "MEASURED",
+      "ceiling": 18.0,
+      "floor": 4.5,
+      "games": 17,
+      "hit10": 0.53,
+      "hit15": 0.29,
+      "mean": 12.4,
+      "sd": 9.6,
+      "startable_rate": 0.53
+    },
+    "7564": {
+      "basis": "MEASURED",
+      "ceiling": 29.0,
+      "floor": 7.3,
+      "games": 16,
+      "hit10": 0.75,
+      "hit15": 0.69,
+      "mean": 19.6,
+      "sd": 9.9,
+      "startable_rate": 0.75
+    },
+    "7567": {
+      "basis": "MEASURED",
+      "ceiling": 23.8,
+      "floor": 3.5,
+      "games": 17,
+      "hit10": 0.41,
+      "hit15": 0.41,
+      "mean": 13.1,
+      "sd": 9.1,
+      "startable_rate": 0.53
+    },
+    "7569": {
+      "basis": "MEASURED",
+      "ceiling": 22.6,
+      "floor": 8.5,
+      "games": 15,
+      "hit10": 0.67,
+      "hit15": 0.47,
+      "mean": 15.1,
+      "sd": 6.3,
+      "startable_rate": 0.87
+    },
+    "7571": {
+      "basis": "MEASURED",
+      "ceiling": 9.3,
+      "floor": 1.8,
+      "games": 10,
+      "hit10": 0.1,
+      "hit15": 0.1,
+      "mean": 5.5,
+      "sd": 4.5,
+      "startable_rate": 0.1
+    },
+    "7588": {
+      "basis": "MEASURED",
+      "ceiling": 20.4,
+      "floor": 8.4,
+      "games": 16,
+      "hit10": 0.81,
+      "hit15": 0.5,
+      "mean": 15.2,
+      "sd": 5.8,
+      "startable_rate": 0.94
+    },
+    "7594": {
+      "basis": "MEASURED",
+      "ceiling": 17.9,
+      "floor": 2.8,
+      "games": 15,
+      "hit10": 0.2,
+      "hit15": 0.2,
+      "mean": 8.4,
+      "sd": 5.9,
+      "startable_rate": 0.33
+    },
+    "7600": {
+      "basis": "MEASURED",
+      "ceiling": 10.9,
+      "floor": 2.9,
+      "games": 15,
+      "hit10": 0.2,
+      "hit15": 0.07,
+      "mean": 7.6,
+      "sd": 6.2,
+      "startable_rate": 0.13
+    },
+    "7611": {
+      "basis": "MEASURED",
+      "ceiling": 21.2,
+      "floor": 4.6,
+      "games": 14,
+      "hit10": 0.57,
+      "hit15": 0.36,
+      "mean": 12.8,
+      "sd": 9.7,
+      "startable_rate": 0.57
+    },
+    "7828": {
+      "basis": "MEASURED",
+      "ceiling": 5.5,
+      "floor": 1.1,
+      "games": 12,
+      "hit10": 0.0,
+      "hit15": 0.0,
+      "mean": 3.2,
+      "sd": 1.7,
+      "startable_rate": 0.0
+    },
+    "8110": {
+      "basis": "MEASURED",
+      "ceiling": 21.2,
+      "floor": 4.9,
+      "games": 16,
+      "hit10": 0.56,
+      "hit15": 0.31,
+      "mean": 11.8,
+      "sd": 6.5,
+      "startable_rate": 0.44
+    },
+    "8111": {
+      "basis": "MEASURED",
+      "ceiling": 13.5,
+      "floor": 3.9,
+      "games": 14,
+      "hit10": 0.36,
+      "hit15": 0.14,
+      "mean": 8.7,
+      "sd": 5.5,
+      "startable_rate": 0.29
+    },
+    "8112": {
+      "basis": "MEASURED",
+      "ceiling": 31.8,
+      "floor": 5.7,
+      "games": 12,
+      "hit10": 0.67,
+      "hit15": 0.5,
+      "mean": 16.8,
+      "sd": 11.0,
+      "startable_rate": 0.67
+    },
+    "8117": {
+      "basis": "MEASURED",
+      "ceiling": 10.1,
+      "floor": 1.8,
+      "games": 8,
+      "hit10": 0.25,
+      "hit15": 0.0,
+      "mean": 5.8,
+      "sd": 3.9,
+      "startable_rate": 0.25
+    },
+    "8119": {
+      "basis": "MEASURED",
+      "ceiling": 8.9,
+      "floor": 1.4,
+      "games": 11,
+      "hit10": 0.09,
+      "hit15": 0.0,
+      "mean": 4.6,
+      "sd": 3.1,
+      "startable_rate": 0.18
+    },
+    "8121": {
+      "basis": "MEASURED",
+      "ceiling": 16.1,
+      "floor": 4.5,
+      "games": 15,
+      "hit10": 0.47,
+      "hit15": 0.2,
+      "mean": 11.0,
+      "sd": 6.7,
+      "startable_rate": 0.6
+    },
+    "8126": {
+      "basis": "MEASURED",
+      "ceiling": 22.3,
+      "floor": 5.2,
+      "games": 16,
+      "hit10": 0.62,
+      "hit15": 0.38,
+      "mean": 13.6,
+      "sd": 7.9,
+      "startable_rate": 0.75
+    },
+    "8130": {
+      "basis": "MEASURED",
+      "ceiling": 27.7,
+      "floor": 10.8,
+      "games": 17,
+      "hit10": 0.88,
+      "hit15": 0.59,
+      "mean": 18.6,
+      "sd": 8.1,
+      "startable_rate": 0.82
+    },
+    "8131": {
+      "basis": "MEASURED",
+      "ceiling": 12.5,
+      "floor": 2.2,
+      "games": 11,
+      "hit10": 0.18,
+      "hit15": 0.0,
+      "mean": 5.6,
+      "sd": 3.8,
+      "startable_rate": 0.18
+    },
+    "8132": {
+      "basis": "MEASURED",
+      "ceiling": 13.5,
+      "floor": 1.6,
+      "games": 17,
+      "hit10": 0.29,
+      "hit15": 0.12,
+      "mean": 7.2,
+      "sd": 5.2,
+      "startable_rate": 0.65
+    },
+    "8134": {
+      "basis": "MEASURED",
+      "ceiling": 17.0,
+      "floor": 2.2,
+      "games": 16,
+      "hit10": 0.56,
+      "hit15": 0.19,
+      "mean": 10.4,
+      "sd": 5.6,
+      "startable_rate": 0.75
+    },
+    "8136": {
+      "basis": "MEASURED",
+      "ceiling": 14.6,
+      "floor": 3.6,
+      "games": 17,
+      "hit10": 0.24,
+      "hit15": 0.12,
+      "mean": 8.4,
+      "sd": 5.3,
+      "startable_rate": 0.47
+    },
+    "8137": {
+      "basis": "MEASURED",
+      "ceiling": 29.6,
+      "floor": 6.3,
+      "games": 17,
+      "hit10": 0.76,
+      "hit15": 0.47,
+      "mean": 17.2,
+      "sd": 9.4,
+      "startable_rate": 0.94
+    },
+    "8138": {
+      "basis": "MEASURED",
+      "ceiling": 26.5,
+      "floor": 8.7,
+      "games": 17,
+      "hit10": 0.76,
+      "hit15": 0.59,
+      "mean": 17.8,
+      "sd": 8.9,
+      "startable_rate": 0.94
+    },
+    "8142": {
+      "basis": "MEASURED",
+      "ceiling": 18.4,
+      "floor": 4.6,
+      "games": 14,
+      "hit10": 0.64,
+      "hit15": 0.36,
+      "mean": 13.1,
+      "sd": 7.6,
+      "startable_rate": 0.71
+    },
+    "8144": {
+      "basis": "MEASURED",
+      "ceiling": 25.9,
+      "floor": 10.0,
+      "games": 16,
+      "hit10": 0.88,
+      "hit15": 0.5,
+      "mean": 16.8,
+      "sd": 7.6,
+      "startable_rate": 1.0
+    },
+    "8146": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 6
+    },
+    "8147": {
+      "basis": "MEASURED",
+      "ceiling": 13.5,
+      "floor": 1.0,
+      "games": 12,
+      "hit10": 0.17,
+      "hit15": 0.08,
+      "mean": 6.0,
+      "sd": 5.2,
+      "startable_rate": 0.25
+    },
+    "8148": {
+      "basis": "MEASURED",
+      "ceiling": 23.9,
+      "floor": 5.7,
+      "games": 15,
+      "hit10": 0.67,
+      "hit15": 0.53,
+      "mean": 14.7,
+      "sd": 7.8,
+      "startable_rate": 0.73
+    },
+    "8150": {
+      "basis": "MEASURED",
+      "ceiling": 21.8,
+      "floor": 10.0,
+      "games": 17,
+      "hit10": 0.88,
+      "hit15": 0.53,
+      "mean": 15.5,
+      "sd": 5.9,
+      "startable_rate": 0.82
+    },
+    "8151": {
+      "basis": "MEASURED",
+      "ceiling": 18.8,
+      "floor": 4.7,
+      "games": 17,
+      "hit10": 0.47,
+      "hit15": 0.29,
+      "mean": 11.3,
+      "sd": 6.3,
+      "startable_rate": 0.53
+    },
+    "8154": {
+      "basis": "MEASURED",
+      "ceiling": 5.4,
+      "floor": 2.0,
+      "games": 16,
+      "hit10": 0.12,
+      "hit15": 0.0,
+      "mean": 3.9,
+      "sd": 3.1,
+      "startable_rate": 0.12
+    },
+    "8155": {
+      "basis": "MEASURED",
+      "ceiling": 19.5,
+      "floor": 5.8,
+      "games": 16,
+      "hit10": 0.5,
+      "hit15": 0.44,
+      "mean": 13.0,
+      "sd": 7.4,
+      "startable_rate": 0.62
+    },
+    "8161": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 4
+    },
+    "8167": {
+      "basis": "MEASURED",
+      "ceiling": 22.3,
+      "floor": 5.9,
+      "games": 10,
+      "hit10": 0.5,
+      "hit15": 0.4,
+      "mean": 13.2,
+      "sd": 7.3,
+      "startable_rate": 0.5
+    },
+    "8172": {
+      "basis": "MEASURED",
+      "ceiling": 9.9,
+      "floor": 3.8,
+      "games": 9,
+      "hit10": 0.11,
+      "hit15": 0.11,
+      "mean": 7.0,
+      "sd": 3.7,
+      "startable_rate": 0.11
+    },
+    "8180": {
+      "basis": "MEASURED",
+      "ceiling": 19.5,
+      "floor": 2.6,
+      "games": 12,
+      "hit10": 0.17,
+      "hit15": 0.17,
+      "mean": 8.4,
+      "sd": 6.2,
+      "startable_rate": 0.25
+    },
+    "8183": {
+      "basis": "MEASURED",
+      "ceiling": 31.9,
+      "floor": 10.3,
+      "games": 9,
+      "hit10": 0.89,
+      "hit15": 0.78,
+      "mean": 20.8,
+      "sd": 9.4,
+      "startable_rate": 0.33
+    },
+    "8188": {
+      "basis": "MEASURED",
+      "ceiling": 13.9,
+      "floor": 4.9,
+      "games": 9,
+      "hit10": 0.33,
+      "hit15": 0.11,
+      "mean": 9.0,
+      "sd": 4.4,
+      "startable_rate": 0.33
+    },
+    "8205": {
+      "basis": "MEASURED",
+      "ceiling": 12.8,
+      "floor": 3.0,
+      "games": 13,
+      "hit10": 0.23,
+      "hit15": 0.0,
+      "mean": 6.7,
+      "sd": 3.7,
+      "startable_rate": 0.23
+    },
+    "8210": {
+      "basis": "MEASURED",
+      "ceiling": 11.6,
+      "floor": 3.0,
+      "games": 16,
+      "hit10": 0.25,
+      "hit15": 0.06,
+      "mean": 7.8,
+      "sd": 4.1,
+      "startable_rate": 0.31
+    },
+    "8228": {
+      "basis": "MEASURED",
+      "ceiling": 17.4,
+      "floor": 8.3,
+      "games": 16,
+      "hit10": 0.69,
+      "hit15": 0.31,
+      "mean": 13.6,
+      "sd": 5.4,
+      "startable_rate": 0.81
+    },
+    "8408": {
+      "basis": "MEASURED",
+      "ceiling": 11.7,
+      "floor": 2.9,
+      "games": 16,
+      "hit10": 0.38,
+      "hit15": 0.06,
+      "mean": 8.1,
+      "sd": 5.3,
+      "startable_rate": 0.44
+    },
+    "8676": {
+      "basis": "MEASURED",
+      "ceiling": 15.2,
+      "floor": 1.8,
+      "games": 18,
+      "hit10": 0.33,
+      "hit15": 0.17,
+      "mean": 8.7,
+      "sd": 5.7,
+      "startable_rate": 0.5
+    },
+    "8698": {
+      "basis": "MEASURED",
+      "ceiling": 17.1,
+      "floor": 4.1,
+      "games": 9,
+      "hit10": 0.56,
+      "hit15": 0.22,
+      "mean": 10.5,
+      "sd": 5.4,
+      "startable_rate": 0.22
+    },
+    "8917": {
+      "basis": "MEASURED",
+      "ceiling": 8.8,
+      "floor": 1.0,
+      "games": 15,
+      "hit10": 0.13,
+      "hit15": 0.13,
+      "mean": 5.6,
+      "sd": 4.5,
+      "startable_rate": 0.27
+    },
+    "9221": {
+      "basis": "MEASURED",
+      "ceiling": 37.0,
+      "floor": 7.5,
+      "games": 17,
+      "hit10": 0.76,
+      "hit15": 0.71,
+      "mean": 21.6,
+      "sd": 13.1,
+      "startable_rate": 0.88
+    },
+    "9224": {
+      "basis": "MEASURED",
+      "ceiling": 25.5,
+      "floor": 8.9,
+      "games": 17,
+      "hit10": 0.82,
+      "hit15": 0.59,
+      "mean": 16.6,
+      "sd": 7.1,
+      "startable_rate": 0.82
+    },
+    "9225": {
+      "basis": "MEASURED",
+      "ceiling": 10.4,
+      "floor": 0.7,
+      "games": 11,
+      "hit10": 0.18,
+      "hit15": 0.09,
+      "mean": 4.9,
+      "sd": 5.3,
+      "startable_rate": 0.27
+    },
+    "9226": {
+      "basis": "MEASURED",
+      "ceiling": 26.2,
+      "floor": 16.1,
+      "games": 16,
+      "hit10": 1.0,
+      "hit15": 0.88,
+      "mean": 20.2,
+      "sd": 6.8,
+      "startable_rate": 1.0
+    },
+    "9228": {
+      "basis": "MEASURED",
+      "ceiling": 22.3,
+      "floor": 9.9,
+      "games": 16,
+      "hit10": 0.81,
+      "hit15": 0.44,
+      "mean": 14.3,
+      "sd": 7.2,
+      "startable_rate": 0.31
+    },
+    "9479": {
+      "basis": "MEASURED",
+      "ceiling": 9.2,
+      "floor": 2.2,
+      "games": 13,
+      "hit10": 0.08,
+      "hit15": 0.0,
+      "mean": 5.6,
+      "sd": 2.8,
+      "startable_rate": 0.0
+    },
+    "9480": {
+      "basis": "MEASURED",
+      "ceiling": 14.9,
+      "floor": 3.6,
+      "games": 12,
+      "hit10": 0.5,
+      "hit15": 0.08,
+      "mean": 9.8,
+      "sd": 4.5,
+      "startable_rate": 0.33
+    },
+    "9482": {
+      "basis": "MEASURED",
+      "ceiling": 16.0,
+      "floor": 2.0,
+      "games": 11,
+      "hit10": 0.18,
+      "hit15": 0.18,
+      "mean": 6.7,
+      "sd": 5.2,
+      "startable_rate": 0.18
+    },
+    "9484": {
+      "basis": "MEASURED",
+      "ceiling": 24.4,
+      "floor": 5.9,
+      "games": 8,
+      "hit10": 0.62,
+      "hit15": 0.38,
+      "mean": 14.7,
+      "sd": 9.2,
+      "startable_rate": 0.38
+    },
+    "9486": {
+      "basis": "MEASURED",
+      "ceiling": 8.4,
+      "floor": 1.6,
+      "games": 13,
+      "hit10": 0.08,
+      "hit15": 0.08,
+      "mean": 5.8,
+      "sd": 6.7,
+      "startable_rate": 0.08
+    },
+    "9487": {
+      "basis": "MEASURED",
+      "ceiling": 19.0,
+      "floor": 4.9,
+      "games": 15,
+      "hit10": 0.53,
+      "hit15": 0.4,
+      "mean": 12.3,
+      "sd": 6.7,
+      "startable_rate": 0.6
+    },
+    "9488": {
+      "basis": "MEASURED",
+      "ceiling": 28.1,
+      "floor": 14.4,
+      "games": 17,
+      "hit10": 0.94,
+      "hit15": 0.82,
+      "mean": 21.2,
+      "sd": 7.3,
+      "startable_rate": 0.94
+    },
+    "9493": {
+      "basis": "MEASURED",
+      "ceiling": 35.7,
+      "floor": 14.3,
+      "games": 16,
+      "hit10": 0.94,
+      "hit15": 0.81,
+      "mean": 23.4,
+      "sd": 9.9,
+      "startable_rate": 0.94
+    },
+    "9494": {
+      "basis": "MEASURED",
+      "ceiling": 10.4,
+      "floor": 1.8,
+      "games": 15,
+      "hit10": 0.2,
+      "hit15": 0.13,
+      "mean": 6.2,
+      "sd": 5.4,
+      "startable_rate": 0.53
+    },
+    "9500": {
+      "basis": "MEASURED",
+      "ceiling": 12.9,
+      "floor": 3.2,
+      "games": 16,
+      "hit10": 0.44,
+      "hit15": 0.12,
+      "mean": 8.5,
+      "sd": 4.4,
+      "startable_rate": 0.69
+    },
+    "9501": {
+      "basis": "MEASURED",
+      "ceiling": 8.2,
+      "floor": 1.8,
+      "games": 16,
+      "hit10": 0.12,
+      "hit15": 0.12,
+      "mean": 6.0,
+      "sd": 5.0,
+      "startable_rate": 0.38
+    },
+    "9502": {
+      "basis": "NO 2025 HISTORY",
+      "fallback": "positional median",
+      "games": 0
+    },
+    "9504": {
+      "basis": "MEASURED",
+      "ceiling": 16.5,
+      "floor": 2.8,
+      "games": 13,
+      "hit10": 0.38,
+      "hit15": 0.23,
+      "mean": 9.5,
+      "sd": 6.9,
+      "startable_rate": 0.46
+    },
+    "9508": {
+      "basis": "MEASURED",
+      "ceiling": 17.2,
+      "floor": 1.4,
+      "games": 13,
+      "hit10": 0.15,
+      "hit15": 0.15,
+      "mean": 8.6,
+      "sd": 5.3,
+      "startable_rate": 0.38
+    },
+    "9509": {
+      "basis": "MEASURED",
+      "ceiling": 30.3,
+      "floor": 9.4,
+      "games": 17,
+      "hit10": 0.82,
+      "hit15": 0.71,
+      "mean": 21.8,
+      "sd": 10.0,
+      "startable_rate": 0.94
+    },
+    "9511": {
+      "basis": "MEASURED",
+      "ceiling": 7.6,
+      "floor": 1.3,
+      "games": 12,
+      "hit10": 0.08,
+      "hit15": 0.0,
+      "mean": 4.6,
+      "sd": 3.0,
+      "startable_rate": 0.08
+    },
+    "96": {
+      "basis": "MEASURED",
+      "ceiling": 21.5,
+      "floor": 8.4,
+      "games": 16,
+      "hit10": 0.75,
+      "hit15": 0.5,
+      "mean": 14.6,
+      "sd": 6.0,
+      "startable_rate": 0.31
+    },
+    "9753": {
+      "basis": "MEASURED",
+      "ceiling": 18.7,
+      "floor": 4.7,
+      "games": 16,
+      "hit10": 0.56,
+      "hit15": 0.25,
+      "mean": 11.3,
+      "sd": 6.5,
+      "startable_rate": 0.62
+    },
+    "9754": {
+      "basis": "MEASURED",
+      "ceiling": 23.8,
+      "floor": 6.9,
+      "games": 12,
+      "hit10": 0.75,
+      "hit15": 0.42,
+      "mean": 14.3,
+      "sd": 6.3,
+      "startable_rate": 0.75
+    },
+    "9756": {
+      "basis": "MEASURED",
+      "ceiling": 15.4,
+      "floor": 4.6,
+      "games": 13,
+      "hit10": 0.54,
+      "hit15": 0.23,
+      "mean": 10.4,
+      "sd": 4.9,
+      "startable_rate": 0.54
+    },
+    "9758": {
+      "basis": "MEASURED",
+      "ceiling": 22.7,
+      "floor": 10.0,
+      "games": 14,
+      "hit10": 0.86,
+      "hit15": 0.43,
+      "mean": 15.5,
+      "sd": 6.1,
+      "startable_rate": 0.21
+    },
+    "9997": {
+      "basis": "MEASURED",
+      "ceiling": 21.2,
+      "floor": 8.6,
+      "games": 17,
+      "hit10": 0.82,
+      "hit15": 0.29,
+      "mean": 14.3,
+      "sd": 7.3,
+      "startable_rate": 0.88
+    }
+  }
+}

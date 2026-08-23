@@ -1,0 +1,202 @@
+[
+  {
+    "avatar": "45072edecd9a15df28501d67108c0955",
+    "display_name": "BIGCTPLAYA",
+    "is_bot": false,
+    "is_owner": null,
+    "league_id": "1257072370535907330",
+    "metadata": {
+      "allow_pn": "off",
+      "allow_sms": "on",
+      "archived": "on",
+      "league_report_pn": "off",
+      "mascot_message": "on",
+      "mention_pn": "on",
+      "player_like_pn": "on",
+      "player_nickname_update": "off",
+      "team_name_update": "off",
+      "trade_block_pn": "on",
+      "transaction_commissioner": "on",
+      "transaction_free_agent": "off",
+      "transaction_trade": "on",
+      "transaction_waiver": "off",
+      "user_message_pn": "off"
+    },
+    "settings": null,
+    "user_id": "343175183898624000"
+  },
+  {
+    "avatar": "f73401e7bf8d3b8182e5186b2103f378",
+    "display_name": "davismendez",
+    "is_bot": false,
+    "is_owner": null,
+    "league_id": "1257072370535907330",
+    "metadata": {
+      "allow_pn": "on",
+      "archived": "off",
+      "mention_pn": "on",
+      "team_name": "Ill probs win this "
+    },
+    "settings": null,
+    "user_id": "550738520182611968"
+  },
+  {
+    "avatar": "7acb1054a61ea6cd2719e6fb08229a91",
+    "display_name": "Antonio93",
+    "is_bot": false,
+    "is_owner": true,
+    "league_id": "1257072370535907330",
+    "metadata": {
+      "allow_pn": "on",
+      "archived": "off",
+      "avatar": "https://sleepercdn.com/uploads/5d12d0ea311ec50a72ae9c1f600c67ad.jpg",
+      "join_voice_pn": "on",
+      "league_report_pn": "on",
+      "mascot_message": "on",
+      "mention_pn": "on",
+      "player_like_pn": "on",
+      "player_nickname_update": "on",
+      "team_name": "Mahomes Alone",
+      "team_name_update": "on",
+      "trade_block_pn": "on",
+      "transaction_commissioner": "on",
+      "transaction_free_agent": "on",
+      "transaction_trade": "on",
+      "transaction_waiver": "on",
+      "user_message_pn": "on"
+    },
+    "settings": null,
+    "user_id": "737314015986008064"
+  },
+  {
+    "avatar": "15d7cf259bc30eab8f6120f45f652fb6",
+    "display_name": "LewisS19",
+    "is_bot": false,
+    "is_owner": false,
+    "league_id": "1257072370535907330",
+    "metadata": {
+      "allow_pn": "on",
+      "archived": "off",
+      "mention_pn": "on"
+    },
+    "settings": null,
+    "user_id": "737850069386223616"
+  },
+  {
+    "avatar": "82aec8e811b839b8ec25d7b458afd57b",
+    "display_name": "Lpatel99",
+    "is_bot": false,
+    "is_owner": null,
+    "league_id": "1257072370535907330",
+    "metadata": {
+      "allow_pn": "on",
+      "allow_sms": "on",
+      "mention_pn": "on",
+      "team_name": "Rex"
+    },
+    "settings": null,
+    "user_id": "857698123148009472"
+  },
+  {
+    "avatar": "d55d1f7075eda01948318de4af616075",
+    "display_name": "bearde66",
+    "is_bot": false,
+    "is_owner": null,
+    "league_id": "1257072370535907330",
+    "metadata": {
+      "allow_pn": "on",
+      "allow_sms": "on",
+      "archived": "on",
+      "avatar": "https://sleepercdn.com/uploads/ebda2fad6b0733def4d53b9ec12b6e91.jpg",
+      "mention_pn": "on",
+      "team_name": "The Empire Strikes Dak"
+    },
+    "settings": null,
+    "user_id": "859520089102336000"
+  },
+  {
+    "avatar": "34d4e23b942b922f3edf7ede5da1dcf3",
+    "display_name": "Allos",
+    "is_bot": false,
+    "is_owner": false,
+    "league_id": "1257072370535907330",
+    "metadata": {
+      "allow_pn": "on",
+      "allow_sms": "on",
+      "archived": "on",
+      "mention_pn": "on",
+      "team_name": "Burrow down"
+    },
+    "settings": null,
+    "user_id": "994330272524972032"
+  },
+  {
+    "avatar": "f0edbf4278f53f9425db175073df6584",
+    "display_name": "Maestro001",
+    "is_bot": false,
+    "is_owner": null,
+    "league_id": "1257072370535907330",
+    "metadata": {
+      "allow_pn": "on",
+      "mention_pn": "on"
+    },
+    "settings": null,
+    "user_id": "994448889535090688"
+  },
+  {
+    "avatar": "6532e07c9218d568941b279bf2bbb93b",
+    "display_name": "PapiTheGallant",
+    "is_bot": false,
+    "is_owner": false,
+    "league_id": "1257072370535907330",
+    "metadata": {
+      "allow_pn": "on",
+      "mention_pn": "on",
+      "team_name": "Livin' LaPorta Loca"
+    },
+    "settings": null,
+    "user_id": "1017597133878407168"
+  },
+  {
+    "avatar": "32921f4caa423aaf9e870d4bc1347b1f",
+    "display_name": "Gunit28",
+    "is_bot": false,
+    "is_owner": null,
+    "league_id": "1257072370535907330",
+    "metadata": {
+      "allow_pn": "on",
+      "mention_pn": "on",
+      "team_name": "Chase-Down A** Up"
+    },
+    "settings": null,
+    "user_id": "1154602560041406464"
+  },
+  {
+    "avatar": "3731212218300e5e7a9ebc50f3b2cfcc",
+    "display_name": "PeepThis11",
+    "is_bot": false,
+    "is_owner": null,
+    "league_id": "1257072370535907330",
+    "metadata": {
+      "allow_pn": "on",
+      "mention_pn": "on",
+      "team_name": "Six-Seven"
+    },
+    "settings": null,
+    "user_id": "1200857591513612288"
+  },
+  {
+    "avatar": "d55d1f7075eda01948318de4af616075",
+    "display_name": "mstasik",
+    "is_bot": false,
+    "is_owner": null,
+    "league_id": "1257072370535907330",
+    "metadata": {
+      "allow_pn": "on",
+      "mention_pn": "on",
+      "team_name": "TeamTonyTime"
+    },
+    "settings": null,
+    "user_id": "1262122812240297984"
+  }
+]

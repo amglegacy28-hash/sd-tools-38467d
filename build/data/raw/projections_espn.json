@@ -1,0 +1,2167 @@
+{
+  "players": {
+    "A.J. Brown": {
+      "espn_default": 284.5,
+      "pos": "WR",
+      "pts": 248.0
+    },
+    "AJ Barner": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 113.5
+    },
+    "Aaron Jones Sr.": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 176.4
+    },
+    "Aaron Rodgers": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 217.7
+    },
+    "Adam Prentice": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 10.5
+    },
+    "Adam Randall": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 25.0
+    },
+    "Adam Trautman": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 28.7
+    },
+    "Adonai Mitchell": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 125.7
+    },
+    "Alec Ingold": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 16.4
+    },
+    "Alec Pierce": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 185.9
+    },
+    "Alvin Kamara": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 117.0
+    },
+    "Amon-Ra St. Brown": {
+      "espn_default": 205.9,
+      "pos": "WR",
+      "pts": 323.5
+    },
+    "Andrei Iosivas": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 57.9
+    },
+    "Andrew Beck": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 8.4
+    },
+    "Antonio Williams": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 76.8
+    },
+    "Arian Smith": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 3.5
+    },
+    "Ashton Dulin": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 29.5
+    },
+    "Ashton Jeanty": {
+      "espn_default": 277.4,
+      "pos": "RB",
+      "pts": 279.7
+    },
+    "Austin Hooper": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 43.3
+    },
+    "Baker Mayfield": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 260.0
+    },
+    "Barion Brown": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 11.8
+    },
+    "Ben Sims": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 15.4
+    },
+    "Ben Sinnott": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 26.5
+    },
+    "Ben Skowronek": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 3.9
+    },
+    "Bhayshul Tuten": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 204.2
+    },
+    "Bijan Robinson": {
+      "espn_default": 277.0,
+      "pos": "RB",
+      "pts": 351.4
+    },
+    "Blake Corum": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 158.9
+    },
+    "Bo Melton": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 11.5
+    },
+    "Bo Nix": {
+      "espn_default": 296.2,
+      "pos": "QB",
+      "pts": 292.3
+    },
+    "Braelon Allen": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 75.9
+    },
+    "Breece Hall": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 271.7
+    },
+    "Brenen Thompson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 27.5
+    },
+    "Brenton Strange": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 142.1
+    },
+    "Brevyn Spann-Ford": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 9.4
+    },
+    "Brian Robinson Jr.": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 93.5
+    },
+    "Brian Thomas Jr.": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 176.2
+    },
+    "British Brooks": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 2.4
+    },
+    "Brock Bowers": {
+      "espn_default": 142.1,
+      "pos": "TE",
+      "pts": 240.1
+    },
+    "Brock Purdy": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 289.2
+    },
+    "Brock Wright": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 18.6
+    },
+    "Bryce Lance": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 39.4
+    },
+    "Bryce Young": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 234.5
+    },
+    "Brycen Tremayne": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 7.8
+    },
+    "Bucky Irving": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 205.8
+    },
+    "C.J. Stroud": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 243.4
+    },
+    "CJ Daniels": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 9.6
+    },
+    "CJ Dippre": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 9.2
+    },
+    "Cade Klubnik": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 8.0
+    },
+    "Cade Otton": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 101.7
+    },
+    "Cade Stover": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 34.7
+    },
+    "Caleb Douglas": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 115.3
+    },
+    "Caleb Williams": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 277.8
+    },
+    "Calvin Austin III": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 15.6
+    },
+    "Calvin Ridley": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 135.3
+    },
+    "Cam Skattebo": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 229.6
+    },
+    "Cam Ward": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 219.1
+    },
+    "Carnell Tate": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 202.2
+    },
+    "Carson Beck": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 29.0
+    },
+    "Cedric Tillman": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 7.3
+    },
+    "CeeDee Lamb": {
+      "espn_default": 190.2,
+      "pos": "WR",
+      "pts": 292.9
+    },
+    "Charlie Kolar": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 36.1
+    },
+    "Charlie Woerner": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 8.2
+    },
+    "Chase Brown": {
+      "espn_default": 265.0,
+      "pos": "RB",
+      "pts": 270.8
+    },
+    "Chig Okonkwo": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 120.9
+    },
+    "Chimere Dike": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 34.6
+    },
+    "Chris Bell": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 61.2
+    },
+    "Chris Brooks": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 35.9
+    },
+    "Chris Godwin Jr.": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 156.6
+    },
+    "Chris Manhertz": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 4.1
+    },
+    "Chris Olave": {
+      "espn_default": 13176.3,
+      "pos": "WR",
+      "pts": 249.7
+    },
+    "Chris Rodriguez Jr.": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 71.1
+    },
+    "Christian Kirk": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 37.1
+    },
+    "Christian McCaffrey": {
+      "espn_default": 264.0,
+      "pos": "RB",
+      "pts": 341.7
+    },
+    "Christian Watson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 184.7
+    },
+    "Chuba Hubbard": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 172.0
+    },
+    "Colbie Young": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 39.5
+    },
+    "Colby Parkinson": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 75.3
+    },
+    "Cole Kmet": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 53.4
+    },
+    "Colston Loveland": {
+      "espn_default": 125.7,
+      "pos": "TE",
+      "pts": 205.1
+    },
+    "Connor Heyward": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 10.2
+    },
+    "Cooper Kupp": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 101.3
+    },
+    "Courtland Sutton": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 203.4
+    },
+    "Cyrus Allen": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 43.9
+    },
+    "D'Andre Swift": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 210.5
+    },
+    "DJ Giddens": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 35.9
+    },
+    "DJ Moore": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 208.3
+    },
+    "DK Metcalf": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 195.5
+    },
+    "Dak Prescott": {
+      "espn_default": 286.8,
+      "pos": "QB",
+      "pts": 284.3
+    },
+    "Dallas Goedert": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 176.5
+    },
+    "Dalton Kincaid": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 154.7
+    },
+    "Dalton Schultz": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 132.9
+    },
+    "Daniel Bellinger": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 26.7
+    },
+    "Daniel Jones": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 263.2
+    },
+    "Darius Cooper": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 8.5
+    },
+    "Darius Slayton": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 88.5
+    },
+    "Darnell Mooney": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 63.6
+    },
+    "Darnell Washington": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 72.4
+    },
+    "Darren Waller": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 114.1
+    },
+    "Davante Adams": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 232.0
+    },
+    "David Montgomery": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 191.5
+    },
+    "David Njoku": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 104.2
+    },
+    "Davis Allen": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 19.5
+    },
+    "Davis Mills": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 8.3
+    },
+    "Dawson Knox": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 67.7
+    },
+    "De'Von Achane": {
+      "espn_default": 291.5,
+      "pos": "RB",
+      "pts": 292.7
+    },
+    "De'Zhaun Stribling": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 129.9
+    },
+    "DeMario Douglas": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 61.4
+    },
+    "DeVonta Smith": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 238.7
+    },
+    "Deebo Samuel Sr.": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 160.0
+    },
+    "Demarcus Robinson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 9.5
+    },
+    "Demond Claiborne": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 16.7
+    },
+    "Denzel Boston": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 139.9
+    },
+    "Derius Davis": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 10.3
+    },
+    "Derrick Henry": {
+      "espn_default": 253.4,
+      "pos": "RB",
+      "pts": 273.9
+    },
+    "Deshaun Watson": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 122.4
+    },
+    "Devaughn Vele": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 123.4
+    },
+    "Devontez Walker": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 43.9
+    },
+    "Dont'e Thornton Jr.": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 16.0
+    },
+    "Dontayvion Wicks": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 107.9
+    },
+    "Drake London": {
+      "espn_default": 269.8,
+      "pos": "WR",
+      "pts": 268.9
+    },
+    "Drake Maye": {
+      "espn_default": 319.4,
+      "pos": "QB",
+      "pts": 316.8
+    },
+    "Drew Allar": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 9.4
+    },
+    "Drew Lock": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 7.9
+    },
+    "Drew Ogletree": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 8.8
+    },
+    "Drew Sample": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 38.7
+    },
+    "Durham Smythe": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 23.5
+    },
+    "Dyami Brown": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 46.7
+    },
+    "Dylan Sampson": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 86.0
+    },
+    "Eli Raridon": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 37.0
+    },
+    "Eli Stowers": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 28.9
+    },
+    "Elic Ayomanor": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 23.9
+    },
+    "Elijah Arroyo": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 60.5
+    },
+    "Elijah Higgins": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 42.9
+    },
+    "Elijah Sarratt": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 33.5
+    },
+    "Emanuel Wilson": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 9.9
+    },
+    "Emari Demercado": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 63.6
+    },
+    "Emeka Egbuka": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 227.7
+    },
+    "Emmett Johnson": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 46.4
+    },
+    "Eric Saubert": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 8.6
+    },
+    "Erick All Jr.": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 60.3
+    },
+    "Evan Engram": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 106.3
+    },
+    "Fernando Mendoza": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 185.3
+    },
+    "Foster Moreau": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 19.0
+    },
+    "Gardner Minshew II": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 7.1
+    },
+    "Garrett Wilson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 248.6
+    },
+    "Geno Smith": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 226.9
+    },
+    "George Holani": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 41.1
+    },
+    "George Kittle": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 176.3
+    },
+    "George Pickens": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 237.9
+    },
+    "Germie Bernard": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 108.3
+    },
+    "Greg Dortch": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 14.1
+    },
+    "Greg Dulcich": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 119.0
+    },
+    "Gunnar Helm": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 126.9
+    },
+    "Harold Fannin Jr.": {
+      "espn_default": 104.6,
+      "pos": "TE",
+      "pts": 187.1
+    },
+    "Hollywood Brown": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 33.7
+    },
+    "Hunter Henry": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 149.5
+    },
+    "Hunter Luepke": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 25.0
+    },
+    "Ian Thomas": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 8.3
+    },
+    "Isaac TeSlaa": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 72.7
+    },
+    "Isaiah Bond": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 30.4
+    },
+    "Isaiah Davis": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 50.6
+    },
+    "Isaiah Likely": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 155.2
+    },
+    "Isaiah Williams": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 43.1
+    },
+    "Isiah Pacheco": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 123.3
+    },
+    "J.J. McCarthy": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 39.3
+    },
+    "J.K. Dobbins": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 174.1
+    },
+    "Ja'Kobi Lane": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 100.2
+    },
+    "Ja'Marr Chase": {
+      "espn_default": 217.8,
+      "pos": "WR",
+      "pts": 336.4
+    },
+    "Ja'Tavion Sanders": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 42.2
+    },
+    "Jack Bech": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 65.8
+    },
+    "Jack Stoll": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 7.5
+    },
+    "Jackson Hawes": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 27.3
+    },
+    "Jacoby Brissett": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 196.9
+    },
+    "Jacory Croskey-Merritt": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 158.5
+    },
+    "Jadarian Price": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 193.5
+    },
+    "Jahan Dotson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 92.5
+    },
+    "Jahdae Walker": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 8.6
+    },
+    "Jahmyr Gibbs": {
+      "espn_default": 297.1,
+      "pos": "RB",
+      "pts": 364.1
+    },
+    "Jake Browning": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 10.1
+    },
+    "Jake Ferguson": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 166.0
+    },
+    "Jake Tonges": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 32.7
+    },
+    "Jakobi Meyers": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 181.5
+    },
+    "Jalen Coker": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 146.8
+    },
+    "Jalen Hurts": {
+      "espn_default": 320.3,
+      "pos": "QB",
+      "pts": 317.4
+    },
+    "Jalen McMillan": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 132.2
+    },
+    "Jalen Nailor": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 123.8
+    },
+    "Jalen Reagor": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 3.4
+    },
+    "Jalen Royals": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 18.3
+    },
+    "Jalen Tolbert": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 85.4
+    },
+    "Jameis Winston": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 8.5
+    },
+    "James Cook III": {
+      "espn_default": 279.6,
+      "pos": "RB",
+      "pts": 278.2
+    },
+    "Jameson Williams": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 208.1
+    },
+    "Jared Goff": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 267.1
+    },
+    "Jarrett Stidham": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 10.3
+    },
+    "Jauan Jennings": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 114.2
+    },
+    "Javonte Williams": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 258.3
+    },
+    "Jawhar Jordan": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 6.9
+    },
+    "Jaxon Smith-Njigba": {
+      "espn_default": 210.0,
+      "pos": "WR",
+      "pts": 326.1
+    },
+    "Jaxson Dart": {
+      "espn_default": 300.3,
+      "pos": "QB",
+      "pts": 297.3
+    },
+    "Jayden Daniels": {
+      "espn_default": 318.4,
+      "pos": "QB",
+      "pts": 314.0
+    },
+    "Jayden Reed": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 169.6
+    },
+    "Jaydon Blue": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 54.6
+    },
+    "Jaylen Waddle": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 212.5
+    },
+    "Jaylen Warren": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 191.2
+    },
+    "Jaylen Wright": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 43.2
+    },
+    "Jaylin Lane": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 34.6
+    },
+    "Jaylin Noel": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 111.1
+    },
+    "Jeremiyah Love": {
+      "espn_default": 278.5,
+      "pos": "RB",
+      "pts": 277.5
+    },
+    "Jeremy Ruckert": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 25.2
+    },
+    "Jerry Jeudy": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 138.0
+    },
+    "Jimmy Horn Jr.": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 21.1
+    },
+    "Joe Burrow": {
+      "espn_default": 304.7,
+      "pos": "QB",
+      "pts": 301.2
+    },
+    "Joe Flacco": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 10.4
+    },
+    "Joe Royer": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 16.2
+    },
+    "John Bates": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 34.4
+    },
+    "Johnny Mundt": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 8.2
+    },
+    "Jonah Coleman": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 74.1
+    },
+    "Jonathan Mingo": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 8.4
+    },
+    "Jonathan Taylor": {
+      "espn_default": 265.8,
+      "pos": "RB",
+      "pts": 315.1
+    },
+    "Jonathon Brooks": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 170.0
+    },
+    "Jordan Addison": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 169.9
+    },
+    "Jordan James": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 29.1
+    },
+    "Jordan Love": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 257.1
+    },
+    "Jordan Mason": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 149.7
+    },
+    "Jordan Whittington": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 31.2
+    },
+    "Jordyn Tyson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 99.5
+    },
+    "Josh Allen": {
+      "espn_default": 369.7,
+      "pos": "QB",
+      "pts": 364.1
+    },
+    "Josh Cuevas": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 8.6
+    },
+    "Josh Downs": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 156.8
+    },
+    "Josh Jacobs": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 258.3
+    },
+    "Josh Oliver": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 38.3
+    },
+    "Josh Whyle": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 8.8
+    },
+    "Joshua Dobbs": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 8.6
+    },
+    "Joshua Palmer": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 44.6
+    },
+    "Justice Hill": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 114.0
+    },
+    "Justin Fields": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 10.5
+    },
+    "Justin Herbert": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 282.0
+    },
+    "Justin Jefferson": {
+      "espn_default": 293.7,
+      "pos": "WR",
+      "pts": 292.8
+    },
+    "Justin Joly": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 9.5
+    },
+    "Justin Watson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 25.7
+    },
+    "Juwan Johnson": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 143.1
+    },
+    "KC Concepcion": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 153.1
+    },
+    "KaVontae Turpin": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 63.5
+    },
+    "Kaden Wetjen": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 1.6
+    },
+    "Kaelon Black": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 60.3
+    },
+    "Kaleb Johnson": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 4.8
+    },
+    "Kalif Raymond": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 46.4
+    },
+    "Kameron Johnson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 1.8
+    },
+    "Kayshon Boutte": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 87.3
+    },
+    "Kaytron Allen": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 15.7
+    },
+    "KeAndre Lambert-Smith": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 17.8
+    },
+    "Keaton Mitchell": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 93.3
+    },
+    "Keenan Allen": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 124.0
+    },
+    "Kendre Miller": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 15.7
+    },
+    "Kendrick Bourne": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 50.2
+    },
+    "Kenneth Walker III": {
+      "espn_default": 278.4,
+      "pos": "RB",
+      "pts": 273.0
+    },
+    "Kenny Gainwell": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 176.6
+    },
+    "Kenny Pickett": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 8.9
+    },
+    "Kenyon Sadiq": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 153.0
+    },
+    "Keon Coleman": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 74.7
+    },
+    "Kevin Coleman Jr.": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 32.8
+    },
+    "Khalil Shakir": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 169.5
+    },
+    "Kimani Vidal": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 36.3
+    },
+    "Kirk Cousins": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 45.2
+    },
+    "Ko Kieft": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 9.0
+    },
+    "Konata Mumpfield": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 29.2
+    },
+    "Kyle Allen": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 7.9
+    },
+    "Kyle Juszczyk": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 44.8
+    },
+    "Kyle Monangai": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 175.2
+    },
+    "Kyle Pitts Sr.": {
+      "espn_default": 104.7,
+      "pos": "TE",
+      "pts": 184.7
+    },
+    "Kyle Williams": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 22.1
+    },
+    "Kyler Murray": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 247.8
+    },
+    "Kyren Williams": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 231.6
+    },
+    "Ladd McConkey": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 220.3
+    },
+    "Lamar Jackson": {
+      "espn_default": 322.9,
+      "pos": "QB",
+      "pts": 320.8
+    },
+    "LeQuint Allen Jr.": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 45.9
+    },
+    "Lewis Bond": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 8.3
+    },
+    "Luke Farrell": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 9.9
+    },
+    "Luke McCaffrey": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 17.6
+    },
+    "Luke Musgrave": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 16.2
+    },
+    "Luke Schoonmaker": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 27.6
+    },
+    "Luther Burden III": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 205.1
+    },
+    "Mac Jones": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 8.5
+    },
+    "Mack Hollins": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 28.0
+    },
+    "Makai Lemon": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 153.9
+    },
+    "Malachi Corley": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 9.1
+    },
+    "Malachi Fields": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 59.7
+    },
+    "Malik Benson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 48.2
+    },
+    "Malik Nabers": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 245.1
+    },
+    "Malik Washington": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 112.9
+    },
+    "Malik Willis": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 237.1
+    },
+    "MarShawn Lloyd": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 86.1
+    },
+    "Marcus Mariota": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 10.1
+    },
+    "Mark Andrews": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 168.8
+    },
+    "Marlin Klein": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 8.9
+    },
+    "Marvin Harrison Jr.": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 193.2
+    },
+    "Marvin Mims Jr.": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 66.8
+    },
+    "Mason Taylor": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 65.9
+    },
+    "Mason Tipton": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 16.7
+    },
+    "Matthew Golden": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 183.8
+    },
+    "Matthew Hibner": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 8.6
+    },
+    "Matthew Stafford": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 292.0
+    },
+    "Max Bredeson": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 9.6
+    },
+    "Max Klare": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 9.9
+    },
+    "Michael Burton": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 10.0
+    },
+    "Michael Mayer": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 80.8
+    },
+    "Michael Penix Jr.": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 112.3
+    },
+    "Michael Pittman Jr.": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 197.1
+    },
+    "Michael Wilson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 176.1
+    },
+    "Mike Evans": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 181.9
+    },
+    "Mike Gesicki": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 85.5
+    },
+    "Mike Washington Jr.": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 64.9
+    },
+    "Mitchell Tinsley": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 9.7
+    },
+    "Mitchell Trubisky": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 7.7
+    },
+    "Mo Alie-Cox": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 27.4
+    },
+    "Najee Harris": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 49.8
+    },
+    "Nate Adkins": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 18.6
+    },
+    "Nate Boerkircher": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 18.4
+    },
+    "Nicholas Singleton": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 19.7
+    },
+    "Nick Mullens": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 10.2
+    },
+    "Nick Westbrook-Ikhine": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 17.2
+    },
+    "Nico Collins": {
+      "espn_default": 13375.1,
+      "pos": "WR",
+      "pts": 248.1
+    },
+    "Noah Fant": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 36.0
+    },
+    "Noah Gray": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 60.7
+    },
+    "Odell Beckham Jr.": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 24.0
+    },
+    "Olamide Zaccheaus": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 32.0
+    },
+    "Ollie Gordon II": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 34.8
+    },
+    "Omar Cooper Jr.": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 66.9
+    },
+    "Omarion Hampton": {
+      "espn_default": 262.4,
+      "pos": "RB",
+      "pts": 261.1
+    },
+    "Oronde Gadsden": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 77.1
+    },
+    "Oscar Delp": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 18.0
+    },
+    "Parker Washington": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 183.8
+    },
+    "Pat Bryant": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 72.6
+    },
+    "Pat Freiermuth": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 136.2
+    },
+    "Patrick Mahomes": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 288.5
+    },
+    "Patrick Ricard": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 7.4
+    },
+    "Payne Durham": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 18.0
+    },
+    "Phil Mafah": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 28.1
+    },
+    "Puka Nacua": {
+      "espn_default": 233.4,
+      "pos": "WR",
+      "pts": 356.0
+    },
+    "Quentin Johnston": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 165.1
+    },
+    "Quinn Ewers": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 7.2
+    },
+    "Quinshon Judkins": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 225.3
+    },
+    "RJ Harvey": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 148.7
+    },
+    "Rachaad White": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 163.8
+    },
+    "Rashee Rice": {
+      "espn_default": 224.8,
+      "pos": "WR",
+      "pts": 270.1
+    },
+    "Rashid Shaheed": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 139.0
+    },
+    "Rashod Bateman": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 122.2
+    },
+    "Ray Davis": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 35.9
+    },
+    "Reggie Gilliam": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 7.9
+    },
+    "Reggie Virgil": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 8.1
+    },
+    "Rhamondre Stevenson": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 202.1
+    },
+    "Rico Dowdle": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 185.6
+    },
+    "Riley Leonard": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 9.3
+    },
+    "Riley Nowakowski": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 8.1
+    },
+    "Roman Wilson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 28.8
+    },
+    "Rome Odunze": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 211.5
+    },
+    "Romeo Doubs": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 149.8
+    },
+    "Ryan Flournoy": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 89.1
+    },
+    "Sam Darnold": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 240.5
+    },
+    "Sam Howell": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 9.4
+    },
+    "Sam LaPorta": {
+      "espn_default": 110.3,
+      "pos": "TE",
+      "pts": 188.3
+    },
+    "Sam Roush": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 8.7
+    },
+    "Samaje Perine": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 99.8
+    },
+    "Saquon Barkley": {
+      "espn_default": 305.4,
+      "pos": "RB",
+      "pts": 272.8
+    },
+    "Savion Williams": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 59.7
+    },
+    "Sean Tucker": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 36.1
+    },
+    "Seth McGowan": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 15.6
+    },
+    "Shedeur Sanders": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 96.8
+    },
+    "Skyler Bell": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 28.4
+    },
+    "Spencer Rattler": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 8.9
+    },
+    "Stefon Diggs": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 163.4
+    },
+    "T.J. Hockenson": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 157.9
+    },
+    "Tahj Brooks": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 18.3
+    },
+    "Tai Felton": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 8.8
+    },
+    "Tank Bigsby": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 63.9
+    },
+    "Tank Dell": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 152.1
+    },
+    "Tanner Hudson": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 29.3
+    },
+    "Tanner Koziol": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 9.2
+    },
+    "Tanner McKee": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 9.4
+    },
+    "Ted Hurst III": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 64.6
+    },
+    "Tee Higgins": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 218.5
+    },
+    "Terrance Ferguson": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 135.6
+    },
+    "Terry McLaurin": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 217.7
+    },
+    "Tetairoa McMillan": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 235.7
+    },
+    "Tez Johnson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 21.4
+    },
+    "Theo Johnson": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 61.6
+    },
+    "Tip Reiman": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 8.4
+    },
+    "Tommy DeVito": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 10.2
+    },
+    "Tommy Tremble": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 43.5
+    },
+    "Tony Pollard": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 185.6
+    },
+    "Tory Horton": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 64.9
+    },
+    "Travis Etienne Jr.": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 245.2
+    },
+    "Travis Hunter": {
+      "espn_default": 188.0,
+      "pos": "WR",
+      "pts": 111.8
+    },
+    "Travis Kelce": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 177.1
+    },
+    "Tre Tucker": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 136.4
+    },
+    "Tre' Harris": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 89.7
+    },
+    "TreVeyon Henderson": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 196.7
+    },
+    "Trevor Etienne": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 14.8
+    },
+    "Trevor Lawrence": {
+      "espn_default": 288.3,
+      "pos": "QB",
+      "pts": 285.6
+    },
+    "Trey Lance": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 9.4
+    },
+    "Trey McBride": {
+      "espn_default": 134.1,
+      "pos": "TE",
+      "pts": 241.3
+    },
+    "Treylon Burks": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 44.7
+    },
+    "Troy Franklin": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 50.5
+    },
+    "Tua Tagovailoa": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 113.5
+    },
+    "Tucker Kraft": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 180.4
+    },
+    "Tutu Atwell": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 57.0
+    },
+    "Ty Johnson": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 84.1
+    },
+    "Ty Simpson": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 10.0
+    },
+    "Tyjae Spears": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 154.3
+    },
+    "Tyler Allgeier": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 90.9
+    },
+    "Tyler Conklin": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 8.9
+    },
+    "Tyler Higbee": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 38.1
+    },
+    "Tyler Huntley": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 8.6
+    },
+    "Tyler Shough": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 263.2
+    },
+    "Tyler Warren": {
+      "espn_default": 125.9,
+      "pos": "TE",
+      "pts": 209.9
+    },
+    "Tyquan Thornton": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 77.2
+    },
+    "Tyrell Shavers": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 10.9
+    },
+    "Tyrod Taylor": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 9.2
+    },
+    "Tyrone Tracy Jr.": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 66.4
+    },
+    "Tyson Bagent": {
+      "espn_default": 0,
+      "pos": "QB",
+      "pts": 9.9
+    },
+    "Wan'Dale Robinson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 174.9
+    },
+    "Will Kacmarek": {
+      "espn_default": 0,
+      "pos": "TE",
+      "pts": 39.9
+    },
+    "Will Shipley": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 27.6
+    },
+    "Woody Marks": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 126.9
+    },
+    "Xavier Hutchinson": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 66.2
+    },
+    "Xavier Legette": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 93.7
+    },
+    "Xavier Smith": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 9.9
+    },
+    "Xavier Worthy": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 172.9
+    },
+    "Zach Charbonnet": {
+      "espn_default": 0,
+      "pos": "RB",
+      "pts": 133.6
+    },
+    "Zachariah Branch": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 80.3
+    },
+    "Zavion Thomas": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 34.9
+    },
+    "Zay Flowers": {
+      "espn_default": 0,
+      "pos": "WR",
+      "pts": 238.4
+    }
+  },
+  "pulled_at_utc": "2026-08-23T04:44:49.173678Z",
+  "source": "ESPN kona_player_info, 2026 season projections, rescored to full PPR / 4pt pass TD",
+  "url": "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/2026/players?view=kona_player_info"
+}
