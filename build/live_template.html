@@ -140,6 +140,24 @@ tr.row:hover td{background:var(--panel-2)}
 .ctl select{font-family:"IBM Plex Sans",sans-serif;font-size:14px;padding:6px 8px;min-height:36px;
   background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px}
 .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.step{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)}
+.step:last-of-type{border-bottom:none}
+.stepn{flex:none;width:24px;height:24px;border-radius:50%;background:var(--gold);color:var(--ground);
+  font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;display:flex;
+  align-items:center;justify-content:center;margin-top:2px}
+.stepb{flex:1;min-width:0}
+.stept{font-size:17px;line-height:1.3}
+.steps2{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);margin-top:3px;line-height:1.45}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.04em;
+  padding:5px 9px;border-radius:999px;background:var(--panel-2);color:var(--ink-2);
+  border:1px solid var(--line);white-space:nowrap}
+.chip b{font-size:12px;color:var(--ink)}
+.chip.up{background:var(--good-bg);border-color:var(--good);color:var(--good)}
+.chip.up b{color:var(--good)}
+.chip.down{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.chip.down b{color:var(--bad)}
+.hero .nm+.nm{margin-top:-2px}
 th.sortable{cursor:pointer;white-space:nowrap}
 th.sortable:hover{color:var(--ink)}
 th.sortable.on{color:var(--gold)}
@@ -202,6 +220,7 @@ footer{margin:22px 0 8px;padding-top:12px;border-top:1px solid var(--line);
 <nav>
   <button data-v="PICK"   aria-pressed="true">PICK</button>
   <button data-v="BOARD"  aria-pressed="false">BOARD</button>
+  <button data-v="MOVES"  aria-pressed="false">MOVES</button>
   <button data-v="LINEUP" aria-pressed="false">LINEUP</button>
   <button data-v="TEAM"   aria-pressed="false">TEAM</button>
   <button data-v="LEAGUE" aria-pressed="false">LEAGUE</button>
@@ -781,10 +800,19 @@ function onBye(p,wk){ return p&&p.bye===wk; }
 // uses the season projection spread over the 17 weeks he actually plays. Summing
 // weeklies to make a season number would quietly inflate exactly the players
 // whose playing time is least certain.
+const _SPW=new WeakMap();
 function spw(p,wk){
   if(!p||p.pts==null) return null;
-  if(p.bye===wk) return null;
-  return p.pts/17.0;
+  let a=_SPW.get(p);
+  if(!a){
+    // 19 slots so the week number indexes directly; null means NOT PLAYING that
+    // week, which must stay distinguishable from a projection of zero.
+    a=new Array(19).fill(p.pts/17.0);
+    if(p.bye) a[p.bye]=null;
+    a[0]=null;
+    _SPW.set(p,a);
+  }
+  return a[wk]===undefined?null:a[wk];
 }
 // Best legal lineup for ONE week, from weekly projections. A player with no
 // projection that week cannot be started, so he is simply not in the pool.
@@ -1522,6 +1550,393 @@ async function loadLeagueRosters(){
   return LEAGUE_ROSTERS;
 }
 
+// ============================ moves ======================================
+// The free-agency screen ranks players. This ranks TRANSACTIONS, because on a
+// full roster an add is always also a drop and the pair is what you actually do.
+// Measured live: dropping Freiermuth for Parkinson costs 2.7 rest-of-season
+// points because Freiermuth starts your week 6, while dropping OTTON for the
+// same player costs nothing and buys the same 10 points of bench floor. A list
+// of adds cannot tell those two apart. This does.
+//
+// There is deliberately no single blended "improvement %". Three things move
+// and they genuinely conflict; collapsing them into one number would hide the
+// trade-off behind a figure nobody could audit. You pick which one leads.
+const MOVE_GOALS={
+  floor:{lb:'BENCH FLOOR', hint:'Best measured 10-point rate among your flex-eligible bench. What you can field when a starter goes down - the thing you identified as separating teams here.'},
+  points:{lb:'POINTS',     hint:'Rest-of-season starting-lineup points, counted week by week so byes are priced.'},
+  worst:{lb:'WORST WEEK',  hint:'Your single weakest week of the season. Raising it is how you stop losing a matchup to a bye.'}
+};
+let MOVE_GOAL='floor', MOVES_CACHE=null, MOVES_KEY='';
+const MOVE_CANDS=70;   // FA candidates considered; reported on screen, never silent
+
+// HANDOFF states the bench-floor thesis as a COUNT, not a maximum: "Antonio93
+// has two bench pieces at 53% and 40%. lenall has four above 40%; Giovanni has
+// none." Scoring only the single best piece got that wrong - it made dropping
+// the current floor-holder look free, when keeping him AND adding a better man
+// is what actually builds the depth the thesis is about. Primary measure is
+// therefore how many flex-eligible bench players clear 10 points in at least
+// 40% of weeks; the best rate breaks ties.
+const BENCH_BAR=0.40;
+function benchFloorOf(ids,L){
+  const lu=(L||weekLineup(ids,1,spw)).line;
+  const st=new Set(lu.QB.concat(lu.RB,lu.WR,lu.TE,lu.FLEX).map(x=>x.p));
+  let best=0, any=false, n=0;
+  ids.forEach(p=>{ if(st.has(p)) return;
+    if(!['RB','WR','TE'].includes(p.pos)) return;
+    if(p.h10==null) return;           // unmeasured is unknown, never zero
+    any=true;
+    if(p.h10>best) best=p.h10;
+    if(p.h10>=BENCH_BAR) n++; });
+  return any?{best:best,n:n}:null;
+}
+function rosterMetrics(ids){
+  let ros=0, worst=Infinity, shortWeeks=[], w1=null;
+  for(let w=1;w<=18;w++){
+    const L=weekLineup(ids,w,spw);
+    if(w===1) w1=L;
+    if(!L.filled) continue;
+    ros+=L.total;
+    if(L.total<worst) worst=L.total;
+    if(!L.legal) shortWeeks.push(w);
+  }
+  return {ros:ros, worst:(worst===Infinity?0:worst),
+          floor:benchFloorOf(ids,w1), shortWeeks:shortWeeks};
+}
+function pct(a,b){ return (b&&b!==0)? ((a-b)/Math.abs(b))*100 : 0; }
+
+function buildMoves(){
+  const mine=myPlayers();
+  const key=mine.map(p=>p.n).sort().join('|')+'::'+FA_SOURCE;
+  if(MOVES_CACHE&&MOVES_KEY===key) return MOVES_CACHE;
+  const base=rosterMetrics(mine);
+
+  // Candidate adds: measured floor first, because an unmeasured player cannot be
+  // shown to improve a floor. Players with no 2025 history are still allowed in
+  // on projection, but they are labelled and cannot win on the floor goal.
+  const owned=new Set(mine.map(p=>p.n));
+  const pool=Object.keys(FA).filter(id=>!ROSTERED.has(id)).map(id=>FA[id])
+    .filter(p=>['QB','RB','WR','TE'].includes(p.pos));
+  pool.sort((a,b)=>((b.h10==null?-1:b.h10)-(a.h10==null?-1:a.h10))||((b.pts||0)-(a.pts||0)));
+  const cands=pool.slice(0,MOVE_CANDS);
+
+  const out=[];
+  cands.forEach(add=>{
+    mine.forEach(drop=>{
+      // Never propose dropping a man you would start this week over a bench add.
+      const after=mine.filter(p=>p!==drop).concat([add]);
+      const m=rosterMetrics(after);
+      out.push({add:add,drop:drop,
+        dRos:m.ros-base.ros, pRos:pct(m.ros,base.ros),
+        dWorst:m.worst-base.worst, pWorst:pct(m.worst,base.worst),
+        floorFrom:base.floor, floorTo:m.floor,
+        dN:(m.floor==null||base.floor==null)?null:(m.floor.n-base.floor.n),
+        dFloor:(m.floor==null||base.floor==null)?null:(m.floor.best-base.floor.best),
+        shortWeeks:m.shortWeeks});
+    });
+  });
+  MOVES_CACHE={base:base,moves:out,considered:cands.length,poolSize:pool.length};
+  MOVES_KEY=key;
+  return MOVES_CACHE;
+}
+function rankMoves(M){
+  const rows=M.moves.slice();
+  if(MOVE_GOAL==='floor'){
+    // floor first, but never at the cost of a materially worse lineup
+    // depth first (how many bench pieces clear the bar), then the best rate,
+    // then never at the cost of a materially worse lineup
+    rows.sort((a,b)=>((b.dN||0)-(a.dN||0))||((b.dFloor||0)-(a.dFloor||0))||(b.dRos-a.dRos));
+    return rows.filter(r=>(r.dN||0)>0||(r.dFloor||0)>0.001);
+  }
+  if(MOVE_GOAL==='worst') { rows.sort((a,b)=>(b.dWorst-a.dWorst)||(b.dRos-a.dRos)); return rows.filter(r=>r.dWorst>0.05); }
+  rows.sort((a,b)=>(b.dRos-a.dRos)||((b.dFloor||0)-(a.dFloor||0)));
+  return rows.filter(r=>r.dRos>0.05);
+}
+function dedupeMoves(rows){
+  // one row per ADD - the best drop to pair with him
+  const seen=new Set(), out=[];
+  rows.forEach(r=>{ if(seen.has(r.add.n)) return; seen.add(r.add.n); out.push(r); });
+  return out;
+}
+function chip(label,val,unit,good){
+  const cls = good===null?'chip':(good?'chip up':'chip down');
+  return '<span class="'+cls+'"><b>'+(val>0?'+':'')+val+unit+'</b> '+label+'</span>';
+}
+function moveChips(r){
+  let h='';
+  if(r.dN!=null&&r.dN!==0) h+=chip('bench pieces &ge;40%',r.dN,'',r.dN>0);
+  if(r.dFloor!=null&&Math.abs(r.dFloor)>0.001)
+    h+=chip('best bench rate',Math.round(r.dFloor*100),'pts',r.dFloor>0);
+  h+=chip('points',r.pRos.toFixed(2),'%',r.dRos>0.05?true:(r.dRos<-0.05?false:null));
+  h+=chip('worst week',r.pWorst.toFixed(2),'%',r.dWorst>0.05?true:(r.dWorst<-0.05?false:null));
+  return h;
+}
+
+// ---- the plan ------------------------------------------------------------
+// One answer, not three rankings. A single move is easy to score; a SEQUENCE is
+// what you actually execute, and each move changes what the next one is worth -
+// once you have added a 56% bench piece, the second one is worth less than the
+// first. So this is greedy over repeated transactions, re-measuring the roster
+// after every step.
+//
+// The objective is stated rather than blended: maximise bench DEPTH (how many
+// flex-eligible bench players clear 10 points in 40%+ of weeks), subject to hard
+// constraints that it must not cost lineup points, must not lower your worst
+// week, and must not push your roster further outside the shape every manager in
+// this league finished inside last year. A constrained objective can be argued
+// with. A weighted blend cannot.
+const PLAN_MAX_STEPS=4, PLAN_ROS_TOL=0.5;
+function shapeCount(list){
+  const c={QB:0,RB:0,WR:0,TE:0}; list.forEach(p=>{ if(c[p.pos]!==undefined) c[p.pos]++; });
+  return c;
+}
+function shapeBreach(list){
+  const c=shapeCount(list); let d=0;
+  Object.keys(OBS).forEach(pos=>{
+    if(c[pos]>OBS[pos][1]) d+=c[pos]-OBS[pos][1];
+    if(c[pos]<OBS[pos][0]) d+=OBS[pos][0]-c[pos];
+  });
+  return d;
+}
+function planScore(m){ return (m.floor?m.floor.n:0)*1000 + (m.floor?m.floor.best:0); }
+function buildPlan(){
+  const M=buildMoves();
+  const start=M.base;
+  let roster=myPlayers().slice();
+  const steps=[]; const used=new Set();
+  const pool=Object.keys(FA).filter(id=>!ROSTERED.has(id)).map(id=>FA[id])
+    .filter(p=>['RB','WR','TE','QB'].includes(p.pos));
+  pool.sort((a,b)=>((b.h10==null?-1:b.h10)-(a.h10==null?-1:a.h10))||((b.pts||0)-(a.pts||0)));
+  const cands=pool.slice(0,MOVE_CANDS);
+  for(let step=0; step<PLAN_MAX_STEPS; step++){
+    const cur=rosterMetrics(roster), curBreach=shapeBreach(roster);
+    let best=null;
+    cands.forEach(add=>{
+      if(used.has(add.n)) return;
+      if(roster.indexOf(add)>=0) return;
+      roster.forEach(drop=>{
+        const after=roster.filter(p=>p!==drop).concat([add]);
+        const m=rosterMetrics(after);
+        if(m.ros < cur.ros-PLAN_ROS_TOL) return;        // must not cost points
+        if(m.worst < cur.worst-0.01) return;            // must not lower your floor week
+        if(m.shortWeeks.length>cur.shortWeeks.length) return;  // must stay legal
+        const br=shapeBreach(after);
+        if(br>curBreach) return;                        // must not worsen roster shape
+        const gain=planScore(m)-planScore(cur);
+        const better = gain>0 || (gain===0 && br<curBreach);
+        if(!better) return;
+        if(!best || gain>best.gain || (gain===best.gain && br<best.breach) ||
+           (gain===best.gain && br===best.breach && m.ros>best.m.ros))
+          best={add:add,drop:drop,m:m,gain:gain,breach:br,before:cur};
+      });
+    });
+    if(!best) break;
+    steps.push(best); used.add(best.add.n);
+    roster=roster.filter(p=>p!==best.drop).concat([best.add]);
+  }
+  return {start:start,steps:steps,end:rosterMetrics(roster),roster:roster,
+          startShape:shapeCount(myPlayers()),endShape:shapeCount(roster),
+          considered:cands.length,poolSize:pool.length};
+}
+function planRow(label,before,after,fmt,better){
+  const b=fmt(before), a=fmt(after);
+  const same=(b===a);
+  return '<div class="srow"><span class="sn">'+label+'</span>'+
+    '<span class="st2">'+(same? '<b>'+b+'</b> unchanged'
+      : b+' &rarr; <b style="color:var(--'+(better?'good':'bad')+')">'+a+'</b>')+'</span></div>';
+}
+
+function viewMoves(){
+  if(!ROSTERED){
+    $('view').innerHTML='<div class="card"><h2>Moves</h2><p>Loading rosters&hellip;</p></div>';
+    Promise.all([loadState(),loadRosters()]).then(()=>render());
+    return;
+  }
+  const M=buildMoves();
+  const P=buildPlan();
+  const ranked=dedupeMoves(rankMoves(M));
+  const b=M.base;
+  const fN=v=>String(v), fP=v=>v.toFixed(0), fW=v=>v.toFixed(1), fB=v=>Math.round(v*100)+'%';
+
+  // ---------- THE PLAN: one answer, in order --------------------------------
+  let h='';
+  if(P.steps.length){
+    h+='<div class="hero"><div class="kicker">YOUR PLAN &mdash; '+P.steps.length+' MOVE'+(P.steps.length>1?'S':'')+', IN THIS ORDER</div>';
+    P.steps.forEach((st,i)=>{
+      h+='<div class="step"><span class="stepn">'+(i+1)+'</span><div class="stepb">'+
+         '<div class="stept">Drop <b>'+st.drop.n+'</b> &nbsp;&rarr;&nbsp; Add <b style="color:var(--gold)">'+st.add.n+'</b></div>'+
+         '<div class="steps2">'+st.drop.pos+(st.drop.tm?' '+st.drop.tm:'')+
+           (st.drop.h10!=null?' &middot; clears 10 in '+Math.round(st.drop.h10*100)+'% of weeks':' &middot; no 2025 history')+
+           '&nbsp; &rarr; &nbsp;'+st.add.pos+(st.add.tm?' '+st.add.tm:'')+
+           (st.add.h10!=null?' &middot; '+Math.round(st.add.h10*100)+'%':' &middot; no 2025 history')+
+           (st.add.bye?' &middot; bye '+st.add.bye:'')+'</div></div></div>';
+    });
+    h+='<div class="split" style="margin-top:13px"><div class="lb">what the whole plan does</div>'+
+      planRow('Bench pieces you can trust in a spot start', P.start.floor?P.start.floor.n:0, P.end.floor?P.end.floor.n:0, fN, true)+
+      planRow('Best bench player, weeks he clears 10', P.start.floor?P.start.floor.best:0, P.end.floor?P.end.floor.best:0, fB, true)+
+      planRow('Rest-of-season starting points', P.start.ros, P.end.ros, fP, P.end.ros>=P.start.ros)+
+      planRow('Your worst week of the season', P.start.worst, P.end.worst, fW, P.end.worst>=P.start.worst)+
+      planRow('Tight ends rostered', P.startShape.TE, P.endShape.TE, fN, P.endShape.TE<=3)+
+      '</div>'+
+      '<p style="margin-top:11px;font-size:13px;color:var(--ink-2)">Every step is checked so it cannot cost you lineup points, '+
+      'cannot lower your worst week, and cannot push your roster further outside the shape all twelve managers finished inside '+
+      'last year. If a move broke any of those it was not offered.</p></div>';
+  }else{
+    h+='<div class="card"><h2>Nothing to do</h2><p>No sequence of moves improves your bench depth without costing you lineup '+
+       'points or worst-week score. Your roster is already the best version of itself that this wire allows.</p></div>';
+  }
+
+  h+='<div class="card"><h2>Where this leaves you</h2>'+
+    '<p>Your roster as it stands today, before any of the above.</p>'+
+    '<div class="split"><div class="lb">where you are</div>'+
+    '<div class="srow"><span class="sn">Rest-of-season points</span><span class="st2"><b>'+b.ros.toFixed(0)+'</b></span></div>'+
+    '<div class="srow"><span class="sn">Worst week</span><span class="st2"><b>'+b.worst.toFixed(1)+'</b></span></div>'+
+    '<div class="srow"><span class="sn">Bench pieces clearing 10 in &ge;40% of weeks</span><span class="st2"><b>'+
+      (b.floor==null?'&mdash;':b.floor.n)+'</b></span></div>'+
+    '<div class="srow"><span class="sn">Best bench rate</span><span class="st2"><b>'+
+      (b.floor==null?'none measured':Math.round(b.floor.best*100)+'%')+'</b></span></div></div>'+
+    '<p style="font-size:12.5px;color:var(--ink-3);margin-top:8px">The count is the measure that matters: last year '+
+    'lenall carried four bench pieces above 40% and Antonio93 two. Holding one good one is not the same as depth.</p></div>';
+
+  h+='<div class="card"><h2>Explore it yourself</h2>'+
+     '<p style="font-size:13px">The plan optimises bench depth under constraints. If you want to rank single moves by a '+
+     'different objective instead, switch it here.</p><div class="modes">';
+  Object.keys(MOVE_GOALS).forEach(k=>{
+    h+='<button class="mode'+(MOVE_GOAL===k?' on':'')+'" data-goal="'+k+'">'+MOVE_GOALS[k].lb+'</button>';
+  });
+  h+='</div><p style="margin-top:9px">'+MOVE_GOALS[MOVE_GOAL].hint+'</p>'+
+     '<p style="font-size:12.5px;color:var(--ink-3)">There is no single blended score. These three genuinely pull against '+
+     'each other &mdash; dropping Freiermuth for Parkinson buys 10 points of floor and costs 0.13% of your points, while '+
+     'dropping <b>Otton</b> for the same man costs nothing. One number would have hidden that.</p></div>';
+
+  if(!ranked.length){
+    h+='<div class="card warn"><h2>No move improves this</h2><p>Across <b>'+M.considered+'</b> free agents &times; your '+
+       myPlayers().length+' players &mdash; <b>'+(M.considered*myPlayers().length).toLocaleString()+'</b> transactions tested &mdash; '+
+       'none raises your '+MOVE_GOALS[MOVE_GOAL].lb.toLowerCase()+'. Try another objective.</p></div>';
+  }else{
+    const t=ranked[0];
+    h+='<div class="hero"><div class="kicker">DO THIS</div>'+
+       '<div class="nm">Drop '+t.drop.n+'</div>'+
+       '<div class="nm" style="color:var(--gold)">Add '+t.add.n+'</div>'+
+       '<div class="meta">'+t.drop.pos+(t.drop.tm?' &middot; '+t.drop.tm:'')+' &rarr; '+
+         t.add.pos+(t.add.tm?' &middot; '+t.add.tm:'')+(t.add.bye?' &middot; bye '+t.add.bye:'')+'</div>'+
+       '<div class="chips">'+moveChips(t)+'</div><ul class="why">'+
+       [ (t.dN!=null&&t.dN>0)?('Bench pieces clearing 10 in 40%+ of weeks: <b>'+t.floorFrom.n+' &rarr; '+
+            t.floorTo.n+'</b>'):'',
+        (t.dFloor!=null&&t.dFloor>0)?('Your best bench rate goes <b>'+Math.round(t.floorFrom.best*100)+'% &rarr; '+
+            Math.round(t.floorTo.best*100)+'%</b> &mdash; measured on real 2025 weeks'):'',
+         Math.abs(t.dRos)<0.05?'Costs you <b>nothing</b> in rest-of-season points':
+            ('Rest-of-season points move <b>'+(t.dRos>0?'+':'')+t.dRos.toFixed(1)+'</b> ('+t.pRos.toFixed(2)+'%)'),
+         t.add.h10!=null?('He cleared 10 points in <b>'+Math.round(t.add.h10*100)+'%</b> of his '+t.add.g25+' games in 2025'):
+            '<b>No 2025 history</b> for him &mdash; his floor is unmeasured, and that is a real unknown',
+         (t.drop.h10!=null)?('You give up '+t.drop.n+' at '+Math.round(t.drop.h10*100)+'%'):'',
+         (t.add.bye&&t.drop.bye&&t.add.bye!==t.drop.bye)?('Moves that roster spot off bye '+t.drop.bye+' onto bye '+t.add.bye):''
+       ].filter(Boolean).map(x=>'<li><span>'+x+'</span></li>').join('')+'</ul></div>';
+
+    h+='<div class="card"><h2>Other moves worth making</h2><div class="tscroll"><table><thead><tr>'+
+       '<th>Transaction</th><th>&ge;40%</th><th>BEST</th><th>POINTS</th><th>WORST WK</th></tr></thead><tbody>';
+    ranked.slice(1,9).forEach(r=>{
+      h+='<tr><td><span class="pn">&minus; '+r.drop.n+'</span><span class="pn" style="color:var(--gold)">+ '+r.add.n+'</span>'+
+         '<span class="pm">'+r.drop.pos+' &rarr; '+r.add.pos+(r.add.bye?' &middot; bye '+r.add.bye:'')+'</span></td>'+
+         '<td'+((r.dN||0)>0?' style="color:var(--good);font-weight:600"':'')+'>'+
+           (r.dN==null?'&mdash;':(r.dN>0?'+':'')+r.dN)+'</td>'+
+         '<td'+((r.dFloor||0)>0?' style="color:var(--good)"':'')+'>'+
+           (r.dFloor==null?'&mdash;':(r.dFloor>0?'+':'')+Math.round(r.dFloor*100))+'</td>'+
+         '<td'+(r.dRos>0.05?' style="color:var(--good)"':(r.dRos<-0.05?' style="color:var(--bad)"':''))+'>'+
+           r.pRos.toFixed(2)+'%</td>'+
+         '<td'+(r.dWorst>0.05?' style="color:var(--good)"':(r.dWorst<-0.05?' style="color:var(--bad)"':''))+'>'+
+           r.pWorst.toFixed(2)+'%</td></tr>';
+    });
+    h+='</tbody></table></div>'+
+       '<p style="margin-top:9px;font-size:12.5px;color:var(--ink-3)">&ge;40% is the CHANGE in how many bench pieces clear the bar; '+
+       'BEST is percentage points of your top bench rate; '+
+       'the other two are percent change. One row per player &mdash; the best partner to drop is already chosen for you.</p></div>';
+  }
+
+  h+=tradeSection();
+  h+='<div class="card warn"><h2>What this cannot see</h2>'+
+     '<p>It tested the top <b>'+M.considered+'</b> free agents of '+M.poolSize+' available, ranked by measured floor then projection &mdash; '+
+     'not all of them. Anyone further down is not in these numbers.</p>'+
+     '<p>Points are Sleeper season projections spread across the weeks each man plays. Floor is measured on real 2025 scores, '+
+     'so a player with no 2025 history has <b>no floor here at all</b> rather than a bad one. Nothing accounts for a role '+
+     'that changed this August.</p></div>';
+  $('view').innerHTML=h;
+  document.querySelectorAll('.mode[data-goal]').forEach(b=>b.onclick=()=>{ MOVE_GOAL=b.dataset.goal; render(); });
+  const tb=$('tradeBtn'); if(tb) tb.onclick=()=>{ TRADES_ON=true; render(); };
+}
+
+// ---- trades --------------------------------------------------------------
+// One-for-one only, and scored on OUR numbers for BOTH sides. This is a
+// structural screen - who has a surplus where you are thin - not a prediction
+// that anyone accepts. There is no trade history in this project and inventing
+// an acceptance probability would be exactly the sort of number that is not
+// allowed here.
+let TRADES_ON=false;
+// Raised from 1200 once the metric loop got 29x faster. The cap matters more
+// than its size suggests: it counts across opponents in order, so a low cap does
+// not sample evenly - it drops the LAST rosters entirely and silently. At 6000
+// the full 11-roster scan finishes well inside it, and if it ever does bite the
+// warning says so.
+const TRADE_CAP=6000;
+function tradeSection(){
+  if(!TRADES_ON){
+    return '<div class="card"><h2>Trades</h2><p>Scans every one-for-one swap with all eleven rosters and keeps the ones '+
+      'where <b>both sides gain</b> on these numbers. Slower than the rest of this screen, so it runs on request.</p>'+
+      '<p><button id="tradeBtn" class="mode on" style="min-width:150px">FIND TRADES</button></p></div>';
+  }
+  if(!LEAGUE_ROSTERS){ loadLeagueRosters().then(()=>render());
+    return '<div class="card"><h2>Trades</h2><p>Reading league rosters&hellip;</p></div>'; }
+  const mine=myPlayers();
+  const myBase=rosterMetrics(mine);
+  const myRid=CFG.roster_by_owner[CFG.me_id];
+  const found=[]; let tested=0, capped=false;
+  LEAGUE_ROSTERS.forEach(r=>{
+    if(r.roster_id===myRid) return;
+    const theirs=(r.players||[]).map(id=>FA[String(id)]).filter(Boolean);
+    if(theirs.length<9) return;
+    const theirBase=rosterMetrics(theirs);
+    mine.forEach(m=>{
+      theirs.forEach(t=>{
+        if(tested>=TRADE_CAP){ capped=true; return; }
+        // plausible swaps only: wildly unequal projections are not trades
+        if(Math.abs((m.pts||0)-(t.pts||0))>70) return;
+        tested++;
+        const mineAfter=mine.filter(p=>p!==m).concat([t]);
+        const theirAfter=theirs.filter(p=>p!==t).concat([m]);
+        const mm=rosterMetrics(mineAfter), tt=rosterMetrics(theirAfter);
+        const myGain=mm.ros-myBase.ros, theirGain=tt.ros-theirBase.ros;
+        if(myGain>0.5&&theirGain>0.5)
+          found.push({give:m,get:t,who:ridToName(r.roster_id),myGain:myGain,
+                      myPct:pct(mm.ros,myBase.ros),theirGain:theirGain,
+                      myFloor:(mm.floor==null||myBase.floor==null)?null:mm.floor.best-myBase.floor.best});
+      });
+    });
+  });
+  found.sort((a,b)=>b.myGain-a.myGain);
+  let h='<div class="card"><h2>Trades that help both sides</h2>';
+  if(!found.length){
+    h+='<p>Tested <b>'+tested+'</b> one-for-one swaps across eleven rosters. <b>None</b> leaves both teams better off on '+
+       'rest-of-season points. That is common in a league that drafted well &mdash; it means no one is holding a surplus '+
+       'you can exploit cheaply.</p>';
+  }else{
+    h+='<p>Tested <b>'+tested+'</b> one-for-one swaps. <b>'+found.length+'</b> leave both sides better off on our numbers.</p>'+
+       '<div class="tscroll"><table><thead><tr><th>Swap</th><th>YOU</th><th>THEM</th><th>FLOOR</th></tr></thead><tbody>';
+    found.slice(0,8).forEach(f=>{
+      h+='<tr><td><span class="pn">&minus; '+f.give.n+'</span><span class="pn" style="color:var(--gold)">+ '+f.get.n+'</span>'+
+         '<span class="pm">with '+f.who+'</span></td>'+
+         '<td style="color:var(--good);font-weight:600">+'+f.myPct.toFixed(2)+'%</td>'+
+         '<td>+'+f.theirGain.toFixed(0)+'</td>'+
+         '<td>'+(f.myFloor==null?'&mdash;':(f.myFloor>0?'+':'')+Math.round(f.myFloor*100))+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+  }
+  if(capped) h+='<p style="color:var(--warn)"><b>Stopped at '+TRADE_CAP+' swaps</b> to keep the page responsive. Not exhaustive.</p>';
+  h+='<p style="margin-top:9px;font-size:12.5px;color:var(--ink-3)">"THEM" is what the deal is worth to <b>them</b> on the same '+
+     'projections, so you can see whether it is worth proposing. It is <b>not</b> a prediction that they accept &mdash; there is no '+
+     'trade history in this project, and a number for how likely someone is to say yes would be invented. Managers also value '+
+     'their own players above the market, so expect to give up more than this says.</p></div>';
+  return h;
+}
+
 // ============================ views ======================================
 let INSPECT=null;
 let VIEW='PICK', lastRank=null, lastTotal=null, lastMineCount=0, lastStarters=null;
@@ -1566,6 +1981,7 @@ function render(){
   document.querySelector('nav button[data-v="PICK"]').textContent = done?'PICKUP':'PICK';
   if(VIEW==='PICK'){ if(done) viewFA(); else viewPick(avail,cur,total,nextPick,isMine,st,onClock,me,teams,gain,ctxBase); }
   if(VIEW==='BOARD')  viewBoard(avail,st);
+  if(VIEW==='MOVES')  viewMoves();
   if(VIEW==='LINEUP') viewLineup();
   if(VIEW==='TEAM')   viewTeam(me,st,teams);
   if(VIEW==='LEAGUE') viewLeague();

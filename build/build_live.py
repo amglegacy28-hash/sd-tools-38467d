@@ -155,7 +155,9 @@ if _m:
     # required globals must survive future block edits
     for _name in ("let picks", "function render", "function poll", "function simulate", "rebuildPickMap",
                   "function viewFA", "function weekLineup", "function faRows", "function faBind",
-                  "function viewLineup", "function viewLeague", "function lineupStats", "function ncdf"):
+                  "function viewLineup", "function viewLeague", "function lineupStats", "function ncdf",
+                  "function viewMoves", "function buildMoves", "function rosterMetrics", "function tradeSection",
+                  "function buildPlan", "function shapeBreach", "function planRow"):
         if _name not in _m.group(1):
             raise SystemExit("MISSING from emitted JS: " + _name)
     print("  js globals: OK")
