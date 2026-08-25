@@ -834,11 +834,19 @@ async function loadRosters(){
         if(x.owner_id===CFG.me_id) lgMine=(x.players||[]).map(String);
       });
       if(lg.size>0){
-        // Post-draft the league roster is authoritative: it is the only thing
-        // that knows about adds and drops. The draft set is merged in so a mock,
-        // which is not attached to any league, still works.
-        fromDraft.forEach(id=>lg.add(id));
-        owned=lg; src='league rosters + draft';
+        // Once the draft is COMPLETE the league roster is the only truth, because
+        // it is the only thing that knows about drops. Unioning the draft record
+        // in made every player anyone ever drafted permanently "rostered" - so a
+        // man drafted and then cut could never reappear on the wire. That was
+        // live: Colby Parkinson was dropped after the draft, sat unrostered with
+        // a MEASURED 46% ten-point rate - better than anything on this bench -
+        // and the free-agency screen could not see him.
+        // Before the draft ends, or in a mock (which is attached to no league),
+        // the draft picks still have to be merged in or players taken seconds ago
+        // look available.
+        const done = effectivePicks().length >= SHAPE.teams*SHAPE.rounds;
+        if(!done) fromDraft.forEach(id=>lg.add(id));
+        owned=lg; src = done ? 'league rosters (live, drops included)' : 'league rosters + draft';
         if(lgMine.length) mine=lgMine;
       }
     }
@@ -1113,6 +1121,13 @@ function viewFA(){
        '. That is a good sign, not a bug — it means your starters are the best available. Check again after injuries.</p></div>';
   }
 
+  // ---- what adding costs you -------------------------------------------
+  // The screen used to show only the upside of an add. In a full roster every
+  // add is also a DROP, and the shape of what is left matters: last year's
+  // twelve managers finished QB 1-2, RB 4-7, WR 5-7, TE 1-3, and going outside
+  // that is the same mistake that once produced a five-tight-end mock.
+  h+=faShapeCheck(mine);
+
   // ---- roster rail ------------------------------------------------------
   h+=faRosterPanel(mine,wk);
 
@@ -1126,6 +1141,36 @@ function viewFA(){
   faBind();
 }
 
+// Observed roster shapes from last year's 12 real managers in this league.
+const OBS={QB:[1,2],RB:[4,7],WR:[5,7],TE:[1,3]};
+function faShapeCheck(mine){
+  const c={QB:0,RB:0,WR:0,TE:0};
+  mine.forEach(p=>{ if(c[p.pos]!==undefined) c[p.pos]++; });
+  const over=Object.keys(OBS).filter(pos=>c[pos]>OBS[pos][1]);
+  // weakest MEASURED floor among flex-eligible bench - what an add actually costs
+  const flex=mine.filter(p=>['RB','WR','TE'].includes(p.pos)&&p.h10!=null);
+  flex.sort((a,b)=>a.h10-b.h10);
+  let h='';
+  if(over.length){
+    h+='<div class="card warn"><h2>Your roster is outside the shape this league drafts</h2>'+
+       over.map(pos=>'<p>You hold <b>'+c[pos]+' '+pos+'s</b>. Last year all twelve managers finished with '+
+         OBS[pos][0]+'&ndash;'+OBS[pos][1]+'. You start one '+pos+
+         (pos==='TE'||pos==='RB'||pos==='WR'?' plus flex':'')+
+         ', so the extra one is a bench spot spent where the wire is deepest.</p>').join('')+
+       '<p style="font-size:12.5px">This is the standing version of the check that once produced a five-tight-end roster. '+
+       'It is a flag, not a verdict &mdash; if the surplus player is genuinely better than what you would hold instead, keep him.</p></div>';
+  }
+  if(flex.length){
+    h+='<div class="card"><h2>What an add would cost you</h2>'+
+       '<p>Your weakest flex-eligible bench pieces by MEASURED 2025 ten-point rate. Adding anyone means dropping one of these:</p>'+
+       flex.slice(0,3).map(p=>'<div class="alt"><span class="an">'+p.n+
+         ' <span class="pm" style="display:inline">'+p.pos+(p.tm?' &middot; '+p.tm:'')+'</span></span>'+
+         '<span class="ar">clears 10 in <b>'+Math.round(p.h10*100)+'%</b> of weeks &middot; bye '+(p.bye||'&mdash;')+'</span></div>').join('')+
+       '<p style="margin-top:9px;font-size:12.5px;color:var(--ink-3)">A pickup whose own 10+ rate is BELOW these is a downgrade to your bench floor, '+
+       'whatever his projection says &mdash; and bench floor is the thing you identified as separating teams here.</p></div>';
+  }
+  return h;
+}
 function faRosterPanel(mine,wk){
   const L=weekLineup(mine,wk);
   const starters=new Set(['QB','RB','WR','TE','FLEX'].flatMap(k=>L.line[k].map(x=>x.p.n)));
@@ -1531,7 +1576,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-25 07:51 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7726 drafts, 2026-08-18..2026-08-25 &middot; variance from real 2025 weekly scores &middot; built Tue 25 Aug, 17:53.<br>'+
+  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-25 07:51 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7726 drafts, 2026-08-18..2026-08-25 &middot; variance from real 2025 weekly scores &middot; built Tue 25 Aug, 19:27.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
