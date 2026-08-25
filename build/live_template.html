@@ -1814,6 +1814,10 @@ function viewMoves(){
        'none raises your '+MOVE_GOALS[MOVE_GOAL].lb.toLowerCase()+'. Try another objective.</p></div>';
   }else{
     const t=ranked[0];
+    // Only when there is NO plan. Two heroes on one screen - "YOUR PLAN" at the
+    // top and "DO THIS" halfway down, saying the same thing - is two competing
+    // instructions, and the reader has to work out which one is the answer.
+    if(!P.steps.length)
     h+='<div class="hero"><div class="kicker">DO THIS</div>'+
        '<div class="nm">Drop '+t.drop.n+'</div>'+
        '<div class="nm" style="color:var(--gold)">Add '+t.add.n+'</div>'+
@@ -1832,7 +1836,10 @@ function viewMoves(){
          (t.add.bye&&t.drop.bye&&t.add.bye!==t.drop.bye)?('Moves that roster spot off bye '+t.drop.bye+' onto bye '+t.add.bye):''
        ].filter(Boolean).map(x=>'<li><span>'+x+'</span></li>').join('')+'</ul></div>';
 
-    h+='<div class="card"><h2>Other moves worth making</h2><div class="tscroll"><table><thead><tr>'+
+    h+='<div class="card"><h2>'+(P.steps.length?'Every single move, ranked':'Other moves worth making')+'</h2>'+
+       (P.steps.length?'<p style="font-size:13px">One move at a time, scored against your roster as it is <b>now</b> &mdash; '+
+        'not after the plan above. Use this to substitute a step you disagree with.</p>':'')+
+       '<div class="tscroll"><table><thead><tr>'+
        '<th>Transaction</th><th>&ge;40%</th><th>BEST</th><th>POINTS</th><th>WORST WK</th></tr></thead><tbody>';
     ranked.slice(1,9).forEach(r=>{
       h+='<tr><td><span class="pn">&minus; '+r.drop.n+'</span><span class="pn" style="color:var(--gold)">+ '+r.add.n+'</span>'+

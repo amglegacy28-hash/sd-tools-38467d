@@ -1814,6 +1814,10 @@ function viewMoves(){
        'none raises your '+MOVE_GOALS[MOVE_GOAL].lb.toLowerCase()+'. Try another objective.</p></div>';
   }else{
     const t=ranked[0];
+    // Only when there is NO plan. Two heroes on one screen - "YOUR PLAN" at the
+    // top and "DO THIS" halfway down, saying the same thing - is two competing
+    // instructions, and the reader has to work out which one is the answer.
+    if(!P.steps.length)
     h+='<div class="hero"><div class="kicker">DO THIS</div>'+
        '<div class="nm">Drop '+t.drop.n+'</div>'+
        '<div class="nm" style="color:var(--gold)">Add '+t.add.n+'</div>'+
@@ -1832,7 +1836,10 @@ function viewMoves(){
          (t.add.bye&&t.drop.bye&&t.add.bye!==t.drop.bye)?('Moves that roster spot off bye '+t.drop.bye+' onto bye '+t.add.bye):''
        ].filter(Boolean).map(x=>'<li><span>'+x+'</span></li>').join('')+'</ul></div>';
 
-    h+='<div class="card"><h2>Other moves worth making</h2><div class="tscroll"><table><thead><tr>'+
+    h+='<div class="card"><h2>'+(P.steps.length?'Every single move, ranked':'Other moves worth making')+'</h2>'+
+       (P.steps.length?'<p style="font-size:13px">One move at a time, scored against your roster as it is <b>now</b> &mdash; '+
+        'not after the plan above. Use this to substitute a step you disagree with.</p>':'')+
+       '<div class="tscroll"><table><thead><tr>'+
        '<th>Transaction</th><th>&ge;40%</th><th>BEST</th><th>POINTS</th><th>WORST WK</th></tr></thead><tbody>';
     ranked.slice(1,9).forEach(r=>{
       h+='<tr><td><span class="pn">&minus; '+r.drop.n+'</span><span class="pn" style="color:var(--gold)">+ '+r.add.n+'</span>'+
@@ -1992,7 +1999,7 @@ function render(){
   $('manualbar').innerHTML = manual.length
     ? '<div class="manualbar">'+manual.length+' pick'+(manual.length>1?'s':'')+' entered by hand &middot; Sleeper supplied '+picks.length+
       ' &middot; the feed takes over automatically if it returns</div>' : '';
-  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-25 07:51 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7726 drafts, 2026-08-18..2026-08-25 &middot; variance from real 2025 weekly scores &middot; built Tue 25 Aug, 19:42.<br>'+
+  $('prov').innerHTML = 'Projections BLENDED: Rotowire via Sleeper (updated 2026-08-25 07:51 UTC) and ESPN, equal weight, both rescored to full PPR &middot; ADP FantasyFootballCalculator PPR 12-team, 7726 drafts, 2026-08-18..2026-08-25 &middot; variance from real 2025 weekly scores &middot; built Tue 25 Aug, 19:43.<br>'+
     'Survival is Monte Carlo, '+SIMS+' sims, rank-based over the intervening picks. Calibration ECE 0.032 on last year&rsquo;s 180 picks. Nothing here forecasts results.';
 }
 function ord(n){return n+({1:'st',2:'nd',3:'rd'}[n%10>3||[11,12,13].includes(n%100)?0:n%10]||'th');}
