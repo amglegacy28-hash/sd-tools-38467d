@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Lions Den Draft Room</title>
 <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,6 +47,14 @@ body{font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;font-size:16
 nav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;
   background:var(--panel);border-top:1px solid var(--line);
   padding-bottom:env(safe-area-inset-bottom,0)}
+/* Eight tabs at 375px leaves ~47px each, which is on the edge of clipping the
+   six-letter labels. Below 430px the bar scrolls instead of squeezing - a
+   clipped tab label on the phone he actually uses is worse than a swipe. */
+@media (max-width:430px){
+  nav{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  nav button{flex:0 0 auto;min-width:64px}
+}
 nav button{flex:1;background:none;border:none;color:var(--ink-3);cursor:pointer;
   font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.06em;
   padding:11px 2px 12px;min-height:52px}
@@ -118,6 +127,25 @@ td:first-child{text-align:left}
 tr.lot td{opacity:.6}
 tr.row{cursor:pointer}
 tr.row:hover td{background:var(--panel-2)}
+/* ---- free agent finder controls ---- */
+.modes{display:flex;flex-wrap:wrap;gap:5px}
+.modes .mode{flex:1 1 auto;min-width:88px;min-height:40px;padding:8px 9px;cursor:pointer;
+  background:var(--panel-2);border:1px solid var(--line);border-radius:5px;color:var(--ink-2);
+  font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.06em}
+.modes .mode.on{background:var(--gold-soft);border-color:var(--gold);color:var(--gold)}
+.modes .mode:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.ctl{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
+.ctl label{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+.ctl select{font-family:"IBM Plex Sans",sans-serif;font-size:14px;padding:6px 8px;min-height:36px;
+  background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+th.sortable{cursor:pointer;white-space:nowrap}
+th.sortable:hover{color:var(--ink)}
+th.sortable.on{color:var(--gold)}
+th.sortable.on::after{content:" \25BC"}
+.pn{display:block;font-weight:500;line-height:1.2}
+.pm{display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);line-height:1.3}
 .pn{font-weight:500} .pm{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-3);display:block}
 .th{display:flex;align-items:baseline;gap:8px;margin:14px 0 3px;padding-bottom:3px;border-bottom:1px solid var(--line)}
 .th .tn{font-family:Oswald,"Arial Narrow",sans-serif;font-size:15px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
@@ -174,13 +202,19 @@ footer{margin:22px 0 8px;padding-top:12px;border-top:1px solid var(--line);
 <nav>
   <button data-v="PICK"   aria-pressed="true">PICK</button>
   <button data-v="BOARD"  aria-pressed="false">BOARD</button>
+  <button data-v="LINEUP" aria-pressed="false">LINEUP</button>
   <button data-v="TEAM"   aria-pressed="false">TEAM</button>
+  <button data-v="LEAGUE" aria-pressed="false">LEAGUE</button>
   <button data-v="RIVALS" aria-pressed="false">RIVALS</button>
   <button data-v="LOG"    aria-pressed="false">LOG</button>
   <button data-v="MANUAL" aria-pressed="false">MANUAL</button>
 </nav>
 <script>
 const CFG=__CFG__, P=__PLAYERS__;
+// The in-season pool: every projected player, not just the 260-man draft board.
+// 311 of these were invisible to the old free-agency screen, which is the tool
+// that exists to find exactly those players.
+const FA=__FAPOOL__, FA_META=__FAMETA__;
 const QS=new URLSearchParams(location.search);
 // Draft id is overridable so this page can be rehearsed against a Sleeper mock
 // (or replayed against a finished draft) before it matters. ?draft=<id>
@@ -696,18 +730,96 @@ function readRoom(EFF){
 function biasAt(k){ const b=BIAS[PICKMAP[k]]; return b?b.bias:0; }
 
 // ============================ free agency ================================
-// League setting pulled live: waiver_type 2 = free agency, first come first
-// served. No FAAB bidding, so speed is the whole game and this screen exists to
-// answer one question fast: who out there actually cracks my lineup, and by how
-// much. "Improvement" is never a rating - it is the change in your own optimal
-// starting-lineup projection if you add him.
-let ROSTERED=null, MYROSTER=null, faLoaded=0;
-let FA_SOURCE='';
+// Rebuilt as a real Free Agent Finder. The old version ranked the 260-man DRAFT
+// board on last season's 10-point rate. Two things were wrong with that in
+// September: the board is not the wire (311 projected players were invisible to
+// it), and a 2025 rate is evidence about a role a player may no longer have.
+//
+// This version asks the question the way you actually ask it, and makes you pick
+// WHICH question: help me this week, help me next week, help me the rest of the
+// way, fill a specific bye, or swing for a ceiling. Draft Sharks call this
+// Suggested Moves; the framing is theirs and it is the right one. The numbers
+// underneath are ours and each carries its basis.
+//
+// League is waiver_type 2 - first come, first served, no FAAB - so this screen is
+// built for speed on a phone, not for a desktop spreadsheet.
+let ROSTERED=null, MYROSTER=null, faLoaded=0, FA_SOURCE='';
+let NFLSTATE=null, FA_MODE='now', FA_WEEK=null, FA_POS='ALL', FA_SORT=null, FA_DESC=true;
+
+// Sleeper's own state endpoint. season_type matters: during August it returns
+// week 3 with season_type "pre". Reading that as regular-season week 3 would be
+// a plausible number nobody checked, which is how this project breaks.
+async function loadState(){
+  try{
+    const r=await fetch('https://api.sleeper.app/v1/state/nfl',{cache:'no-store'});
+    if(r.ok) NFLSTATE=await r.json();
+  }catch(e){ NFLSTATE=null; }
+  const reg = NFLSTATE && NFLSTATE.season_type==='regular';
+  if(FA_WEEK===null) FA_WEEK = reg ? Math.min(18,Math.max(1,NFLSTATE.week)) : 1;
+  return NFLSTATE;
+}
+function regularSeason(){ return !!(NFLSTATE && NFLSTATE.season_type==='regular'); }
+
+// ---- weekly projection access -------------------------------------------
+// null means NOT PROJECTED (bye week, or no projection issued). It is never 0.
+// Coercing the two together is how a player on bye looks merely bad instead of
+// unavailable.
+function wp(p,wk){
+  if(!p||!p.wp) return null;
+  const v=p.wp[String(wk)];
+  return (v===undefined||v===null)?null:v;
+}
+function onBye(p,wk){ return p&&p.bye===wk; }
+// SEASON-PRORATED weekly value. Sleeper's per-week projection and its own season
+// projection do NOT agree: summed over 18 weeks the weekly numbers run about 9%
+// high at the median, and up to 2.4x for individuals - every one of the worst
+// offenders a quarterback with a job he might lose (Watson 2.42, Tua 2.36,
+// Brissett 1.83, Rodgers 1.66). They are answering different questions. The
+// weekly number is conditional on him PLAYING that week; the season number
+// prices in the chance he does not hold the role all year.
+// So: single-week questions use the weekly projection, and anything cumulative
+// uses the season projection spread over the 17 weeks he actually plays. Summing
+// weeklies to make a season number would quietly inflate exactly the players
+// whose playing time is least certain.
+function spw(p,wk){
+  if(!p||p.pts==null) return null;
+  if(p.bye===wk) return null;
+  return p.pts/17.0;
+}
+// Best legal lineup for ONE week, from weekly projections. A player with no
+// projection that week cannot be started, so he is simply not in the pool.
+function weekLineup(list,wk,valf){
+  const f=valf||wp;
+  const pool=list.map(p=>({p,v:f(p,wk)})).filter(x=>x.v!==null)
+                 .sort((a,b)=>b.v-a.v);
+  const used=new Set(), line={QB:[],RB:[],WR:[],TE:[],FLEX:[]};
+  Object.keys(REQ).forEach(pos=>{
+    for(let i=0;i<pool.length&&line[pos].length<REQ[pos];i++){
+      if(used.has(i)||pool[i].p.pos!==pos) continue; line[pos].push(pool[i]); used.add(i);
+    }
+  });
+  for(let i=0;i<pool.length&&line.FLEX.length<NFLEX;i++){
+    if(used.has(i)||!['RB','WR','TE'].includes(pool[i].p.pos)) continue; line.FLEX.push(pool[i]); used.add(i);
+  }
+  let total=0,filled=0;
+  Object.keys(line).forEach(k=>line[k].forEach(x=>{total+=x.v;filled++;}));
+  return {line,total,filled,legal:filled>=9};
+}
+function rosLineup(list,fromWk){
+  // Rest of season = sum of weekly best-legal lineups, not the season total of
+  // your best nine. That difference IS the bye-week cost, and it is the same
+  // quantity the draft engine will need when bye-aware construction gets built.
+  let t=0, weeks=0, shortWeeks=[];
+  for(let w=fromWk;w<=18;w++){
+    const L=weekLineup(list,w,spw);
+    if(L.filled===0) continue;
+    t+=L.total; weeks++;
+    if(!L.legal) shortWeeks.push(w);
+  }
+  return {total:t,weeks,shortWeeks};
+}
+
 async function loadRosters(){
-  // Start from the draft itself. It is always right the moment the draft ends,
-  // and it is the ONLY thing that is right for a mock, which is not attached to
-  // the league at all - reading league rosters for a mock returned an empty set,
-  // so every player just drafted looked like a free agent.
   const EFF=effectivePicks();
   const fromDraft=new Set(EFF.map(x=>String(x.player_id)));
   const mineFromDraft=EFF.filter(isMinePick).map(x=>String(x.player_id));
@@ -721,9 +833,10 @@ async function loadRosters(){
         (x.players||[]).forEach(pid=>lg.add(String(pid)));
         if(x.owner_id===CFG.me_id) lgMine=(x.players||[]).map(String);
       });
-      // League rosters only supersede the draft once they actually hold players,
-      // because that is when adds and drops have started to matter.
       if(lg.size>0){
+        // Post-draft the league roster is authoritative: it is the only thing
+        // that knows about adds and drops. The draft set is merged in so a mock,
+        // which is not attached to any league, still works.
         fromDraft.forEach(id=>lg.add(id));
         owned=lg; src='league rosters + draft';
         if(lgMine.length) mine=lgMine;
@@ -731,149 +844,637 @@ async function loadRosters(){
     }
   }catch(e){ /* draft-derived view stands */ }
   ROSTERED=owned; MYROSTER=mine; FA_SOURCE=src; faLoaded=Date.now();
-  return owned.size>0 || EFF.length>0;
+  return owned.size>0||EFF.length>0;
 }
-function faCandidates(){
-  // Anyone on the board not on any roster. Post-draft this is exactly the FA pool.
+
+// ---- the five questions --------------------------------------------------
+const FA_MODES={
+  now :{lb:'THIS WEEK',   hint:'Who raises my score in week %W%.'},
+  next:{lb:'NEXT WEEK',   hint:'Who to grab NOW for week %W%, before the room notices.'},
+  ros :{lb:'REST OF SEASON', hint:'Who helps most from week %W% to the end, counted week by week.'},
+  bye :{lb:'BYE FILLER',  hint:'Who can actually play in week %W%, when your starters cannot.'},
+  ceil:{lb:'CEILING',     hint:'Biggest measured upside, skill positions first. 2025 evidence only &mdash; never projected. VS YOURS compares him to your best measured ceiling at the same position.'}
+};
+function faTargetWeek(){
+  if(FA_MODE==='next') return Math.min(18,FA_WEEK+1);
+  return FA_WEEK;
+}
+function myPlayers(){ return (MYROSTER||[]).map(id=>FA[id]).filter(Boolean); }
+// What is he worth if your guy goes down? Drop your best player at his position
+// and re-ask. If you are already two deep at quarterback, a third one answers
+// "nothing" - which is the whole lesson of the 13.09 pick, computed instead of
+// assumed. Without this the wire ranks by raw weekly points and quarterbacks,
+// who put up the biggest numbers and of whom you start exactly one, fill the
+// screen with players who can never enter your lineup.
+function coverGain(mine,p,wk){
+  const same=mine.filter(q=>q.pos===p.pos);
+  if(!same.length) return weekLineup(mine.concat([p]),wk).total-weekLineup(mine,wk).total;
+  let best=same[0];
+  same.forEach(q=>{ if((wp(q,wk)||0)>(wp(best,wk)||0)) best=q; });
+  const without=mine.filter(q=>q!==best);
+  return weekLineup(without.concat([p]),wk).total-weekLineup(without,wk).total;
+}
+
+function faRows(){
   if(!ROSTERED) return null;
-  const mine=(MYROSTER||[]).map(id=>byId[id]).filter(Boolean);
-  const base=lineupOf(mine).total;
-  const out=[];
-  P.forEach(p=>{
-    if(ROSTERED.has(p.id)) return;
-    const withHim=lineupOf(mine.concat([p]));
-    const gain=withHim.total-base;
-    // who leaves the lineup to make room
-    const wasIn=new Set(['QB','RB','WR','TE','FLEX'].flatMap(k=>lineupOf(mine).line[k].map(q=>q.id)));
-    const nowIn=new Set(['QB','RB','WR','TE','FLEX'].flatMap(k=>withHim.line[k].map(q=>q.id)));
-    const bumped=[...wasIn].filter(id=>!nowIn.has(id)).map(id=>byId[id]).filter(Boolean)[0]||null;
-    out.push({p,gain,bumped,starts:nowIn.has(p.id)});
+  const mine=myPlayers();
+  const wk=faTargetWeek();
+  const rows=[];
+  Object.keys(FA).forEach(pid=>{
+    if(ROSTERED.has(pid)) return;
+    const p=FA[pid];
+    if(FA_POS!=='ALL'&&p.pos!==FA_POS) return;
+    const r={id:pid,p:p,wkproj:wp(p,wk)};
+    if(FA_MODE==='ceil'){
+      // MEASURED only. A ceiling we did not measure is not a ceiling.
+      if(p.mb!=='M'||p.ceil==null) return;
+      r.score=p.ceil; r.basis='MEASURED 2025';
+      // Your own best MEASURED ceiling at his position, so the number on screen
+      // is a comparison and not just a big figure. Left null when you hold
+      // nobody measured there - that is a real gap, not a zero.
+      const same=mine.filter(q=>q.pos===p.pos&&q.ceil!=null);
+      r.mineCeil = same.length? Math.max.apply(null,same.map(q=>q.ceil)) : null;
+      r.beats = (r.mineCeil==null)? null : +(p.ceil-r.mineCeil).toFixed(1);
+    }else if(FA_MODE==='ros'){
+      const base=rosLineup(mine,FA_WEEK).total;
+      r.score=rosLineup(mine.concat([p]),FA_WEEK).total-base;
+      r.cover=coverGain(mine,p,wk);
+      r.basis='projection';
+    }else{
+      // now / next / bye all ask the same thing about one specific week
+      const base=weekLineup(mine,wk);
+      const withHim=weekLineup(mine.concat([p]),wk);
+      r.score=withHim.total-base.total;
+      r.cover=coverGain(mine,p,wk);
+      r.starts=withHim.line.QB.concat(withHim.line.RB,withHim.line.WR,withHim.line.TE,withHim.line.FLEX)
+                     .some(x=>x.p===p);
+      const wasIn=new Set(['QB','RB','WR','TE','FLEX'].flatMap(k=>base.line[k].map(x=>x.p.n)));
+      const nowIn=new Set(['QB','RB','WR','TE','FLEX'].flatMap(k=>withHim.line[k].map(x=>x.p.n)));
+      r.bumped=[...wasIn].filter(n=>!nowIn.has(n))[0]||null;
+      r.basis='projection';
+      if(FA_MODE==='bye'&&r.wkproj===null) return;   // cannot fill a week he is not playing
+    }
+    rows.push(r);
   });
-  out.sort((a,b)=>b.gain-a.gain||b.p.pts-a.p.pts);
-  return {rows:out,base,mine};
+  const key=FA_SORT;
+  if(key){
+    rows.sort((a,b)=>{
+      const va=faCell(a,key,true), vb=faCell(b,key,true);
+      if(va===null&&vb===null) return 0;
+      if(va===null) return 1; if(vb===null) return -1;
+      return FA_DESC?(vb-va):(va-vb);
+    });
+  }else{
+    // Rank on lineup gain; break ties on COVER, not on raw points. Early in the
+    // week nobody improves a healthy lineup, so every gain is 0.00 and the
+    // tiebreak is doing all the work - it must not be "who scores most", or the
+    // list is quarterbacks you cannot start.
+    // Tiebreak chain, in the open because it is doing most of the work: when a
+    // healthy roster faces a bare wire, every gain and every cover value is 0.00
+    // and the LAST key decides the whole screen. It must not be raw points -
+    // that ranks by who scores most, and the men who score most are quarterbacks,
+    // of whom you start one and already hold two. So: flex-eligible before QB,
+    // then MEASURED floor (his own thesis for what a bench player is for), then
+    // this week's projection. Unmeasured players sort last rather than being
+    // floated by a projection nothing corroborates.
+    const flexFirst=p=>(['RB','WR','TE'].includes(p.pos)?0:1);
+    if(FA_MODE==='ceil'){
+      // Ceiling has the same trap as points: quarterbacks post the biggest
+      // numbers and you start one of them. Rank the eight skill slots first,
+      // then quarterbacks, rather than pretending a QB27 ceiling is available
+      // to a man already holding two.
+      rows.sort((a,b)=>(flexFirst(a.p)-flexFirst(b.p))
+                     ||((b.beats==null?-99:b.beats)-(a.beats==null?-99:a.beats))
+                     ||(b.score-a.score));
+      return rows;
+    }
+    rows.sort((a,b)=>
+        (b.score-a.score)
+     || ((b.cover||0)-(a.cover||0))
+     || (flexFirst(a.p)-flexFirst(b.p))
+     || ((b.p.h10==null?-1:b.p.h10)-(a.p.h10==null?-1:a.p.h10))
+     || ((b.wkproj||0)-(a.wkproj||0)));
+  }
+  return rows;
 }
+// One place that knows what each column means, so sorting and rendering cannot
+// drift apart.
+function faCell(r,key,raw){
+  const p=r.p, wk=faTargetWeek();
+  switch(key){
+    case 'score': return raw?r.score:(r.score>0?'+':'')+r.score.toFixed(1);
+    case 'cover': return raw?(r.cover==null?null:r.cover):(r.cover==null?'&mdash;':r.cover.toFixed(1));
+    case 'wk':    return raw?r.wkproj:(r.wkproj===null?(onBye(p,wk)?'BYE':'&mdash;'):r.wkproj.toFixed(1));
+    case 'pts':   return raw?(p.pts||null):(p.pts?p.pts.toFixed(0):'&mdash;');
+    case 'h10':   return raw?(p.h10==null?null:p.h10):(p.h10==null?'&mdash;':Math.round(p.h10*100)+'%');
+    case 'h15':   return raw?(p.h15==null?null:p.h15):(p.h15==null?'&mdash;':Math.round(p.h15*100)+'%');
+    case 'ceil':  return raw?(p.ceil==null?null:p.ceil):(p.ceil==null?'&mdash;':p.ceil.toFixed(1));
+    case 'flr':   return raw?(p.flr==null?null:p.flr):(p.flr==null?'&mdash;':p.flr.toFixed(1));
+    case 'bye':   return raw?(p.bye||null):(p.bye||'—');
+    default: return raw?null:'';
+  }
+}
+const FA_COLS={
+  now :[['score','GAIN'],['cover','IF OUT'],['wk','WK PROJ'],['h10','10+'],['bye','BYE']],
+  next:[['score','GAIN'],['cover','IF OUT'],['wk','WK PROJ'],['h10','10+'],['bye','BYE']],
+  ros :[['score','GAIN'],['cover','IF OUT'],['pts','SEASON'],['h10','10+'],['bye','BYE']],
+  bye :[['score','GAIN'],['wk','WK PROJ'],['h10','10+'],['flr','FLOOR'],['bye','HIS BYE']],
+  ceil:[['ceil','CEILING'],['beats','VS YOURS'],['h15','15+'],['h10','10+'],['g25','GAMES']]
+};
+
+function faHeader(){
+  const wk=faTargetWeek();
+  const reg=regularSeason();
+  let h='<div class="card"><h2>Free agency — first come, first served</h2>';
+  h+='<p style="font-size:12px;color:var(--ink-3)">Rostered players read from <b>'+FA_SOURCE+
+     '</b> &middot; '+ROSTERED.size+' accounted for &middot; pool of <b>'+Object.keys(FA).length+
+     '</b> projected players'+(FA_META.n_on_board?' ('+(Object.keys(FA).length-FA_META.n_on_board)+
+     ' of them never on the draft board)':'')+'.</p>';
+  h+='<p>No FAAB and no waiver period in this league — whoever clicks first gets him.</p>';
+  if(!reg){
+    h+='<div class="note"><div class="lb">Not the regular season yet</div>Sleeper reports <b>'+
+       (NFLSTATE?NFLSTATE.season_type:'unknown')+'</b> season'+(NFLSTATE?', week '+NFLSTATE.week:'')+
+       '. Week numbers below are ones you picked, not the live week. This screen becomes real in week 1.</div>';
+  }
+  h+='</div>';
+  // mode selector
+  h+='<div class="card"><h2>What are you trying to fix?</h2><div class="modes">';
+  Object.keys(FA_MODES).forEach(k=>{
+    h+='<button class="mode'+(FA_MODE===k?' on':'')+'" data-mode="'+k+'">'+FA_MODES[k].lb+'</button>';
+  });
+  h+='</div>';
+  h+='<p style="margin-top:9px">'+FA_MODES[FA_MODE].hint.replace('%W%','<b>week '+wk+'</b>')+'</p>';
+  // week + position controls
+  h+='<div class="ctl"><label>Week <select id="faWk">';
+  for(let w=1;w<=18;w++) h+='<option value="'+w+'"'+(w===FA_WEEK?' selected':'')+'>'+w+'</option>';
+  h+='</select></label><label>Position <select id="faPos">';
+  ['ALL','QB','RB','WR','TE'].forEach(p=>{ h+='<option value="'+p+'"'+(FA_POS===p?' selected':'')+'>'+p+'</option>'; });
+  h+='</select></label></div></div>';
+  return h;
+}
+
 function viewFA(){
   if(!ROSTERED){
     $('view').innerHTML='<div class="card"><h2>Free agency</h2><p>Loading rosters&hellip;</p></div>';
-    loadRosters().then(ok=>{ if(ok) render(); else $('view').innerHTML=
-      '<div class="card warn"><h2>Free agency</h2><p>Could not read league rosters. Sleeper may not have settled them yet &mdash; they populate once the draft finishes. Retry in a moment.</p></div>'; });
+    Promise.all([loadState(),loadRosters()]).then(([s,ok])=>{ if(ok) render(); else $('view').innerHTML=
+      '<div class="card warn"><h2>Free agency</h2><p>Could not read league rosters. Sleeper may not have settled them yet. Retry in a moment.</p></div>'; });
     return;
   }
-  const fa=faCandidates();
-  const mine=fa.mine;
-  // which weeks are thin? count starters unavailable per bye week
-  const lu=lineupOf(mine).line;
-  const starters=['QB','RB','WR','TE','FLEX'].flatMap(k=>lu[k]);
-  const byeLoad={}; starters.forEach(p=>{ if(p.bye) byeLoad[p.bye]=(byeLoad[p.bye]||0)+1; });
-  const painWeeks=Object.keys(byeLoad).filter(w=>byeLoad[w]>=3).map(Number);
-  let h='<div class="card"><h2>Free agency &mdash; first come, first served</h2>'+
-    '<p style="font-size:12px;color:var(--ink-3)">Rostered players read from <b>'+FA_SOURCE+'</b> &middot; '+ROSTERED.size+' players accounted for.</p>'+
-    '<p>Your league is <b>waiver_type 2</b>: no FAAB, no waiver period. Whoever clicks first gets him. '+
-    'Every number below is the change in <b>your own</b> projected starting lineup if you add that player &mdash; not a rating of him.</p>'+
-    '<p>Your lineup now: <b>'+fa.base.toFixed(0)+'</b> projected points from '+mine.length+' rostered.</p></div>';
-  // which weeks leave you short of BODIES, counting only flex-eligible players
-  const wk=[]; for(let w=1;w<=18;w++){
-    const out=mine.filter(p=>p.bye===w&&['RB','WR','TE'].includes(p.pos)).length;
-    const have=mine.filter(p=>['RB','WR','TE'].includes(p.pos)).length-out;
-    if(out>=2) wk.push({w,out,have,short:Math.max(0,8-have)});
+  const mine=myPlayers();
+  const wk=faTargetWeek();
+  let h=faHeader();
+
+  // ---- your own week, before anything is added -------------------------
+  const L=weekLineup(mine,wk);
+  const outThisWeek=mine.filter(p=>onBye(p,wk));
+  h+='<div class="card'+(L.legal?'':' warn')+'"><h2>Your week '+wk+' as it stands</h2>'+
+     '<p>Best legal lineup projects <b>'+L.total.toFixed(1)+'</b> points from '+L.filled+' of 9 slots'+
+     (L.legal?'':' — <b>you cannot field a legal lineup</b>')+'.</p>';
+  if(outThisWeek.length) h+='<p><b>'+outThisWeek.length+'</b> on bye: '+
+     outThisWeek.map(p=>p.n).join(', ')+'</p>';
+  const ros=rosLineup(mine,FA_WEEK);
+  h+='<p style="font-size:12.5px;color:var(--ink-3)">The week figure above uses Sleeper&rsquo;s <b>per-week</b> '+
+     'projection (what he scores <i>if he plays</i>). The rest-of-season figure below uses the <b>season</b> '+
+     'projection spread over the 17 weeks he plays, because summing per-week numbers inflates anyone whose '+
+     'job is uncertain &mdash; they run about 9% high in total and up to 2.4x for individual quarterbacks. '+
+     'Two different questions, two different denominators, not mixed.</p>';
+  h+='<p style="font-size:12.5px;color:var(--ink-3)">Rest of season from week '+FA_WEEK+
+     ': <b>'+ros.total.toFixed(0)+'</b> across '+ros.weeks+' weeks'+
+     (ros.shortWeeks.length?' &middot; <b style="color:var(--bad)">short in week '+ros.shortWeeks.join(', ')+'</b>':'')+'.</p></div>';
+
+  // ---- the ranked wire --------------------------------------------------
+  const rows=faRows();
+  // Said before the table, not after it. A ranked list of 384 names reads as
+  // "here are your options" even when the honest answer is "there are none",
+  // and this tool has been wrong that way before.
+  const anyGain=rows.filter(r=>r.score>0.3).length;
+  const anyCover=rows.filter(r=>(r.cover||0)>0.3).length;
+  if(!anyGain&&!anyCover&&FA_MODE!=='ceil'){
+    h+='<div class="card warn"><h2>The wire cannot help you in week '+wk+'</h2>'+
+       '<p>Of <b>'+rows.length+'</b> available players, <b>none</b> raises your week '+wk+' lineup, and '+
+       '<b>none</b> is worth holding as cover &mdash; even with your best man at his position removed, '+
+       'someone already on your roster is still better.</p>'+
+       '<p>The list below is therefore ordered by <b>measured 2025 floor</b>, flex-eligible first, '+
+       'so it answers "who would I take if I had to" &mdash; not "who should I take". '+
+       'Those are different questions and this screen will not blur them.</p></div>';
   }
-  if(wk.length){
-    h+='<div class="card warn"><h2>Weeks you are short of bodies</h2>'+
-      wk.map(x=>'<p><b>Week '+x.w+'</b>: '+x.out+' flex-eligible players on bye, leaving '+x.have+
-        ' for 8 skill slots'+(x.short>0?' &mdash; <b>'+x.short+' short of a legal lineup</b>':'')+'</p>').join('')+
-      '<p>Pickups whose own bye is NOT one of these weeks are the ones that actually help.</p></div>';
-  }
-  if(painWeeks.length){
-    h+='<div class="card warn"><h2>Bye weeks that will hurt</h2><p>'+
-      painWeeks.map(w=>'<b>Week '+w+'</b>: '+byeLoad[w]+' of your starters are out').join(' &middot; ')+
-      '. Free agents who play those weeks are promoted below, because a player who cannot fill your worst week '+
-      'is worth less to you than his season projection says.</p></div>';
-    // Sort with a bye-fit bonus, but NEVER fold it into the displayed gain -
-    // that number must stay exactly "what my starting lineup gains", or it lies.
-    fa.rows.forEach(r=>{ r.covers = !!(r.p.bye && !painWeeks.includes(r.p.bye));
-                         r.fit = r.gain + (r.covers?3.0*painWeeks.length:0); });
-    fa.rows.sort((a,b)=>b.fit-a.fit||b.p.pts-a.p.pts);
-  }
-  // A bench pickup is judged on whether he can CLEAR 10 IN A SPOT START, not on
-  // season projection. Measured from real 2025 weeks.
-  const benchWorthy=fa.rows.filter(r=>r.p.h10!=null&&r.p.h10>=0.30&&['RB','WR','TE'].includes(r.p.pos))
-                           .sort((a,b)=>b.p.h10-a.p.h10).slice(0,14);
-  const myBench=lineupOf(mine).line.BN.filter(p=>['RB','WR','TE'].includes(p.pos));
-  const bestBench=myBench.reduce((m,p)=>Math.max(m,p.h10||0),0);
-  if(benchWorthy.length){
-    h+='<div class="card"><h2>Bench upgrades &mdash; who clears 10 points</h2>'+
-      '<p>Ranked by how often they actually cleared <b>10 PPR points</b> in 2025, not by season projection. '+
-      'A player who scores 140 across 17 quiet weeks is no use to you in a bye week. '+
-      'Quarterbacks are excluded &mdash; you start one.</p>'+
-      '<p>Your best flex-eligible bench piece right now clears 10 in <b>'+Math.round(bestBench*100)+
-      '%</b> of weeks. Anything above that is an upgrade.</p>'+
-      '<table><thead><tr><th>Player</th><th>10+</th><th>15+</th><th>Bye</th><th>Proj</th></tr></thead><tbody>'+
-      benchWorthy.map(r=>'<tr><td><span class="pn">'+r.p.n+'</span><span class="pm">'+r.p.pos+
-        (r.p.tm?' &middot; '+r.p.tm:'')+(r.p.inj?' &middot; '+String(r.p.inj).slice(0,4).toUpperCase():'')+'</span></td>'+
-        '<td style="color:'+((r.p.h10>bestBench)?'var(--good)':'var(--ink-2)')+';font-weight:600">'+
-          Math.round(r.p.h10*100)+'%</td>'+
-        '<td>'+Math.round((r.p.h15||0)*100)+'%</td>'+
-        '<td>'+(r.p.bye||'&mdash;')+'</td><td>'+r.p.pts.toFixed(0)+'</td></tr>').join('')+
-      '</tbody></table>'+
-      '<p style="margin-top:9px;color:var(--warn)"><b>Read this before claiming.</b> A high 2025 rate with a low 2026 '+
-      'projection usually means he had a role last year that he may not have now. Check the depth-chart column on the '+
-      'BOARD tab before you drop anyone for him.</p></div>';
-  }
-  const helps=fa.rows.filter(r=>r.gain>0.5).slice(0,12);
-  if(!helps.length){
-    h+='<div class="card"><h2>Nobody out there improves your starters</h2><p>Every free agent projects below what you already start. That is a good sign, not a bug. Check back after injuries.</p></div>';
+
+  const cols=FA_COLS[FA_MODE];
+  const shown=rows.slice(0,40);
+  if(!shown.length){
+    h+='<div class="card"><h2>Nothing to show</h2><p>No free agent matches this filter. Widen the position filter, or try another mode.</p></div>';
   }else{
-    h+='<div class="card"><h2>Would crack your lineup</h2><table><thead><tr><th>Player</th><th>Gain</th><th>Role</th><th>Start%</th></tr></thead><tbody>';
-    helps.forEach(r=>{
-      h+='<tr><td><span class="pn">'+r.p.n+'</span><span class="pm">'+r.p.pos+(r.p.tm?' &middot; '+r.p.tm:'')+
-         (r.bumped?' &middot; over '+r.bumped.n:'')+'</span></td>'+
-         '<td style="color:var(--good);font-weight:600">+'+r.gain.toFixed(1)+
-           (r.covers?'<span class="pm" style="color:var(--gold)">covers bye</span>':'')+'</td>'+
-         '<td>'+(r.p.inj?'<span style="color:var(--bad)">'+String(r.p.inj).slice(0,4).toUpperCase()+'</span>':(r.p.dcp&&r.p.dcp!==r.p.pos?r.p.dcp:(r.p.dco?r.p.pos+r.p.dco:'&mdash;')))+'</td>'+
-         '<td>'+(r.p.sr!=null?Math.round(r.p.sr*100)+'%':'&mdash;')+'</td></tr>';
+    h+='<div class="card"><h2>'+FA_MODES[FA_MODE].lb+' — '+rows.length+' free agents ranked</h2>'+
+       '<div class="tscroll"><table><thead><tr><th>Player</th>';
+    cols.forEach(c=>{ h+='<th class="sortable'+(FA_SORT===c[0]?' on':'')+'" data-sort="'+c[0]+'">'+c[1]+'</th>'; });
+    h+='</tr></thead><tbody>';
+    shown.forEach(r=>{
+      const p=r.p;
+      const role=p.inj?('<span style="color:var(--bad)">'+String(p.inj).slice(0,4).toUpperCase()+'</span>')
+                      :(p.dcp&&p.dcp!==p.pos?p.dcp:(p.dco?p.pos+p.dco:''));
+      h+='<tr class="row'+(p.mb!=='M'?' lot':'')+'"><td><span class="pn">'+p.n+'</span>'+
+         '<span class="pm">'+p.pos+(p.tm?' &middot; '+p.tm:'')+(role?' &middot; '+role:'')+
+         (r.bumped?' · over '+r.bumped:'')+'</span></td>';
+      cols.forEach(c=>{
+        const v=faCell(r,c[0],false);
+        // >=0.05, not >0: a gain that DISPLAYS as +0.0 must not be coloured
+        // as an improvement. Green on a rounded zero is a small lie.
+        const good=(c[0]==='score'&&r.score>=0.05);
+        h+='<td'+(good?' style="color:var(--good);font-weight:600"':'')+'>'+v+'</td>';
+      });
+      h+='</tr>';
     });
     h+='</tbody></table></div>';
-    const t0=helps[0];
-    h+='<div class="hero"><div class="kicker">GRAB FIRST</div><div class="nm">'+t0.p.n+'</div>'+
-       '<div class="meta">'+t0.p.pos+(t0.p.tm?' &middot; '+t0.p.tm:'')+' &middot; '+t0.p.pts.toFixed(0)+' proj pts'+
-       (t0.p.bye?' &middot; bye '+t0.p.bye:'')+'</div><ul class="why">'+
-       ['<b>+'+t0.gain.toFixed(1)+'</b> to your starting lineup ('+fa.base.toFixed(0)+' &rarr; '+(fa.base+t0.gain).toFixed(0)+')',
-        t0.covers?'He plays in the weeks your starters are on bye':'',
-        t0.bumped?'He starts over <b>'+t0.bumped.n+'</b>, who moves to your bench':'He fills a slot you cannot currently field',
-        t0.p.sr!=null?'Startable in <b>'+Math.round(t0.p.sr*100)+'%</b> of weeks last season':'No 2025 history &mdash; upside unmeasured',
-        t0.p.inj?'<b style="color:var(--bad)">'+String(t0.p.inj).toUpperCase()+'</b> per Sleeper &mdash; check before you claim':''
+    h+='<p style="margin-top:9px;font-size:12.5px;color:var(--ink-3)">'+
+       'GAIN is the change in <b>your own</b> projected starting lineup, never a rating of the player. '+
+       '<b>IF OUT</b> is the same number computed with your best player at his position removed &mdash; what he is worth as cover. '+
+       'A third quarterback scores near zero there however many points he projects, because you start one. '+
+       'Rows dimmed have <b>no 2025 history</b> — their measured columns are blank rather than guessed. '+
+       'A blank week projection means <b>not projected</b> (bye, or none issued); it is not a zero.</p>';
+    h+='</div>';
+  }
+
+  const top=shown.filter(r=>r.score>0.3)[0];
+  if(top){
+    const p=top.p;
+    h+='<div class="hero"><div class="kicker">GRAB FIRST · '+FA_MODES[FA_MODE].lb+'</div>'+
+       '<div class="nm">'+p.n+'</div><div class="meta">'+p.pos+(p.tm?' &middot; '+p.tm:'')+
+       (p.bye?' · bye '+p.bye:'')+(p.pts?' &middot; '+p.pts.toFixed(0)+' season proj':'')+'</div><ul class="why">'+
+       ['<b>'+(top.score>0?'+':'')+top.score.toFixed(1)+'</b> to your '+
+          (FA_MODE==='ros'?'rest-of-season total':'week '+wk+' lineup'),
+        top.bumped?'He starts over <b>'+top.bumped+'</b>, who moves to your bench':'',
+        p.h10!=null?'Cleared 10 points in <b>'+Math.round(p.h10*100)+'%</b> of his 2025 weeks ('+p.g25+' games)':
+                    '<b>No 2025 history</b> — floor unmeasured, and that is a real unknown',
+        p.dcp&&p.dco?'Listed <b>'+(p.dcp||p.pos)+p.dco+'</b> on the depth chart per Sleeper':'',
+        p.inj?'<b style="color:var(--bad)">'+String(p.inj).toUpperCase()+'</b> per Sleeper — check before you claim':''
        ].filter(Boolean).map(x=>'<li><span>'+x+'</span></li>').join('')+'</ul></div>';
+  }else if(shown.length){
+    h+='<div class="card"><h2>Nobody here improves your lineup</h2><p>Every free agent projects below what you already start in week '+wk+
+       '. That is a good sign, not a bug — it means your starters are the best available. Check again after injuries.</p></div>';
   }
-  // WASTED ROSTER SPOTS. A bench player is only worth a spot if the wire cannot
-  // replace him. This is the check the DRAFT rule got wrong: it valued a backup
-  // QB at 2.00 cover because "zero spare", while ignoring that the waiver pool is
-  // deep at quarterback. Measured here instead of assumed.
-  const freeBest={};
-  fa.rows.forEach(r=>{ const p=r.p;
-    if(p.h10==null) return;
-    if(!freeBest[p.pos]||p.h10>freeBest[p.pos].h10) freeBest[p.pos]=p; });
-  const wasted=lineupOf(mine).line.BN.filter(p=>{
-    const f=freeBest[p.pos];
-    return f && p.h10!=null && f.h10>=p.h10;
-  });
-  if(wasted.length){
-    h+='<div class="card warn"><h2>Roster spots the wire can replace for free</h2>'+
-      '<p>These bench players are matched or beaten by someone <b>currently unrostered</b> at the same position. '+
-      'Holding them costs you a spot you could spend on a position the wire is thin at.</p>'+
-      wasted.map(p=>{const f=freeBest[p.pos];
-        return '<div class="alt"><span class="an">'+p.n+' <span class="pm" style="display:inline">'+p.pos+
-          ' &middot; clears 10 in '+Math.round(p.h10*100)+'% of weeks</span></span>'+
-          '<span class="ar">free right now: <b>'+f.n+'</b> at '+Math.round(f.h10*100)+'%</span></div>';}).join('')+
-      '<p style="margin-top:9px">This is the mistake the draft engine made at 13.09 &mdash; it valued a backup '+
-      'quarterback as scarce because you had only one, without checking that the waiver pool is deep at that position. '+
-      'The draft rule has been corrected; this panel is the standing check.</p></div>';
-  }
-  const drops=lineupOf(mine).line.BN.slice().sort((a,b)=>a.pts-b.pts).slice(0,3);
-  if(drops.length) h+='<div class="card"><h2>Cheapest to drop</h2><p>Lowest-projected bench players, so you can see the cost of a roster spot.</p>'+
-    drops.map(p=>'<div class="alt"><span class="an">'+p.n+' <span class="pm" style="display:inline">'+p.pos+'</span></span>'+
-      '<span class="ar">'+p.pts.toFixed(0)+' proj'+(p.inj?' &middot; '+String(p.inj).toUpperCase():'')+'</span></div>').join('')+'</div>';
-  h+='<div class="card warn"><h2>What this cannot see</h2><p>Rosters are read from Sleeper, so a player another manager grabbed seconds ago may still show here until the next refresh. It also cannot see anyone outside the 260-player board &mdash; deep waiver fliers are not in this data.</p></div>';
+
+  // ---- roster rail ------------------------------------------------------
+  h+=faRosterPanel(mine,wk);
+
+  // ---- standing checks --------------------------------------------------
+  h+=faWasteCheck(mine,rows);
+  h+='<div class="card warn"><h2>What this cannot see</h2>'+
+     '<p>Rosters come from Sleeper, so a player someone claimed seconds ago may still show here until the next poll. '+
+     'Weekly projections are Sleeper’s and are refreshed twice a day, not live. '+
+     'There is <b>no strength-of-schedule adjustment</b> anywhere on this screen — no defensible 2026 defensive metric exists in this project, and inventing one would be worse than leaving it out.</p></div>';
   $('view').innerHTML=h;
+  faBind();
+}
+
+function faRosterPanel(mine,wk){
+  const L=weekLineup(mine,wk);
+  const starters=new Set(['QB','RB','WR','TE','FLEX'].flatMap(k=>L.line[k].map(x=>x.p.n)));
+  let h='<div class="card"><h2>Your roster in week '+wk+'</h2><div class="tscroll"><table><thead><tr>'+
+        '<th>Player</th><th>WK '+wk+'</th><th>10+</th><th>BYE</th></tr></thead><tbody>';
+  mine.slice().sort((a,b)=>{
+    const sa=starters.has(a.n)?0:1, sb=starters.has(b.n)?0:1;
+    return sa-sb||((wp(b,wk)||0)-(wp(a,wk)||0));
+  }).forEach(p=>{
+    const v=wp(p,wk);
+    const st=starters.has(p.n);
+    h+='<tr'+(st?'':' class="lot"')+'><td><span class="pn">'+(st?'&#9679; ':'')+p.n+'</span>'+
+       '<span class="pm">'+p.pos+(p.tm?' &middot; '+p.tm:'')+(st?' · starting':' · bench')+'</span></td>'+
+       '<td>'+(v===null?(onBye(p,wk)?'<b style="color:var(--bad)">BYE</b>':'&mdash;'):v.toFixed(1))+'</td>'+
+       '<td>'+(p.h10==null?'&mdash;':Math.round(p.h10*100)+'%')+'</td>'+
+       '<td>'+(p.bye||'—')+'</td></tr>';
+  });
+  h+='</tbody></table></div><p style="font-size:12.5px;color:var(--ink-3);margin-top:8px">'+
+     '&#9679; marks the nine the week-'+wk+' projection would start.</p></div>';
+  return h;
+}
+
+// A bench player is only worth a roster spot if the wire cannot replace him.
+// This is the standing version of the check the draft engine failed at 13.09.
+function faWasteCheck(mine,rows){
+  const best={};
+  rows.forEach(r=>{ const p=r.p; if(p.h10==null) return;
+    if(!best[p.pos]||p.h10>best[p.pos].h10) best[p.pos]=p; });
+  const wk=faTargetWeek();
+  const L=weekLineup(mine,wk);
+  const starters=new Set(['QB','RB','WR','TE','FLEX'].flatMap(k=>L.line[k].map(x=>x.p.n)));
+  const wasted=mine.filter(p=>{
+    if(starters.has(p.n)) return false;
+    const f=best[p.pos];
+    return f&&p.h10!=null&&f.h10>=p.h10;
+  });
+  if(!wasted.length) return '';
+  let h='<div class="card warn"><h2>Roster spots the wire can replace for free</h2>'+
+    '<p>These bench players are matched or beaten by someone <b>currently unrostered</b> at the same position, '+
+    'on measured 2025 ten-point rate. Holding them costs a spot you could spend where the wire is thin.</p>';
+  wasted.forEach(p=>{ const f=best[p.pos];
+    h+='<div class="alt"><span class="an">'+p.n+' <span class="pm" style="display:inline">'+p.pos+
+       ' · clears 10 in '+Math.round(p.h10*100)+'% of weeks</span></span>'+
+       '<span class="ar">free right now: <b>'+f.n+'</b> at '+Math.round(f.h10*100)+'%</span></div>';});
+  h+='<p style="margin-top:9px;font-size:12.5px">Both rates are 2025 measurements. A high 2025 rate with a low '+
+     '2026 projection usually means a role the player no longer has — check the depth-chart note before you drop anyone.</p></div>';
+  return h;
+}
+
+function faBind(){
+  document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{
+    FA_MODE=b.dataset.mode; FA_SORT=null;
+    if(FA_MODE==='bye'){
+      // Default the bye filler to the week that actually hurts most.
+      const mine=myPlayers(); let worst=null,worstN=0;
+      for(let w=1;w<=18;w++){ const n=mine.filter(p=>onBye(p,w)).length;
+        if(n>worstN){worstN=n;worst=w;} }
+      if(worst) FA_WEEK=worst;
+    }
+    render();
+  });
+  const wkSel=$('faWk'); if(wkSel) wkSel.onchange=()=>{ FA_WEEK=+wkSel.value; render(); };
+  const posSel=$('faPos'); if(posSel) posSel.onchange=()=>{ FA_POS=posSel.value; render(); };
+  document.querySelectorAll('th.sortable').forEach(th=>th.onclick=()=>{
+    const k=th.dataset.sort;
+    if(FA_SORT===k) FA_DESC=!FA_DESC; else { FA_SORT=k; FA_DESC=true; }
+    render();
+  });
+}
+
+// ============================ start / sit ================================
+// The gap HANDOFF listed at 5.5: there was no weekly lineup tool at all. Draft
+// Sharks put floor, ceiling, projection and a win probability for BOTH teams at
+// the top of their Team Dashboard, and that framing is right - the question on
+// Sunday is not "who is good" but "who beats the man I would otherwise start,
+// and does it change whether I win".
+//
+// Win probability is computed, not asserted. It uses MEASURED weekly standard
+// deviations from real 2025 scores; players with no 2025 history fall back to
+// the positional median sd, and the count of such players is shown, because a
+// probability resting mostly on fallbacks deserves to be distrusted.
+let LU_WEEK=null, MATCHUP=null, MATCHUP_WK=null;
+const FALLBACK_SD={QB:7.2,RB:6.5,WR:6.3,TE:5.5};   // medians from variance.py
+
+function luWeek(){
+  if(LU_WEEK!==null) return LU_WEEK;
+  LU_WEEK = regularSeason()? Math.min(18,Math.max(1,NFLSTATE.week)) : 1;
+  return LU_WEEK;
+}
+function sdOf(p){
+  if(p&&p.sd!=null) return {sd:p.sd,basis:'M'};
+  return {sd:(FALLBACK_SD[p?p.pos:'WR']||6.3),basis:'F'};
+}
+// Normal CDF - Abramowitz & Stegun 7.1.26, plenty for a win probability.
+function ncdf(z){
+  const t=1/(1+0.2316419*Math.abs(z));
+  const d=0.3989423*Math.exp(-z*z/2);
+  let p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  return z>0?1-p:p;
+}
+function lineupStats(list,wk){
+  const L=weekLineup(list,wk);
+  const st=['QB','RB','WR','TE','FLEX'].flatMap(k=>L.line[k]);
+  let varsum=0, nFall=0;
+  st.forEach(x=>{ const s=sdOf(x.p); varsum+=s.sd*s.sd; if(s.basis==='F') nFall++; });
+  return {line:L.line,total:L.total,filled:L.filled,legal:L.legal,
+          sd:Math.sqrt(varsum),fallbacks:nFall,starters:st};
+}
+async function loadMatchup(wk){
+  // Sleeper only has matchups once the regular season is running. Before that
+  // this returns nothing and the screen says so rather than inventing a rival.
+  //
+  // Returns TRUE only when it fetched something new. The caller re-renders on a
+  // truthy result, and returning the cached matchup here put the page into an
+  // infinite render loop the moment a matchup existed: render -> loadMatchup ->
+  // cache hit -> render. It never fired before week 1, so it would have shipped
+  // and hung the page on the first Sunday that mattered.
+  if(MATCHUP_WK===wk) return false;
+  MATCHUP=null; MATCHUP_WK=wk;
+  if(!regularSeason()) return false;
+  try{
+    const r=await fetch('https://api.sleeper.app/v1/league/'+(LEAGUE_ID||CFG.league_id)+'/matchups/'+wk,{cache:'no-store'});
+    if(!r.ok) return false;
+    const rows=await r.json();
+    if(!rows||!rows.length) return false;
+    const myRid=CFG.roster_by_owner[CFG.me_id];
+    const meRow=rows.find(x=>x.roster_id===myRid);
+    if(!meRow) return false;
+    const opp=rows.find(x=>x.matchup_id===meRow.matchup_id&&x.roster_id!==myRid);
+    MATCHUP={me:meRow,opp:opp||null};
+    return true;                     // newly fetched - one re-render, then done
+  }catch(e){ MATCHUP=null; }
+  return false;
+}
+function ridToName(rid){
+  const owner=Object.keys(CFG.roster_by_owner).find(o=>CFG.roster_by_owner[o]===rid);
+  return (owner&&CFG.user_names[owner])||('Roster '+rid);
+}
+
+function viewLineup(){
+  if(!ROSTERED){
+    $('view').innerHTML='<div class="card"><h2>Lineup</h2><p>Loading rosters&hellip;</p></div>';
+    Promise.all([loadState(),loadRosters()]).then(()=>render());
+    return;
+  }
+  const wk=luWeek();
+  const mine=myPlayers();
+  const S=lineupStats(mine,wk);
+  let h='<div class="card"><h2>Week '+wk+' lineup</h2>';
+  if(!regularSeason()){
+    h+='<div class="note"><div class="lb">Not the regular season yet</div>Sleeper reports <b>'+
+       (NFLSTATE?NFLSTATE.season_type:'unknown')+'</b> season. There is no live matchup to read, so the '+
+       'opponent and win probability below are unavailable rather than estimated.</div>';
+  }
+  h+='<div class="ctl"><label>Week <select id="luWk">';
+  for(let w=1;w<=18;w++) h+='<option value="'+w+'"'+(w===wk?' selected':'')+'>'+w+'</option>';
+  h+='</select></label></div></div>';
+
+  // ---- projection, floor, ceiling ---------------------------------------
+  // Floor and ceiling of the LINEUP, not the sum of nine individual floors.
+  // Summing each starter's 15th percentile gives the week where all nine have a
+  // bad day at once - for this roster that is 57.5 against a 133.6 projection,
+  // a number that reads like a floor and is nothing of the sort. The lineup
+  // total is what matters, and its spread is sqrt(sum of variances), so the
+  // 15th/85th percentiles sit about 1.036 sd either side of the projection.
+  const Z15=1.036;
+  const flr=S.total-Z15*S.sd, ceil=S.total+Z15*S.sd;
+  const allBad=S.starters.reduce((a,x)=>a+(x.p.flr!=null?x.p.flr:x.v*0.6),0);
+  const measured=S.starters.filter(x=>x.p.sd!=null).length;
+  h+='<div class="card"><h2>What you project</h2>'+
+     '<div class="split"><div class="lb">week '+wk+'</div>'+
+     '<div class="srow"><span class="sn">Projection</span><span class="st2"><b>'+S.total.toFixed(1)+'</b></span></div>'+
+     '<div class="srow"><span class="sn">Floor</span><span class="st2">'+flr.toFixed(1)+'</span></div>'+
+     '<div class="srow"><span class="sn">Ceiling</span><span class="st2">'+ceil.toFixed(1)+'</span></div>'+
+     '<div class="srow"><span class="sn">Week-to-week swing (sd)</span><span class="st2">&plusmn;'+S.sd.toFixed(1)+'</span></div>'+
+     '</div>';
+  h+='<p style="font-size:12.5px;color:var(--ink-3);margin-top:8px">Floor and ceiling are the 15th and 85th percentiles '+
+     'of your <b>lineup total</b>, from weekly spreads MEASURED on real 2025 scores. <b>'+measured+' of '+
+     S.starters.length+'</b> starter'+(measured===1?'':'s')+' ha'+(measured===1?'s':'ve')+' their own measured spread'+
+     (S.fallbacks?'; the other '+S.fallbacks+' use the positional median, which is the weakest part of this number':'')+
+     '. It assumes the nine scores are independent &mdash; if you ever start a quarterback and his own receiver, '+
+     'the real spread is wider than this.</p>'+
+     '<p style="font-size:12.5px;color:var(--ink-3)">For contrast, all nine starters hitting their individual 15th '+
+     'percentile in the same week totals <b>'+allBad.toFixed(1)+'</b>. That is not your floor &mdash; it is a much rarer '+
+     'event than a 15%-of-weeks outcome, and treating it as a floor is a mistake worth naming.</p></div>';
+
+  // ---- opponent and win probability -------------------------------------
+  if(regularSeason()){
+    loadMatchup(wk).then(fresh=>{ if(fresh) render(); });
+  }
+  if(MATCHUP&&MATCHUP.opp){
+    const oppPl=(MATCHUP.opp.players||[]).map(id=>FA[String(id)]).filter(Boolean);
+    const O=lineupStats(oppPl,wk);
+    const z=(S.total-O.total)/Math.sqrt(S.sd*S.sd+O.sd*O.sd);
+    const wpct=ncdf(z);
+    h+='<div class="card"><h2>Week '+wk+' matchup</h2>'+
+       '<div class="split"><div class="lb">'+ridToName(MATCHUP.opp.roster_id)+'</div>'+
+       '<div class="srow"><span class="sn">You</span><span class="st2"><b>'+S.total.toFixed(1)+'</b> &plusmn;'+S.sd.toFixed(1)+'</span></div>'+
+       '<div class="srow"><span class="sn">Them</span><span class="st2"><b>'+O.total.toFixed(1)+'</b> &plusmn;'+O.sd.toFixed(1)+'</span></div>'+
+       '<div class="srow"><span class="sn">Win probability</span><span class="st2"><b>'+Math.round(wpct*100)+'%</b></span></div>'+
+       '</div><p style="font-size:12.5px;color:var(--ink-3);margin-top:8px">'+
+       'Both sides are the <b>best legal lineup</b> from each roster, not what either manager has actually set &mdash; '+
+       'your opponent may start someone worse. Probability assumes each lineup is normally distributed around its '+
+       'projection with the measured weekly spread, and that the two are independent.</p></div>';
+  }else if(regularSeason()){
+    h+='<div class="card"><h2>Week '+wk+' matchup</h2><p>No matchup returned by Sleeper for this week yet.</p></div>';
+  }
+
+  // ---- the lineup, and what to change -----------------------------------
+  const startIds=new Set(S.starters.map(x=>x.p.n));
+  const bench=mine.filter(p=>!startIds.has(p.n));
+  h+='<div class="card"><h2>Start these nine</h2><div class="slots">';
+  ['QB','RB','WR','TE','FLEX'].forEach(k=>{
+    S.line[k].forEach(x=>{
+      h+='<div class="sl"><div class="lb"><span>'+k+'</span><span class="pkn">'+x.v.toFixed(1)+'</span></div>'+
+         '<div class="vl">'+x.p.n+'</div></div>';
+    });
+  });
+  for(let i=S.filled;i<9;i++) h+='<div class="sl empty crit"><div class="lb"><span>EMPTY</span></div><div class="vl">no eligible player</div></div>';
+  h+='</div></div>';
+
+  // benched players who out-project a starter at a slot they could fill
+  const swaps=[];
+  bench.forEach(b=>{
+    const bv=wp(b,wk); if(bv===null) return;
+    S.starters.forEach(x=>{
+      if(x.v>=bv) return;
+      const slotOk = (x.p.pos===b.pos) || (['RB','WR','TE'].includes(b.pos)&&['RB','WR','TE'].includes(x.p.pos));
+      if(slotOk) swaps.push({inP:b,inV:bv,outP:x.p,outV:x.v,d:bv-x.v});
+    });
+  });
+  swaps.sort((a,b)=>b.d-a.d);
+  const seen=new Set(), best=[];
+  swaps.forEach(s=>{ if(seen.has(s.inP.n)||seen.has(s.outP.n)) return;
+                     seen.add(s.inP.n); seen.add(s.outP.n); best.push(s); });
+  if(best.length){
+    h+='<div class="card warn"><h2>Changes worth making</h2>';
+    best.slice(0,4).forEach(s=>{
+      h+='<div class="alt"><span class="an">Start '+s.inP.n+' <span class="pm" style="display:inline">'+
+         s.inP.pos+' &middot; '+s.inV.toFixed(1)+'</span></span>'+
+         '<span class="ar">over '+s.outP.n+' ('+s.outV.toFixed(1)+') &mdash; worth <b>+'+s.d.toFixed(1)+'</b></span></div>';
+    });
+    h+='<p style="margin-top:9px;font-size:12.5px">These are projection differences only. A gap under about two points '+
+       'is inside the noise of the projection itself and is not a reason to move anyone.</p></div>';
+  }else{
+    h+='<div class="card"><h2>No changes worth making</h2><p>Nobody on your bench out-projects a starter they could replace in week '+wk+'.</p></div>';
+  }
+
+  // ---- full roster ------------------------------------------------------
+  h+='<div class="card"><h2>Full roster, week '+wk+'</h2><div class="tscroll"><table><thead><tr>'+
+     '<th>Player</th><th>PROJ</th><th>FLOOR</th><th>CEIL</th><th>10+</th><th>BYE</th></tr></thead><tbody>';
+  mine.slice().sort((a,b)=>{
+    const sa=startIds.has(a.n)?0:1, sb=startIds.has(b.n)?0:1;
+    return sa-sb||((wp(b,wk)||0)-(wp(a,wk)||0));
+  }).forEach(p=>{
+    const v=wp(p,wk), st=startIds.has(p.n);
+    h+='<tr'+(st?'':' class="lot"')+'><td><span class="pn">'+(st?'&#9679; ':'')+p.n+'</span>'+
+       '<span class="pm">'+p.pos+(p.tm?' &middot; '+p.tm:'')+(p.inj?' &middot; '+String(p.inj).slice(0,4).toUpperCase():'')+'</span></td>'+
+       '<td>'+(v===null?(onBye(p,wk)?'<b style="color:var(--bad)">BYE</b>':'&mdash;'):v.toFixed(1))+'</td>'+
+       '<td>'+(p.flr==null?'&mdash;':p.flr.toFixed(1))+'</td>'+
+       '<td>'+(p.ceil==null?'&mdash;':p.ceil.toFixed(1))+'</td>'+
+       '<td>'+(p.h10==null?'&mdash;':Math.round(p.h10*100)+'%')+'</td>'+
+       '<td>'+(p.bye||'&mdash;')+'</td></tr>';
+  });
+  h+='</tbody></table></div><p style="font-size:12.5px;color:var(--ink-3);margin-top:8px">'+
+     'PROJ is Sleeper&rsquo;s per-week projection. FLOOR, CEIL and 10+ are MEASURED from real 2025 weeks &mdash; '+
+     'a dash means no 2025 history, not a zero.</p></div>';
+  $('view').innerHTML=h;
+  const sel=$('luWk'); if(sel) sel.onchange=()=>{ LU_WEEK=+sel.value; MATCHUP_WK=null; render(); };
+}
+
+// ============================ league analyzer ============================
+// Position-by-position across all twelve rosters, in season. The draft-time
+// version of this ranked teams by their best nine; this one runs week by week so
+// byes and roles that have changed since August actually show up.
+function viewLeague(){
+  if(!ROSTERED){
+    $('view').innerHTML='<div class="card"><h2>League</h2><p>Loading rosters&hellip;</p></div>';
+    Promise.all([loadState(),loadRosters()]).then(()=>render());
+    return;
+  }
+  const wk=luWeek();
+  if(!LEAGUE_ROSTERS){
+    $('view').innerHTML='<div class="card"><h2>League</h2><p>Reading league rosters&hellip;</p></div>';
+    loadLeagueRosters().then(()=>render());
+    return;
+  }
+  const teams=LEAGUE_ROSTERS.map(r=>{
+    const pl=(r.players||[]).map(id=>FA[String(id)]).filter(Boolean);
+    const S=lineupStats(pl,wk);
+    const ros=rosLineup(pl,wk);
+    const byPos={};
+    ['QB','RB','WR','TE'].forEach(pos=>{
+      const at=pl.filter(p=>p.pos===pos);
+      byPos[pos]={n:at.length,
+        pts:at.reduce((a,p)=>a+(p.pts||0),0),
+        best:at.length?Math.max.apply(null,at.map(p=>p.pts||0)):0};
+    });
+    return {rid:r.roster_id,name:ridToName(r.roster_id),n:pl.length,
+            wkTotal:S.total,legal:S.legal,filled:S.filled,ros:ros.total,
+            shortWeeks:ros.shortWeeks,byPos:byPos,
+            mine:CFG.roster_by_owner[CFG.me_id]===r.roster_id};
+  }).sort((a,b)=>b.ros-a.ros);
+  teams.forEach((t,i)=>t.rank=i+1);
+  const me=teams.find(t=>t.mine);
+
+  let h='<div class="card"><h2>League, week '+wk+' onward</h2>'+
+     '<p>Every roster scored the way your own is: best legal lineup <b>each week</b>, summed to the end of the season. '+
+     'A team that looks strong on paper but cannot field nine in week 11 is scored for that here.</p>'+
+     (me?'<p>You are <b>'+me.rank+'</b> of '+teams.length+' on rest-of-season, at <b>'+me.ros.toFixed(0)+'</b>.</p>':'')+
+     '</div>';
+  h+='<div class="card"><h2>Rest of season</h2><div class="tscroll"><table><thead><tr>'+
+     '<th>Team</th><th>ROS</th><th>WK '+wk+'</th><th>QB</th><th>RB</th><th>WR</th><th>TE</th></tr></thead><tbody>';
+  teams.forEach(t=>{
+    h+='<tr'+(t.mine?' style="background:var(--gold-soft)"':'')+'><td><span class="pn">'+t.rank+'. '+t.name+
+       '</span><span class="pm">'+t.n+' players'+(t.shortWeeks.length?' &middot; short in wk '+t.shortWeeks.join(','):'')+'</span></td>'+
+       '<td><b>'+t.ros.toFixed(0)+'</b></td><td>'+(t.filled<9?'<b style="color:var(--bad)">'+t.filled+'/9</b>':t.wkTotal.toFixed(0))+'</td>';
+    ['QB','RB','WR','TE'].forEach(pos=>{ h+='<td>'+t.byPos[pos].n+'</td>'; });
+    h+='</tr>';
+  });
+  h+='</tbody></table></div><p style="font-size:12.5px;color:var(--ink-3);margin-top:8px">'+
+     'ROS uses the season projection spread across the weeks each player actually plays. QB/RB/WR/TE are <b>counts</b>, '+
+     'not ratings &mdash; a manager holding one quarterback is one injury from an illegal lineup.</p></div>';
+
+  // where I am strong and weak, by position, against the room
+  if(me){
+    h+='<div class="card"><h2>Where you stand by position</h2>';
+    ['RB','WR','TE','QB'].forEach(pos=>{
+      const vals=teams.map(t=>({name:t.name,v:t.byPos[pos].pts,mine:t.mine})).sort((a,b)=>b.v-a.v);
+      const rank=vals.findIndex(x=>x.mine)+1;
+      const med=vals[Math.floor(vals.length/2)].v;
+      const mineV=vals[rank-1].v;
+      h+='<div class="alt"><span class="an">'+pos+' &mdash; <b>'+rank+'</b> of '+vals.length+
+         '</span><span class="ar">'+mineV.toFixed(0)+' projected points rostered vs league median '+med.toFixed(0)+
+         ' &middot; '+(mineV>=med?'<span style="color:var(--good)">above</span>':'<span style="color:var(--bad)">below</span>')+'</span></div>';
+    });
+    h+='<p style="margin-top:9px;font-size:12.5px;color:var(--ink-3)">Total projected points rostered at each position. '+
+       'This counts depth you cannot start, so it reads surplus as strength &mdash; useful for spotting what you could trade, '+
+       'not for judging your lineup.</p></div>';
+  }
+  $('view').innerHTML=h;
+}
+let LEAGUE_ROSTERS=null;
+async function loadLeagueRosters(){
+  try{
+    const r=await fetch('https://api.sleeper.app/v1/league/'+(LEAGUE_ID||CFG.league_id)+'/rosters',{cache:'no-store'});
+    if(r.ok) LEAGUE_ROSTERS=await r.json();
+  }catch(e){ LEAGUE_ROSTERS=[]; }
+  return LEAGUE_ROSTERS;
 }
 
 // ============================ views ======================================
@@ -920,7 +1521,9 @@ function render(){
   document.querySelector('nav button[data-v="PICK"]').textContent = done?'PICKUP':'PICK';
   if(VIEW==='PICK'){ if(done) viewFA(); else viewPick(avail,cur,total,nextPick,isMine,st,onClock,me,teams,gain,ctxBase); }
   if(VIEW==='BOARD')  viewBoard(avail,st);
+  if(VIEW==='LINEUP') viewLineup();
   if(VIEW==='TEAM')   viewTeam(me,st,teams);
+  if(VIEW==='LEAGUE') viewLeague();
   if(VIEW==='RIVALS') viewRivals(teams,me);
   if(VIEW==='LOG')    viewLog(EFF);
   if(VIEW==='MANUAL') viewManual(avail,EFF);

@@ -95,8 +95,40 @@ for r in range(1, R + 1):
     for i, s in enumerate(range(1, T + 1) if r % 2 else range(T, 0, -1)):
         CFG["slots_by_pick"][str((r - 1) * T + i + 1)] = s
 
+# In-season pool. Built by inseason.py, and deliberately NOT board.json: the
+# free-agency screen exists to find players who were never worth drafting.
+_IS = json.load(open(os.path.join(HERE, "data", "inseason.json")))
+
+# Ship only the fields the page reads. inseason.json keeps everything for the
+# python side; embedding all of it cost 331 KB, of which 123 KB was per-week
+# opponent strings nothing on this screen uses. This page gets opened on a phone
+# during a first-come-first-served scramble - weight is a feature, not a detail.
+_FA_FIELDS = ("n", "pos", "tm", "bye", "dcp", "dco", "inj", "pts",
+              "wp", "h10", "h15", "ceil", "flr", "sd", "sr", "g25", "mb")
+
+
+def _slim(rec):
+    out = {}
+    for k in _FA_FIELDS:
+        v = rec.get(k)
+        # Absent means unknown to the page, which is exactly what null means
+        # here - so drop it rather than shipping the word "null" 500 times.
+        if v is None or v == "" or v == {}:
+            continue
+        if k == "mb" and v != "M":
+            continue          # only "has 2025 history" needs saying
+        if k == "g25" and not v:
+            continue
+        out[k] = v
+    return out
+
+
+_FAPOOL = {pid: _slim(r) for pid, r in _IS["players"].items()}
+
 page = open(os.path.join(HERE, "live_template.html")).read()
 page = page.replace("__CFG__", json.dumps(CFG, separators=(",", ":")))
+page = page.replace("__FAPOOL__", json.dumps(_FAPOOL, separators=(",", ":")))
+page = page.replace("__FAMETA__", json.dumps(_IS["meta"], separators=(",", ":")))
 page = page.replace("__PLAYERS__", json.dumps(players, separators=(",", ":")))
 page = page.replace("__PULLED__", datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"))
 page = page.replace("__BUILT__", datetime.datetime.now().strftime("%a %d %b, %H:%M"))
@@ -121,8 +153,19 @@ if _m:
     except FileNotFoundError:
         print("  js syntax: SKIPPED (node not found)")
     # required globals must survive future block edits
-    for _name in ("let picks", "function render", "function poll", "function simulate", "rebuildPickMap"):
+    for _name in ("let picks", "function render", "function poll", "function simulate", "rebuildPickMap",
+                  "function viewFA", "function weekLineup", "function faRows", "function faBind",
+                  "function viewLineup", "function viewLeague", "function lineupStats", "function ncdf"):
         if _name not in _m.group(1):
             raise SystemExit("MISSING from emitted JS: " + _name)
     print("  js globals: OK")
+# No placeholder may survive into the shipped page. A missed __X__ renders as
+# literal text and the JS dies at parse time.
+import re as _re2
+_left = _re2.findall(r"__[A-Z][A-Z0-9_]*__", page)
+if _left:
+    raise SystemExit("UNREPLACED PLACEHOLDERS in live.html: %s" % sorted(set(_left)))
+print("  placeholders: all replaced")
+print("  in-season pool: %d players (%d never on the draft board)"
+      % (_IS["meta"]["n_pool"], _IS["meta"]["n_pool"] - _IS["meta"]["n_on_board"]))
 print("wrote %s (%.0f KB) draft_id=%s me=%s slot=%d" % (out, len(page)/1024, DRAFT_ID, ME_ID, CFG["slot"]))
