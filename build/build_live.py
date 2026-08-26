@@ -160,7 +160,8 @@ if _m:
                   "function viewFA", "function weekLineup", "function faRows", "function faBind",
                   "function viewLineup", "function viewLeague", "function lineupStats", "function ncdf",
                   "function viewMoves", "function buildMoves", "function rosterMetrics", "function tradeSection",
-                  "function buildPlan", "function shapeBreach", "function planRow"):
+                  "function buildPlan", "function shapeBreach", "function planRow",
+                  "function viewToday", "function viewMore"):
         if _name not in _m.group(1):
             raise SystemExit("MISSING from emitted JS: " + _name)
     print("  js globals: OK")

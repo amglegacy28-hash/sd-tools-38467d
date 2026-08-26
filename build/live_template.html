@@ -149,6 +149,16 @@ tr.row:hover td{background:var(--panel-2)}
 .stept{font-size:17px;line-height:1.3}
 .steps2{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);margin-top:3px;line-height:1.45}
 .stepw{font-size:13.5px;color:var(--ink-2);margin-top:5px;line-height:1.4}
+.act{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.act:last-child{border-bottom:none}
+.actk{flex:none;font-family:"IBM Plex Mono",monospace;font-size:9px;font-weight:600;letter-spacing:.07em;
+  padding:3px 6px;border-radius:3px;margin-top:2px;min-width:52px;text-align:center}
+.k-START{background:var(--good-bg);color:var(--good)}
+.k-MOVE{background:var(--gold-soft);color:var(--gold)}
+.k-ALERT{background:var(--bad-bg);color:var(--bad)}
+.actb{flex:1;min-width:0}
+.actt{font-size:16px;line-height:1.3;font-weight:500}
+.acts{font-size:13px;color:var(--ink-2);margin-top:2px;line-height:1.4}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
 .chip{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.04em;
   padding:5px 9px;border-radius:999px;background:var(--panel-2);color:var(--ink-2);
@@ -223,15 +233,15 @@ footer{margin:22px 0 8px;padding-top:12px;border-top:1px solid var(--line);
 <footer id="prov"></footer>
 </div>
 <nav>
-  <button data-v="PICK"   aria-pressed="true">PICK</button>
-  <button data-v="BOARD"  aria-pressed="false">BOARD</button>
-  <button data-v="MOVES"  aria-pressed="false">MOVES</button>
-  <button data-v="LINEUP" aria-pressed="false">LINEUP</button>
-  <button data-v="TEAM"   aria-pressed="false">TEAM</button>
-  <button data-v="LEAGUE" aria-pressed="false">LEAGUE</button>
-  <button data-v="RIVALS" aria-pressed="false">RIVALS</button>
-  <button data-v="LOG"    aria-pressed="false">LOG</button>
-  <button data-v="MANUAL" aria-pressed="false">MANUAL</button>
+  <button data-v="TODAY"  data-when="season" aria-pressed="false">TODAY</button>
+  <button data-v="PICK"   data-when="both"   aria-pressed="true">PICK</button>
+  <button data-v="LEAGUE" data-when="season" aria-pressed="false">LEAGUE</button>
+  <button data-v="MORE"   data-when="season" aria-pressed="false">MORE</button>
+  <button data-v="BOARD"  data-when="draft"  aria-pressed="false">BOARD</button>
+  <button data-v="TEAM"   data-when="draft"  aria-pressed="false">TEAM</button>
+  <button data-v="RIVALS" data-when="draft"  aria-pressed="false">RIVALS</button>
+  <button data-v="LOG"    data-when="draft"  aria-pressed="false">LOG</button>
+  <button data-v="MANUAL" data-when="draft"  aria-pressed="false">MANUAL</button>
 </nav>
 <script>
 const CFG=__CFG__, P=__PLAYERS__;
@@ -2021,8 +2031,122 @@ function tradeSection(){
   return h;
 }
 
+// ============================ today ======================================
+// Nine tabs is a menu, not a product. In season there are only two things you
+// do - set a lineup and decide whether to touch the roster - and they were split
+// across three screens (LINEUP, MOVES, PICKUP) that each answered part of it.
+// This is one surface: what needs doing, then the lineup it applies to.
+// The draft-time tabs are untouched; they only appear while a draft is running.
+function viewToday(){
+  if(!ROSTERED){
+    $('view').innerHTML='<div class="card"><h2>Today</h2><p>Loading your roster&hellip;</p></div>';
+    Promise.all([loadState(),loadRosters()]).then(()=>render());
+    return;
+  }
+  const wk=luWeek(), mine=myPlayers();
+  const S=lineupStats(mine,wk);
+  const P=buildPlan();
+
+  // ---- one line on where you actually stand ------------------------------
+  let h='<div class="card"><h2>Week '+wk+'</h2>';
+  if(!regularSeason()){
+    h+='<div class="note"><div class="lb">Pre-season</div>Sleeper reports <b>'+
+       (NFLSTATE?NFLSTATE.season_type:'unknown')+'</b> season, so there is no live matchup and no live week. '+
+       'Everything below is for week '+wk+', which you chose &mdash; not the current one.</div>';
+  }
+  h+='<p>Your best legal lineup projects <b>'+S.total.toFixed(1)+'</b> points'+
+     (S.legal?'':' &mdash; <b style="color:var(--bad)">and you cannot field nine</b>')+'.</p>'+
+     '<div class="ctl"><label>Week <select id="tdWk">';
+  for(let w=1;w<=18;w++) h+='<option value="'+w+'"'+(w===wk?' selected':'')+'>'+w+'</option>';
+  h+='</select></label></div></div>';
+
+  // ---- everything that needs doing, in one list --------------------------
+  const acts=[];
+  // 1. lineup changes
+  const startIds=new Set(S.starters.map(x=>x.p.n));
+  const bench=mine.filter(p=>!startIds.has(p.n));
+  const swaps=[];
+  bench.forEach(b=>{ const bv=wp(b,wk); if(bv===null) return;
+    S.starters.forEach(x=>{ if(x.v>=bv) return;
+      const ok=(x.p.pos===b.pos)||(['RB','WR','TE'].includes(b.pos)&&['RB','WR','TE'].includes(x.p.pos));
+      if(ok) swaps.push({inP:b,inV:bv,outP:x.p,outV:x.v,d:bv-x.v}); }); });
+  swaps.sort((a,b)=>b.d-a.d);
+  const seen=new Set();
+  swaps.forEach(s=>{ if(seen.has(s.inP.n)||seen.has(s.outP.n)||s.d<2) return;
+    seen.add(s.inP.n); seen.add(s.outP.n);
+    acts.push({kind:'START',t:'Start '+s.inP.n+' over '+s.outP.n,
+      s:'+'+s.d.toFixed(1)+' points this week &middot; '+s.inV.toFixed(1)+' vs '+s.outV.toFixed(1),
+      urgent:true}); });
+  // 2. roster moves
+  P.steps.forEach(st=>{
+    acts.push({kind:'MOVE',t:'Drop '+st.drop.n+', add '+st.add.n,
+      s:st.why[0].charAt(0).toUpperCase()+st.why[0].slice(1)+'.', urgent:false});
+  });
+  // 3. players who cannot play
+  mine.forEach(p=>{ if(injSevere(p)&&startIds.has(p.n))
+    acts.push({kind:'ALERT',t:p.n+' is '+String(p.inj).toUpperCase(),
+      s:'He is in your projected lineup and may not take the field.',urgent:true}); });
+
+  if(!acts.length){
+    h+='<div class="card"><h2>Nothing to do</h2>'+
+       '<p>Your lineup is already the best you can field this week, and no move on the wire beats what you hold '+
+       'by more than the margin of error. Doing nothing is the correct play.</p></div>';
+  }else{
+    h+='<div class="card"><h2>What to do</h2>';
+    acts.forEach((a,i)=>{
+      h+='<div class="act"><span class="actk k-'+a.kind+'">'+a.kind+'</span>'+
+         '<div class="actb"><div class="actt">'+a.t+'</div><div class="acts">'+a.s+'</div></div></div>';
+    });
+    h+='</div>';
+  }
+
+  // ---- the lineup itself --------------------------------------------------
+  h+='<div class="card"><h2>Your week '+wk+' lineup</h2><div class="slots">';
+  ['QB','RB','WR','TE','FLEX'].forEach(k=>S.line[k].forEach(x=>{
+    h+='<div class="sl"><div class="lb"><span>'+k+'</span><span class="pkn">'+x.v.toFixed(1)+'</span></div>'+
+       '<div class="vl">'+x.p.n+'</div></div>';
+  }));
+  for(let i=S.filled;i<9;i++) h+='<div class="sl empty crit"><div class="lb"><span>EMPTY</span></div><div class="vl">nobody eligible</div></div>';
+  h+='</div>';
+  const flr=S.total-1.036*S.sd, ceil=S.total+1.036*S.sd;
+  h+='<p style="margin-top:10px;font-size:13px;color:var(--ink-2)">Typical range <b>'+flr.toFixed(0)+'</b> to <b>'+
+     ceil.toFixed(0)+'</b> &mdash; the middle 70% of outcomes, from spreads measured on real 2025 weeks.</p>';
+  h+='<p style="font-size:12.5px;color:var(--ink-3)">Full roster, floor and ceiling per player, and the matchup are on '+
+     '<b>MORE &rarr; lineup detail</b>. Every move considered is on <b>MORE &rarr; all moves</b>. '+
+     'The whole free-agent pool is on <b>WIRE</b>.</p></div>';
+  $('view').innerHTML=h;
+  const sel=$('tdWk'); if(sel) sel.onchange=()=>{ LU_WEEK=+sel.value; MATCHUP_WK=null; render(); };
+}
+
+// ---- MORE: the draft-time screens, parked behind one tab -----------------
+let MORE_SUB='MOVES';
+function viewMore(me,st,teams,avail,EFF){
+  let h='<div class="card"><h2>More</h2><div class="modes">';
+  [['MOVES','ALL MOVES'],['LINEUP','LINEUP DETAIL'],['TEAM','MY TEAM'],['BOARD','BOARD'],
+    ['RIVALS','RIVALS'],['LOG','DRAFT LOG'],['MANUAL','MANUAL']].forEach(x=>{
+    h+='<button class="mode'+(MORE_SUB===x[0]?' on':'')+'" data-sub="'+x[0]+'">'+x[1]+'</button>';
+  });
+  h+='</div></div><div id="subview"></div>';
+  $('view').innerHTML=h;
+  const host=$('subview');
+  const real=$('view');
+  // the sub-views write into #view, so swap the target while they run
+  const stash=document.getElementById('view');
+  stash.id='view-outer'; host.id='view';
+  if(MORE_SUB==='MOVES')  viewMoves();
+  if(MORE_SUB==='LINEUP') viewLineup();
+  if(MORE_SUB==='TEAM')   viewTeam(me,st,teams);
+  if(MORE_SUB==='BOARD')  viewBoard(avail,st);
+  if(MORE_SUB==='RIVALS') viewRivals(teams,me);
+  if(MORE_SUB==='LOG')    viewLog(EFF);
+  if(MORE_SUB==='MANUAL') viewManual(avail,EFF);
+  host.id='subview'; stash.id='view';
+  document.querySelectorAll('.mode[data-sub]').forEach(b=>b.onclick=()=>{ MORE_SUB=b.dataset.sub; render(); });
+}
+
 // ============================ views ======================================
 let INSPECT=null;
+let TODAY_SEEN=0;
 let VIEW='PICK', lastRank=null, lastTotal=null, lastMineCount=0, lastStarters=null;
 const $=id=>document.getElementById(id);
 
@@ -2062,9 +2186,25 @@ function render(){
 
   const ctxBase={depth:st.depth,line:st.line,avail};
   const done = cur>total || (IS_TEST && LEAGUE_ID);
-  document.querySelector('nav button[data-v="PICK"]').textContent = done?'PICKUP':'PICK';
+  // Four tabs in season, the draft tabs while a draft is running. The draft
+  // tool is not degraded to make the in-season one tidy - they are different
+  // jobs and only one of them is ever live.
+  document.querySelector('nav button[data-v="PICK"]').textContent = done?'WIRE':'PICK';
+  document.querySelectorAll('nav button[data-when]').forEach(b=>{
+    const w=b.dataset.when;
+    b.style.display = (w==='both'||(done? w==='season' : w==='draft')) ? '' : 'none';
+  });
+  if(done && (VIEW==='BOARD'||VIEW==='TEAM'||VIEW==='RIVALS'||VIEW==='LOG'||VIEW==='MANUAL'||
+              VIEW==='MOVES'||VIEW==='LINEUP')){
+    MORE_SUB=VIEW; VIEW='MORE';
+    document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.v===VIEW?'true':'false'));
+  }
+  if(done && VIEW==='PICK' && !TODAY_SEEN){ TODAY_SEEN=1; VIEW='TODAY';
+    document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.v===VIEW?'true':'false')); }
   if(VIEW==='PICK'){ if(done) viewFA(); else viewPick(avail,cur,total,nextPick,isMine,st,onClock,me,teams,gain,ctxBase); }
   if(VIEW==='BOARD')  viewBoard(avail,st);
+  if(VIEW==='TODAY')  viewToday();
+  if(VIEW==='MORE')   viewMore(me,st,teams,avail,EFF);
   if(VIEW==='MOVES')  viewMoves();
   if(VIEW==='LINEUP') viewLineup();
   if(VIEW==='TEAM')   viewTeam(me,st,teams);
