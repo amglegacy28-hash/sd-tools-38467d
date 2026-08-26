@@ -161,9 +161,33 @@ def build():
                 rec["k"] = round(k, 2)
                 rec["m25"] = round(m25, 1)
                 rec["m26"] = round(m26, 1)
-                # what changed, in one word, for the UI to show without arithmetic
+                # WHY it changed, not just that it did. Cross-checked against
+                # Sleeper's own depth chart, which is a separate pipeline from the
+                # projections: median depth-chart order came out 3.0 for players
+                # whose rate fell, 2.0 for flat, 1.0 for risen - so the two agree.
+                #
+                # But six players whose rate fell are still listed FIRST at their
+                # spot: Kittle 80->60%, Goedert 60->33%, Dobbins 60->40%, Ferguson,
+                # Henry, Gadsden. They did not lose a job; they are projected to
+                # score less in the same one. Calling that "role lost" is the tool
+                # claiming to know something it does not - and it would have buried
+                # Kittle, who at 60% would be the best bench floor on this roster.
                 d = rec["h10a"] - (rec.get("h10") or 0)
-                rec["role"] = "LOST" if d <= -0.15 else ("GAINED" if d >= 0.15 else "SAME")
+                starter = (rec.get("dco") == 1)
+                if d <= -0.15 and not starter:
+                    rec["role"] = "BACKUP"       # behind someone now
+                elif d <= -0.15 and starter:
+                    rec["role"] = "LOWER"        # same job, smaller projection
+                elif d >= 0.15:
+                    rec["role"] = "HIGHER"
+                else:
+                    rec["role"] = "SAME"
+                # PHASE 1 - how much evidence is this resting on? A rate from 8
+                # games and one from 17 look identical on screen and are not.
+                # Standard error of a proportion; shown as a plus/minus so a thin
+                # sample cannot masquerade as a firm number.
+                p = rec["h10a"]
+                rec["se"] = round((p * (1 - p) / len(g)) ** 0.5, 3)
 
         rec["opp"] = opp.get(team or "", {})
         pool[pid] = rec
@@ -189,7 +213,12 @@ def build():
                     "describes a role the player may no longer have",
             "k": "2026 projected points per game divided by 2025 actual points per game. "
                  "Below ~0.7 means the role shrank; above ~1.3 means it grew",
-            "role": "LOST / SAME / GAINED - the direction h10a moved against h10",
+            "role": "BACKUP (rate fell and he is no longer listed first) / LOWER (rate fell "
+                    "but he is still the listed starter - projected to score less in the same "
+                    "job) / HIGHER / SAME. Cross-checked against Sleeper's depth chart, a "
+                    "separate pipeline: median depth order 3.0 BACKUP, 2.0 SAME, 1.0 HIGHER",
+            "se": "standard error of h10a given the number of 2025 games behind it. "
+                  "8 games at 30% is +/-16 points; 17 games at 30% is +/-11",
             "opp": "factual 2026 opponent by week. No difficulty rating - none is defensible here",
         },
     }

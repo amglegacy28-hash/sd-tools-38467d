@@ -114,8 +114,19 @@ for n in sorted(STALE):
 n_pool_adj = sum(1 for r in IS["players"].values() if r.get("h10a") is not None)
 check("role-adjusted floor computed for most measured players",
       n_pool_adj >= 250, "%d players" % n_pool_adj)
-check("role flag only ever LOST / SAME / GAINED",
-      all(r.get("role") in (None, "LOST", "SAME", "GAINED") for r in IS["players"].values()))
+check("role flag only ever BACKUP / LOWER / SAME / HIGHER",
+      all(r.get("role") in (None, "BACKUP", "LOWER", "SAME", "HIGHER")
+          for r in IS["players"].values()))
+# A player the depth chart still lists FIRST must never be called a backup.
+# Six were: Kittle 80->60%, Goedert, Dobbins, Ferguson, Henry, Gadsden. They are
+# projected to score less in the SAME job, which is a different claim, and
+# labelling it "role lost" would have buried Kittle - who at 60% would be the
+# best bench floor on this roster.
+mislabel = [r["n"] for r in IS["players"].values()
+            if r.get("role") == "BACKUP" and r.get("dco") == 1]
+check("nobody listed first on the depth chart is labelled a backup", not mislabel, mislabel[:4])
+check("every role-adjusted rate carries a standard error",
+      all("se" in r for r in IS["players"].values() if r.get("h10a") is not None))
 # the page must not rank on the raw rate anywhere
 live = os.path.join(HERE, "live.html")
 if os.path.exists(live):

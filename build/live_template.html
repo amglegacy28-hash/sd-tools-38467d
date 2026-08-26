@@ -158,6 +158,10 @@ tr.row:hover td{background:var(--panel-2)}
 .chip.up b{color:var(--good)}
 .chip.down{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
 .chip.down b{color:var(--bad)}
+.pm2{font-family:"IBM Plex Mono",monospace;font-size:9.5px;color:var(--ink-3);margin-left:2px;
+  font-weight:400;letter-spacing:0}
+td .tag{margin-left:5px;display:inline-block;vertical-align:1px}
+.t-THIN{background:var(--warn-bg);color:var(--warn)}
 .hero .nm+.nm{margin-top:-2px}
 th.sortable{cursor:pointer;white-space:nowrap}
 th.sortable:hover{color:var(--ink)}
@@ -1004,8 +1008,7 @@ function faCell(r,key,raw){
     case 'wk':    return raw?r.wkproj:(r.wkproj===null?(onBye(p,wk)?'BYE':'&mdash;'):r.wkproj.toFixed(1));
     case 'pts':   return raw?(p.pts||null):(p.pts?p.pts.toFixed(0):'&mdash;');
     case 'h10':   {const f=floorOf(p);
-                   return raw?(f==null?null:f)
-                             :(f==null?'&mdash;':Math.round(f*100)+'%'+(p.role==='LOST'?' <span class="tag t-NO">lost</span>':''));}
+                   return raw?(f==null?null:f):(f==null?'&mdash;':ratePct(p)+roleTag(p));}
     case 'h10raw':return raw?(p.h10==null?null:p.h10):(p.h10==null?'&mdash;':Math.round(p.h10*100)+'%');
     case 'h15':   return raw?(p.h15==null?null:p.h15):(p.h15==null?'&mdash;':Math.round(p.h15*100)+'%');
     case 'ceil':  return raw?(p.ceil==null?null:p.ceil):(p.ceil==null?'&mdash;':p.ceil.toFixed(1));
@@ -1217,7 +1220,7 @@ function faRosterPanel(mine,wk){
     h+='<tr'+(st?'':' class="lot"')+'><td><span class="pn">'+(st?'&#9679; ':'')+p.n+'</span>'+
        '<span class="pm">'+p.pos+(p.tm?' &middot; '+p.tm:'')+(st?' · starting':' · bench')+'</span></td>'+
        '<td>'+(v===null?(onBye(p,wk)?'<b style="color:var(--bad)">BYE</b>':'&mdash;'):v.toFixed(1))+'</td>'+
-       '<td>'+(floorOf(p)==null?'&mdash;':Math.round(floorOf(p)*100)+'%'+(p.role==='LOST'?' <span class="tag t-NO">lost</span>':''))+'</td>'+
+       '<td>'+(floorOf(p)==null?'&mdash;':Math.round(floorOf(p)*100)+'%'+roleTag(p))+'</td>'+
        '<td>'+(p.bye||'&mdash;')+'</td></tr>';
   });
   h+='</tbody></table></div><p style="font-size:12.5px;color:var(--ink-3);margin-top:8px">'+
@@ -1464,7 +1467,7 @@ function viewLineup(){
        '<td>'+(v===null?(onBye(p,wk)?'<b style="color:var(--bad)">BYE</b>':'&mdash;'):v.toFixed(1))+'</td>'+
        '<td>'+(p.flr==null?'&mdash;':p.flr.toFixed(1))+'</td>'+
        '<td>'+(p.ceil==null?'&mdash;':p.ceil.toFixed(1))+'</td>'+
-       '<td>'+(floorOf(p)==null?'&mdash;':Math.round(floorOf(p)*100)+'%'+(p.role==='LOST'?' <span class="tag t-NO">lost</span>':''))+'</td>'+
+       '<td>'+(floorOf(p)==null?'&mdash;':Math.round(floorOf(p)*100)+'%'+roleTag(p))+'</td>'+
        '<td>'+(p.bye||'&mdash;')+'</td></tr>';
   });
   h+='</tbody></table></div><p style="font-size:12.5px;color:var(--ink-3);margin-top:8px">'+
@@ -1587,10 +1590,31 @@ const BENCH_BAR=0.40;
 // ranks on h10 - that mistake put four men HANDOFF explicitly said not to
 // recommend at the top of the first moves plan.
 function floorOf(p){ return (p&&p.h10a!=null)?p.h10a:null; }
+function seOf(p){ return (p&&p.se!=null)?p.se:0.15; }   // unknown spread is treated as wide
+// Print a rate WITH the evidence behind it. A 25% from 8 games and a 25% from
+// 17 games are not the same claim and must not look the same.
+function ratePct(p){
+  const f=floorOf(p);
+  if(f==null) return '&mdash;';
+  return Math.round(f*100)+'%<span class="pm2">&plusmn;'+Math.round(seOf(p)*100)+'</span>';
+}
+// Is a difference in floor real, or inside the noise? Standard error of the
+// difference of two proportions. The best free agent on this wire is Keaton
+// Mitchell at 25% +/-12; the weakest bench piece is Allgeier at 18% +/-9. That
+// is a 7-point "gain" against 15 points of combined uncertainty - not a move,
+// and a tool that recommends it is churning a roster on noise.
+function realGain(add,drop){
+  const a=floorOf(add), d=floorOf(drop);
+  if(a==null||d==null) return null;
+  const se=Math.sqrt(seOf(add)*seOf(add)+seOf(drop)*seOf(drop));
+  return {diff:a-d, se:se, real:(a-d)>se};
+}
+const ROLE_TAG={BACKUP:['t-NO','backup now'],LOWER:['t-THIN','same job, projected lower'],
+                HIGHER:['t-MEASURED','bigger role'],SAME:null};
 function roleTag(p){
-  if(!p||!p.role||p.role==='SAME') return '';
-  const lost=p.role==='LOST';
-  return '<span class="tag '+(lost?'t-NO':'t-MEASURED')+'">role '+(lost?'lost':'gained')+'</span>';
+  const r=p&&ROLE_TAG[p.role];
+  if(!r) return '';
+  return '<span class="tag '+r[0]+'">'+r[1]+'</span>';
 }
 function benchFloorOf(ids,L){
   const lu=(L||weekLineup(ids,1,spw)).line;
@@ -1661,7 +1685,11 @@ function rankMoves(M){
     // depth first (how many bench pieces clear the bar), then the best rate,
     // then never at the cost of a materially worse lineup
     rows.sort((a,b)=>((b.dN||0)-(a.dN||0))||((b.dFloor||0)-(a.dFloor||0))||(b.dRos-a.dRos));
-    return rows.filter(r=>(r.dN||0)>0||(r.dFloor||0)>0.001);
+    return rows.filter(r=>{
+      if((r.dN||0)<=0&&(r.dFloor||0)<=0.001) return false;
+      const rg=realGain(r.add,r.drop);
+      return !rg || rg.real;      // inside the margin of error is not an upgrade
+    });
   }
   if(MOVE_GOAL==='worst') { rows.sort((a,b)=>(b.dWorst-a.dWorst)||(b.dRos-a.dRos)); return rows.filter(r=>r.dWorst>0.05); }
   rows.sort((a,b)=>(b.dRos-a.dRos)||((b.dFloor||0)-(a.dFloor||0)));
@@ -1738,6 +1766,14 @@ function buildPlan(){
         const br=shapeBreach(after);
         if(br>curBreach) return;                        // must not worsen roster shape
         const gain=planScore(m)-planScore(cur);
+        // A gain in floor only counts if it is bigger than the uncertainty in
+        // the two numbers being compared. Otherwise the plan churns the roster
+        // on noise - which is worse than doing nothing, because every drop is
+        // irreversible in a first-come league.
+        if(gain>0){
+          const rg=realGain(add,drop);
+          if(rg && !rg.real) return;
+        }
         const better = gain>0 || (gain===0 && br<curBreach);
         if(!better) return;
         if(!best || gain>best.gain || (gain===best.gain && br<best.breach) ||
@@ -1844,7 +1880,13 @@ function viewMoves(){
      'dropping <b>Otton</b> for the same man costs nothing. One number would have hidden that.</p></div>';
 
   if(!ranked.length){
-    h+='<div class="card warn"><h2>No move improves this</h2><p>Across <b>'+M.considered+'</b> free agents &times; your '+
+    h+='<div class="card warn"><h2>No move improves this</h2>'+
+       '<p style="font-size:13.5px">Moves are only offered when the gain is larger than the uncertainty in the '+
+       'two numbers being compared. The best free agent here is <b>'+
+       (M.moves.length?(function(){let b=null;M.moves.forEach(x=>{if(floorOf(x.add)!=null&&(!b||floorOf(x.add)>floorOf(b)))b=x.add;});
+         return b?b.n+'</b> at '+ratePct(b):'nobody</b>';})():'nobody</b>')+
+       ' &mdash; measured on his current role. Nothing on this wire clears your bench by more than the error bars.</p>'+
+       '<p>Across <b>'+M.considered+'</b> free agents &times; your '+
        myPlayers().length+' players &mdash; <b>'+(M.considered*myPlayers().length).toLocaleString()+'</b> transactions tested &mdash; '+
        'none raises your '+MOVE_GOALS[MOVE_GOAL].lb.toLowerCase()+'. Try another objective.</p></div>';
   }else{
