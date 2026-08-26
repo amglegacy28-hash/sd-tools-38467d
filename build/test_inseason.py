@@ -96,6 +96,34 @@ med = ratios[len(ratios) // 2]
 check("weekly projections still sum ABOVE season totals (they are conditional)",
       1.02 < med < 1.20, "median ratio %.3f over n=%d" % (med, len(ratios)))
 
+# 7. ROLE ADJUSTMENT. HANDOFF S2 named four players whose 2025 floor came from
+#    a role they no longer hold, and said explicitly: do not recommend them. The
+#    first moves engine ranked on the raw 2025 rate and put them straight at the
+#    top. These assertions exist so that cannot happen again silently.
+STALE = {"Jake Tonges": "TE2", "Theo Johnson": "TE2",
+         "Troy Franklin": "SWR3", "Kimani Vidal": "RB3"}
+byname = {r["n"]: r for r in IS["players"].values()}
+missing = [n for n in STALE if n not in byname]
+check("HANDOFF's four named stale-role players are all in the pool", not missing, missing)
+for n in sorted(STALE):
+    r = byname.get(n) or {}
+    raw, adj = r.get("h10"), r.get("h10a")
+    check("%s: role-adjusted floor is far below his 2025 rate" % n,
+          raw is not None and adj is not None and adj <= raw - 0.20,
+          "2025 %s -> 2026 %s" % (raw, adj))
+n_pool_adj = sum(1 for r in IS["players"].values() if r.get("h10a") is not None)
+check("role-adjusted floor computed for most measured players",
+      n_pool_adj >= 250, "%d players" % n_pool_adj)
+check("role flag only ever LOST / SAME / GAINED",
+      all(r.get("role") in (None, "LOST", "SAME", "GAINED") for r in IS["players"].values()))
+# the page must not rank on the raw rate anywhere
+live = os.path.join(HERE, "live.html")
+if os.path.exists(live):
+    src = open(live, encoding="utf-8").read()
+    import re as _re
+    bad = _re.findall(r"sort\([^)]*\.h10[^a]", src)
+    check("nothing in the shipped page sorts on the RAW 2025 rate", not bad, bad[:2])
+
 print("\n%d/%d checks passed" % (len(ran) - len(fails), len(ran)))
 if fails:
     print("FAILED: %s" % ", ".join(fails))

@@ -104,7 +104,10 @@ _IS = json.load(open(os.path.join(HERE, "data", "inseason.json")))
 # opponent strings nothing on this screen uses. This page gets opened on a phone
 # during a first-come-first-served scramble - weight is a feature, not a detail.
 _FA_FIELDS = ("n", "pos", "tm", "bye", "dcp", "dco", "inj", "pts",
-              "wp", "h10", "h15", "ceil", "flr", "sd", "sr", "g25", "mb")
+              "wp", "h10", "h15", "ceil", "flr", "sd", "sr", "g25", "mb",
+              # h10a is what decisions run on; h10 is kept so the page can show
+              # the reader BOTH and name the gap between them.
+              "h10a", "h15a", "k", "m25", "m26", "role")
 
 
 def _slim(rec):

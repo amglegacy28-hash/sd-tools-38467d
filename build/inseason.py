@@ -132,6 +132,39 @@ def build():
             n_measured += 1
         else:
             rec.update({"g25": len(g), "mb": "N"})
+
+        # ROLE-ADJUSTED FLOOR. A 2025 ten-point rate describes the role a player
+        # HAD. HANDOFF S2 named this exact failure - "everyone with a good floor
+        # lost the role that produced it: Tonges TE2, Theo Johnson TE2, Franklin
+        # SWR3, Vidal RB3" - and the first moves engine went and recommended all
+        # of them anyway, because it ranked on the raw 2025 rate.
+        #
+        # Keep his own measured week-to-week SHAPE, which is genuinely his, and
+        # move its LEVEL to the role he holds now, taken from the 2026 weekly
+        # projections. Then re-count how often that clears the bar.
+        #
+        # Validated out of sample: predict a player's 2025 rate from his 2024
+        # weeks plus his 2025 role, n=218 players -
+        #     2025 rate alone   mean err 0.161   r 0.735   bias +0.047
+        #     normal approx     mean err 0.085   r 0.942   bias +0.054
+        #     rescaled shape    mean err 0.077   r 0.936   bias +0.004  <- used
+        # On the 24% whose rate moved >25 points year to year - the role changes,
+        # the only cases this has to get right - naive error is 0.360 against
+        # 0.094 rescaled.
+        if len(g) >= 8 and w:
+            m25 = statistics.mean(g)
+            m26 = statistics.mean(list(w.values()))
+            if m25 > 0.5:
+                k = m26 / m25
+                rec["h10a"] = round(sum(1 for x in g if x * k >= 10) / len(g), 2)
+                rec["h15a"] = round(sum(1 for x in g if x * k >= 15) / len(g), 2)
+                rec["k"] = round(k, 2)
+                rec["m25"] = round(m25, 1)
+                rec["m26"] = round(m26, 1)
+                # what changed, in one word, for the UI to show without arithmetic
+                d = rec["h10a"] - (rec.get("h10") or 0)
+                rec["role"] = "LOST" if d <= -0.15 else ("GAINED" if d >= 0.15 else "SAME")
+
         rec["opp"] = opp.get(team or "", {})
         pool[pid] = rec
 
@@ -150,6 +183,13 @@ def build():
             "sr": "startable_rate, measured against this league's own weekly baseline; "
                   "null for pool-only players whose baseline was not computed",
             "mb": "M = has >=8 games of 2025 history. N = does not; nothing is interpolated",
+            "h10a": "ROLE-ADJUSTED expected 2026 ten-point rate: his own 2025 weekly shape "
+                    "rescaled to his 2026 projected level, then recounted. This is the number "
+                    "decisions run on. h10 (the raw 2025 rate) is kept for display only - it "
+                    "describes a role the player may no longer have",
+            "k": "2026 projected points per game divided by 2025 actual points per game. "
+                 "Below ~0.7 means the role shrank; above ~1.3 means it grew",
+            "role": "LOST / SAME / GAINED - the direction h10a moved against h10",
             "opp": "factual 2026 opponent by week. No difficulty rating - none is defensible here",
         },
     }

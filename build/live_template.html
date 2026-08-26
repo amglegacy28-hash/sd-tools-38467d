@@ -148,6 +148,7 @@ tr.row:hover td{background:var(--panel-2)}
 .stepb{flex:1;min-width:0}
 .stept{font-size:17px;line-height:1.3}
 .steps2{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);margin-top:3px;line-height:1.45}
+.stepw{font-size:13.5px;color:var(--ink-2);margin-top:5px;line-height:1.4}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
 .chip{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.04em;
   padding:5px 9px;border-radius:999px;background:var(--panel-2);color:var(--ink-2);
@@ -988,7 +989,7 @@ function faRows(){
         (b.score-a.score)
      || ((b.cover||0)-(a.cover||0))
      || (flexFirst(a.p)-flexFirst(b.p))
-     || ((b.p.h10==null?-1:b.p.h10)-(a.p.h10==null?-1:a.p.h10))
+     || ((floorOf(b.p)==null?-1:floorOf(b.p))-(floorOf(a.p)==null?-1:floorOf(a.p)))
      || ((b.wkproj||0)-(a.wkproj||0)));
   }
   return rows;
@@ -1002,7 +1003,10 @@ function faCell(r,key,raw){
     case 'cover': return raw?(r.cover==null?null:r.cover):(r.cover==null?'&mdash;':r.cover.toFixed(1));
     case 'wk':    return raw?r.wkproj:(r.wkproj===null?(onBye(p,wk)?'BYE':'&mdash;'):r.wkproj.toFixed(1));
     case 'pts':   return raw?(p.pts||null):(p.pts?p.pts.toFixed(0):'&mdash;');
-    case 'h10':   return raw?(p.h10==null?null:p.h10):(p.h10==null?'&mdash;':Math.round(p.h10*100)+'%');
+    case 'h10':   {const f=floorOf(p);
+                   return raw?(f==null?null:f)
+                             :(f==null?'&mdash;':Math.round(f*100)+'%'+(p.role==='LOST'?' <span class="tag t-NO">lost</span>':''));}
+    case 'h10raw':return raw?(p.h10==null?null:p.h10):(p.h10==null?'&mdash;':Math.round(p.h10*100)+'%');
     case 'h15':   return raw?(p.h15==null?null:p.h15):(p.h15==null?'&mdash;':Math.round(p.h15*100)+'%');
     case 'ceil':  return raw?(p.ceil==null?null:p.ceil):(p.ceil==null?'&mdash;':p.ceil.toFixed(1));
     case 'flr':   return raw?(p.flr==null?null:p.flr):(p.flr==null?'&mdash;':p.flr.toFixed(1));
@@ -1011,10 +1015,10 @@ function faCell(r,key,raw){
   }
 }
 const FA_COLS={
-  now :[['score','GAIN'],['cover','IF OUT'],['wk','WK PROJ'],['h10','10+'],['bye','BYE']],
-  next:[['score','GAIN'],['cover','IF OUT'],['wk','WK PROJ'],['h10','10+'],['bye','BYE']],
-  ros :[['score','GAIN'],['cover','IF OUT'],['pts','SEASON'],['h10','10+'],['bye','BYE']],
-  bye :[['score','GAIN'],['wk','WK PROJ'],['h10','10+'],['flr','FLOOR'],['bye','HIS BYE']],
+  now :[['score','GAIN'],['h10','10+ 2026'],['h10raw','WAS'],['wk','WK PROJ'],['bye','BYE']],
+  next:[['score','GAIN'],['h10','10+ 2026'],['h10raw','WAS'],['wk','WK PROJ'],['bye','BYE']],
+  ros :[['score','GAIN'],['h10','10+ 2026'],['h10raw','WAS'],['pts','SEASON'],['bye','BYE']],
+  bye :[['score','GAIN'],['h10','10+ 2026'],['h10raw','WAS'],['wk','WK PROJ'],['bye','HIS BYE']],
   ceil:[['ceil','CEILING'],['beats','VS YOURS'],['h15','15+'],['h10','10+'],['g25','GAMES']]
 };
 
@@ -1139,7 +1143,7 @@ function viewFA(){
        ['<b>'+(top.score>0?'+':'')+top.score.toFixed(1)+'</b> to your '+
           (FA_MODE==='ros'?'rest-of-season total':'week '+wk+' lineup'),
         top.bumped?'He starts over <b>'+top.bumped+'</b>, who moves to your bench':'',
-        p.h10!=null?'Cleared 10 points in <b>'+Math.round(p.h10*100)+'%</b> of his 2025 weeks ('+p.g25+' games)':
+        floorOf(p)!=null?('Expected to clear 10 points in <b>'+Math.round(floorOf(p)*100)+'%</b> of weeks in his CURRENT role'+(p.role==='LOST'?' &mdash; was '+Math.round(p.h10*100)+'% in 2025, before the role changed':'')):
                     '<b>No 2025 history</b> — floor unmeasured, and that is a real unknown',
         p.dcp&&p.dco?'Listed <b>'+(p.dcp||p.pos)+p.dco+'</b> on the depth chart per Sleeper':'',
         p.inj?'<b style="color:var(--bad)">'+String(p.inj).toUpperCase()+'</b> per Sleeper — check before you claim':''
@@ -1176,8 +1180,8 @@ function faShapeCheck(mine){
   mine.forEach(p=>{ if(c[p.pos]!==undefined) c[p.pos]++; });
   const over=Object.keys(OBS).filter(pos=>c[pos]>OBS[pos][1]);
   // weakest MEASURED floor among flex-eligible bench - what an add actually costs
-  const flex=mine.filter(p=>['RB','WR','TE'].includes(p.pos)&&p.h10!=null);
-  flex.sort((a,b)=>a.h10-b.h10);
+  const flex=mine.filter(p=>['RB','WR','TE'].includes(p.pos)&&floorOf(p)!=null);
+  flex.sort((a,b)=>floorOf(a)-floorOf(b));
   let h='';
   if(over.length){
     h+='<div class="card warn"><h2>Your roster is outside the shape this league drafts</h2>'+
@@ -1193,7 +1197,7 @@ function faShapeCheck(mine){
        '<p>Your weakest flex-eligible bench pieces by MEASURED 2025 ten-point rate. Adding anyone means dropping one of these:</p>'+
        flex.slice(0,3).map(p=>'<div class="alt"><span class="an">'+p.n+
          ' <span class="pm" style="display:inline">'+p.pos+(p.tm?' &middot; '+p.tm:'')+'</span></span>'+
-         '<span class="ar">clears 10 in <b>'+Math.round(p.h10*100)+'%</b> of weeks &middot; bye '+(p.bye||'&mdash;')+'</span></div>').join('')+
+         '<span class="ar">expected <b>'+Math.round(floorOf(p)*100)+'%</b> in his current role &middot; bye '+(p.bye||'&mdash;')+'</span></div>').join('')+
        '<p style="margin-top:9px;font-size:12.5px;color:var(--ink-3)">A pickup whose own 10+ rate is BELOW these is a downgrade to your bench floor, '+
        'whatever his projection says &mdash; and bench floor is the thing you identified as separating teams here.</p></div>';
   }
@@ -1213,8 +1217,8 @@ function faRosterPanel(mine,wk){
     h+='<tr'+(st?'':' class="lot"')+'><td><span class="pn">'+(st?'&#9679; ':'')+p.n+'</span>'+
        '<span class="pm">'+p.pos+(p.tm?' &middot; '+p.tm:'')+(st?' · starting':' · bench')+'</span></td>'+
        '<td>'+(v===null?(onBye(p,wk)?'<b style="color:var(--bad)">BYE</b>':'&mdash;'):v.toFixed(1))+'</td>'+
-       '<td>'+(p.h10==null?'&mdash;':Math.round(p.h10*100)+'%')+'</td>'+
-       '<td>'+(p.bye||'—')+'</td></tr>';
+       '<td>'+(floorOf(p)==null?'&mdash;':Math.round(floorOf(p)*100)+'%'+(p.role==='LOST'?' <span class="tag t-NO">lost</span>':''))+'</td>'+
+       '<td>'+(p.bye||'&mdash;')+'</td></tr>';
   });
   h+='</tbody></table></div><p style="font-size:12.5px;color:var(--ink-3);margin-top:8px">'+
      '&#9679; marks the nine the week-'+wk+' projection would start.</p></div>';
@@ -1225,15 +1229,15 @@ function faRosterPanel(mine,wk){
 // This is the standing version of the check the draft engine failed at 13.09.
 function faWasteCheck(mine,rows){
   const best={};
-  rows.forEach(r=>{ const p=r.p; if(p.h10==null) return;
-    if(!best[p.pos]||p.h10>best[p.pos].h10) best[p.pos]=p; });
+  rows.forEach(r=>{ const p=r.p; if(floorOf(p)==null) return;
+    if(!best[p.pos]||floorOf(p)>floorOf(best[p.pos])) best[p.pos]=p; });
   const wk=faTargetWeek();
   const L=weekLineup(mine,wk);
   const starters=new Set(['QB','RB','WR','TE','FLEX'].flatMap(k=>L.line[k].map(x=>x.p.n)));
   const wasted=mine.filter(p=>{
     if(starters.has(p.n)) return false;
     const f=best[p.pos];
-    return f&&p.h10!=null&&f.h10>=p.h10;
+    return f&&floorOf(p)!=null&&floorOf(f)>=floorOf(p);
   });
   if(!wasted.length) return '';
   let h='<div class="card warn"><h2>Roster spots the wire can replace for free</h2>'+
@@ -1241,7 +1245,7 @@ function faWasteCheck(mine,rows){
     'on measured 2025 ten-point rate. Holding them costs a spot you could spend where the wire is thin.</p>';
   wasted.forEach(p=>{ const f=best[p.pos];
     h+='<div class="alt"><span class="an">'+p.n+' <span class="pm" style="display:inline">'+p.pos+
-       ' · clears 10 in '+Math.round(p.h10*100)+'% of weeks</span></span>'+
+       ' · expected '+Math.round(floorOf(p)*100)+'% in his current role</span></span>'+
        '<span class="ar">free right now: <b>'+f.n+'</b> at '+Math.round(f.h10*100)+'%</span></div>';});
   h+='<p style="margin-top:9px;font-size:12.5px">Both rates are 2025 measurements. A high 2025 rate with a low '+
      '2026 projection usually means a role the player no longer has — check the depth-chart note before you drop anyone.</p></div>';
@@ -1460,7 +1464,7 @@ function viewLineup(){
        '<td>'+(v===null?(onBye(p,wk)?'<b style="color:var(--bad)">BYE</b>':'&mdash;'):v.toFixed(1))+'</td>'+
        '<td>'+(p.flr==null?'&mdash;':p.flr.toFixed(1))+'</td>'+
        '<td>'+(p.ceil==null?'&mdash;':p.ceil.toFixed(1))+'</td>'+
-       '<td>'+(p.h10==null?'&mdash;':Math.round(p.h10*100)+'%')+'</td>'+
+       '<td>'+(floorOf(p)==null?'&mdash;':Math.round(floorOf(p)*100)+'%'+(p.role==='LOST'?' <span class="tag t-NO">lost</span>':''))+'</td>'+
        '<td>'+(p.bye||'&mdash;')+'</td></tr>';
   });
   h+='</tbody></table></div><p style="font-size:12.5px;color:var(--ink-3);margin-top:8px">'+
@@ -1577,16 +1581,28 @@ const MOVE_CANDS=70;   // FA candidates considered; reported on screen, never si
 // therefore how many flex-eligible bench players clear 10 points in at least
 // 40% of weeks; the best rate breaks ties.
 const BENCH_BAR=0.40;
+// THE number decisions run on. p.h10 is last year's rate and describes a role
+// the player may not have any more; p.h10a is that same measured shape rescaled
+// to his 2026 role. Everything that ranks, filters or scores uses this. Nothing
+// ranks on h10 - that mistake put four men HANDOFF explicitly said not to
+// recommend at the top of the first moves plan.
+function floorOf(p){ return (p&&p.h10a!=null)?p.h10a:null; }
+function roleTag(p){
+  if(!p||!p.role||p.role==='SAME') return '';
+  const lost=p.role==='LOST';
+  return '<span class="tag '+(lost?'t-NO':'t-MEASURED')+'">role '+(lost?'lost':'gained')+'</span>';
+}
 function benchFloorOf(ids,L){
   const lu=(L||weekLineup(ids,1,spw)).line;
   const st=new Set(lu.QB.concat(lu.RB,lu.WR,lu.TE,lu.FLEX).map(x=>x.p));
   let best=0, any=false, n=0;
   ids.forEach(p=>{ if(st.has(p)) return;
     if(!['RB','WR','TE'].includes(p.pos)) return;
-    if(p.h10==null) return;           // unmeasured is unknown, never zero
+    const f=floorOf(p);
+    if(f==null) return;               // unmeasured is unknown, never zero
     any=true;
-    if(p.h10>best) best=p.h10;
-    if(p.h10>=BENCH_BAR) n++; });
+    if(f>best) best=f;
+    if(f>=BENCH_BAR) n++; });
   return any?{best:best,n:n}:null;
 }
 function rosterMetrics(ids){
@@ -1616,7 +1632,7 @@ function buildMoves(){
   const owned=new Set(mine.map(p=>p.n));
   const pool=Object.keys(FA).filter(id=>!ROSTERED.has(id)).map(id=>FA[id])
     .filter(p=>['QB','RB','WR','TE'].includes(p.pos));
-  pool.sort((a,b)=>((b.h10==null?-1:b.h10)-(a.h10==null?-1:a.h10))||((b.pts||0)-(a.pts||0)));
+  pool.sort((a,b)=>((floorOf(b)==null?-1:floorOf(b))-(floorOf(a)==null?-1:floorOf(a)))||((b.pts||0)-(a.pts||0)));
   const cands=pool.slice(0,MOVE_CANDS);
 
   const out=[];
@@ -1705,7 +1721,7 @@ function buildPlan(){
   const steps=[]; const used=new Set();
   const pool=Object.keys(FA).filter(id=>!ROSTERED.has(id)).map(id=>FA[id])
     .filter(p=>['RB','WR','TE','QB'].includes(p.pos));
-  pool.sort((a,b)=>((b.h10==null?-1:b.h10)-(a.h10==null?-1:a.h10))||((b.pts||0)-(a.pts||0)));
+  pool.sort((a,b)=>((floorOf(b)==null?-1:floorOf(b))-(floorOf(a)==null?-1:floorOf(a)))||((b.pts||0)-(a.pts||0)));
   const cands=pool.slice(0,MOVE_CANDS);
   for(let step=0; step<PLAN_MAX_STEPS; step++){
     const cur=rosterMetrics(roster), curBreach=shapeBreach(roster);
@@ -1725,8 +1741,21 @@ function buildPlan(){
         const better = gain>0 || (gain===0 && br<curBreach);
         if(!better) return;
         if(!best || gain>best.gain || (gain===best.gain && br<best.breach) ||
-           (gain===best.gain && br===best.breach && m.ros>best.m.ros))
-          best={add:add,drop:drop,m:m,gain:gain,breach:br,before:cur};
+           (gain===best.gain && br===best.breach && m.ros>best.m.ros)){
+          // Say WHY this step is in the plan. A step that shows "0 -> 0" on
+          // every headline number reads like a no-op, and the reader is left to
+          // work out that it is there to fix roster shape.
+          const why=[];
+          if(m.floor&&cur.floor&&m.floor.n>cur.floor.n)
+            why.push('adds a bench piece you can start in a pinch');
+          if(m.floor&&cur.floor&&m.floor.best>cur.floor.best+0.005)
+            why.push('raises your best bench option to '+Math.round(m.floor.best*100)+'%');
+          if(br<curBreach) why.push('brings your roster back inside the shape every manager in this league finished inside');
+          if(m.ros>cur.ros+0.5) why.push('worth '+(m.ros-cur.ros).toFixed(0)+' more points across the season');
+          if(m.worst>cur.worst+0.05) why.push('lifts your worst week');
+          if(!why.length) why.push('small gain with no cost anywhere else');
+          best={add:add,drop:drop,m:m,gain:gain,breach:br,before:cur,why:why};
+        }
       });
     });
     if(!best) break;
@@ -1760,15 +1789,21 @@ function viewMoves(){
   // ---------- THE PLAN: one answer, in order --------------------------------
   let h='';
   if(P.steps.length){
-    h+='<div class="hero"><div class="kicker">YOUR PLAN &mdash; '+P.steps.length+' MOVE'+(P.steps.length>1?'S':'')+', IN THIS ORDER</div>';
+    const bigGain=(P.end.floor&&P.start.floor&&P.end.floor.n>P.start.floor.n);
+    h+='<div class="hero"><div class="kicker">'+(bigGain?'YOUR PLAN &mdash; ':'HOUSEKEEPING &mdash; ')+P.steps.length+' MOVE'+(P.steps.length>1?'S':'')+
+       (P.steps.length>1?', IN THIS ORDER':'')+'</div>';
+    if(!bigGain) h+='<p style="font-size:13.5px;color:var(--ink-2);margin:0 0 11px">No move on this wire raises your bench depth &mdash; '+
+       'every free agent with a good 2025 rate has lost the role that produced it. What is left is tidying.</p>';
     P.steps.forEach((st,i)=>{
       h+='<div class="step"><span class="stepn">'+(i+1)+'</span><div class="stepb">'+
          '<div class="stept">Drop <b>'+st.drop.n+'</b> &nbsp;&rarr;&nbsp; Add <b style="color:var(--gold)">'+st.add.n+'</b></div>'+
          '<div class="steps2">'+st.drop.pos+(st.drop.tm?' '+st.drop.tm:'')+
-           (st.drop.h10!=null?' &middot; clears 10 in '+Math.round(st.drop.h10*100)+'% of weeks':' &middot; no 2025 history')+
+           (floorOf(st.drop)!=null?' &middot; '+Math.round(floorOf(st.drop)*100)+'% expected':' &middot; no 2025 history')+
            '&nbsp; &rarr; &nbsp;'+st.add.pos+(st.add.tm?' '+st.add.tm:'')+
-           (st.add.h10!=null?' &middot; '+Math.round(st.add.h10*100)+'%':' &middot; no 2025 history')+
-           (st.add.bye?' &middot; bye '+st.add.bye:'')+'</div></div></div>';
+           (floorOf(st.add)!=null?' &middot; '+Math.round(floorOf(st.add)*100)+'% expected'+(st.add.role==='LOST'?' (was '+Math.round(st.add.h10*100)+'%)':''):' &middot; no 2025 history')+
+           (st.add.bye?' &middot; bye '+st.add.bye:'')+'</div>'+
+           '<div class="stepw">'+st.why[0].charAt(0).toUpperCase()+st.why[0].slice(1)+
+           (st.why.length>1?', and '+st.why.slice(1).join(', '):'')+'.</div></div></div>';
     });
     h+='<div class="split" style="margin-top:13px"><div class="lb">what the whole plan does</div>'+
       planRow('Bench pieces you can trust in a spot start', P.start.floor?P.start.floor.n:0, P.end.floor?P.end.floor.n:0, fN, true)+
@@ -1832,7 +1867,7 @@ function viewMoves(){
             ('Rest-of-season points move <b>'+(t.dRos>0?'+':'')+t.dRos.toFixed(1)+'</b> ('+t.pRos.toFixed(2)+'%)'),
          t.add.h10!=null?('He cleared 10 points in <b>'+Math.round(t.add.h10*100)+'%</b> of his '+t.add.g25+' games in 2025'):
             '<b>No 2025 history</b> for him &mdash; his floor is unmeasured, and that is a real unknown',
-         (t.drop.h10!=null)?('You give up '+t.drop.n+' at '+Math.round(t.drop.h10*100)+'%'):'',
+         (floorOf(t.drop)!=null)?('You give up '+t.drop.n+' at '+Math.round(floorOf(t.drop)*100)+'%'):'',
          (t.add.bye&&t.drop.bye&&t.add.bye!==t.drop.bye)?('Moves that roster spot off bye '+t.drop.bye+' onto bye '+t.add.bye):''
        ].filter(Boolean).map(x=>'<li><span>'+x+'</span></li>').join('')+'</ul></div>';
 
